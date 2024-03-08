@@ -166,7 +166,7 @@ commerce:
 	product: 
 		fakeservice: 
 			enabled: true # boolean: enables fake services
-			currency: "€" # string: currency for the fake services
+			currency: "EUR" # string: currency for the fake services
 			jsonTestDataFolder: "testdata/products"
 			jsonTestDataLiveSearch: "testdata/livesearch/livesearch.json"
             jsonTestDataCategoryFacetItems: "testdata/facets/categoryFacetItems.json"

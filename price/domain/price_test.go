@@ -140,17 +140,17 @@ func TestSumAll(t *testing.T) {
 }
 
 func TestPrice_TaxFromGross(t *testing.T) {
-	// 119 €
+	// 119 EUR
 	price := domain.NewFromInt(119, 1, "EUR")
 	tax := price.TaxFromGross(*new(big.Float).SetInt64(19))
 	assert.Equal(t, tax, domain.NewFromInt(19, 1, "EUR"))
 }
 
 func TestPrice_TaxFromNet(t *testing.T) {
-	// 100 €
+	// 100 EUR
 	price := domain.NewFromInt(100, 1, "EUR")
 	tax := price.TaxFromNet(*new(big.Float).SetInt64(19))
-	assert.Equal(t, tax, domain.NewFromInt(19, 1, "EUR"), "expect 19 € tax fromm 100€")
+	assert.Equal(t, tax, domain.NewFromInt(19, 1, "EUR"), "expect 19 EUR tax fromm 100EUR")
 
 	taxedPrice := price.Taxed(*new(big.Float).SetInt64(19))
 	assert.Equal(t, taxedPrice, domain.NewFromInt(119, 1, "EUR"))
@@ -382,13 +382,13 @@ func TestCharges_Add(t *testing.T) {
 
 func TestCharges_GetAllByType(t *testing.T) {
 	charges := domain.Charges{}
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-x", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-c", Reference: "HUHUWHHUHX", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "ABC123", Price: domain.NewFromInt(200, 1, "€")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-x", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-c", Reference: "HUHUWHHUHX", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "ABC123", Price: domain.NewFromInt(200, 1, "EUR")})
 
 	assert.Len(t, charges.GetAllByType(domain.ChargeTypeMain), 3)
 	assert.Len(t, charges.GetAllByType("type-a"), 1)
@@ -398,21 +398,22 @@ func TestCharges_GetAllByType(t *testing.T) {
 
 func TestCharges_GetByType(t *testing.T) {
 	charges := domain.Charges{}
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-x", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-c", Reference: "HUHUWHHUHX", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "ABC123", Price: domain.NewFromInt(200, 1, "€")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-x", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-c", Reference: "HUHUWHHUHX", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: "type-a", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "ABC123", Price: domain.NewFromInt(200, 1, "EUR")})
 
 	charge, found := charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(600, 1, "€")})
+	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(600, 1, "EUR")})
 
 	charge, found = charges.GetByType("type-a")
 	assert.True(t, found)
-	want := domain.Charge{Type: "type-a", Price: domain.NewFromInt(400, 1, "€")}
+
+	want := domain.Charge{Type: "type-a", Price: domain.NewFromInt(400, 1, "EUR")}
 	assert.Equal(t, charge.Price, want.Price)
 }
 
@@ -422,21 +423,21 @@ func TestCharges_GetByTypeForced(t *testing.T) {
 	charge := charges.GetByTypeForced(domain.ChargeTypeMain)
 	assert.Equal(t, charge, domain.Charge{})
 
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "EUR")})
 	charge = charges.GetByTypeForced(domain.ChargeTypeMain)
 
-	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "€")})
+	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "EUR")})
 }
 
 func TestCharges_GetByChargeQualifier(t *testing.T) {
 	charges := domain.Charges{}
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "€")})
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "ABC123", Price: domain.NewFromInt(200, 1, "€")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(200, 1, "EUR")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "ABC123", Price: domain.NewFromInt(200, 1, "EUR")})
 
 	charge, found := charges.GetByChargeQualifier(domain.ChargeQualifier{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82"})
 	assert.True(t, found)
-	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
+	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "EUR")})
 
 }
 
@@ -445,9 +446,9 @@ func TestCharges_GetByChargeQualifierForced(t *testing.T) {
 	charge := charges.GetByChargeQualifierForced(domain.ChargeQualifier{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82"})
 	assert.Equal(t, charge, domain.Charge{})
 
-	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
+	charges = charges.AddCharge(domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "EUR")})
 	charge = charges.GetByChargeQualifierForced(domain.ChargeQualifier{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82"})
-	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
+	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "EUR")})
 
 }
 

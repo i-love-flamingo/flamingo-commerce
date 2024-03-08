@@ -21,7 +21,7 @@ func Test_CommerceProductGet(t *testing.T) {
 			"title":           "TypeSimple product",
 			"marketPlaceCode": "fake_simple",
 			"meta":            map[string]interface{}{"keywords": []interface{}{"keywords"}},
-			"price":           map[string]interface{}{"activeBase": map[string]interface{}{"amount": 1.0, "currency": "€"}},
+			"price":           map[string]interface{}{"activeBase": map[string]interface{}{"amount": 1.0, "currency": "EUR"}},
 		},
 		"configurable": map[string]interface{}{
 			"title":           "TypeConfigurable product",

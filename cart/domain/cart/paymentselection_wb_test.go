@@ -28,21 +28,21 @@ func Test_CanBuildSimpleSelectionFromCard(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "EUR"),
 					},
 					{
 						ID:                        "2",
-						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
-					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "EUR"),
 				},
 			},
 		},
 	}
 	selection, _ := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
-	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
+	assert.Equal(t, domain.NewFromInt(1198, 100, "EUR").FloatAmount(), selection.TotalValue().FloatAmount())
 }
 
 func Test_CanBuildSimpleSelectionWithGiftCard_NoGc(t *testing.T) {
@@ -55,15 +55,15 @@ func Test_CanBuildSimpleSelectionWithGiftCard_NoGc(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "EUR"),
 					},
 					{
 						ID:                        "2",
-						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
-					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "EUR"),
 				},
 			},
 		},
@@ -71,7 +71,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard_NoGc(t *testing.T) {
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	require.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
+	assert.Equal(t, domain.NewFromInt(1198, 100, "EUR").FloatAmount(), selection.TotalValue().FloatAmount())
 }
 
 func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
@@ -85,45 +85,45 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "EUR"),
 					},
 					{
 						ID:                        "2",
-						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
-					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "EUR"),
 				},
 			},
 		},
 		AppliedGiftCards: AppliedGiftCards{
 			{
 				Code:    "code-1",
-				Applied: domain.NewFromInt(100, 100, "€"),
+				Applied: domain.NewFromInt(100, 100, "EUR"),
 			},
 			{
 				Code:    "code-2",
-				Applied: domain.NewFromInt(200, 100, "€"),
+				Applied: domain.NewFromInt(200, 100, "EUR"),
 			},
 		},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
-	want := domain.NewFromInt(199, 100, "€").FloatAmount()
+	assert.Equal(t, domain.NewFromInt(1198, 100, "EUR").FloatAmount(), selection.TotalValue().FloatAmount())
+	want := domain.NewFromInt(199, 100, "EUR").FloatAmount()
 	got := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Price.FloatAmount()
 	assert.Equal(t, want, got)
 
-	want = domain.NewFromInt(0, 0, "€").FloatAmount()
+	want = domain.NewFromInt(0, 0, "EUR").FloatAmount()
 	got = selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Price.FloatAmount()
 	assert.Equal(t, want, got)
 
-	want = domain.NewFromInt(101, 100, "€").FloatAmount()
+	want = domain.NewFromInt(101, 100, "EUR").FloatAmount()
 	got = selection.ItemSplit().CartItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Price.FloatAmount()
 	assert.Equal(t, want, got)
 
-	want = domain.NewFromInt(198, 100, "€").FloatAmount()
+	want = domain.NewFromInt(198, 100, "EUR").FloatAmount()
 	got = selection.ItemSplit().CartItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Price.FloatAmount()
 	assert.Equal(t, want, got)
 
@@ -139,28 +139,28 @@ func Test_CanBuildSimpleSelectionWithGiftCardFullPayment(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "EUR"),
 					},
 					{
 						ID:                        "2",
-						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
-					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "EUR"),
 				},
 			},
 		},
 		AppliedGiftCards: AppliedGiftCards{
 			{
-				Applied: domain.NewFromInt(1198, 100, "€"),
+				Applied: domain.NewFromInt(1198, 100, "EUR"),
 			},
 		},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
-	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(1198, 100, "EUR").FloatAmount(), selection.TotalValue().FloatAmount())
+	assert.Equal(t, domain.NewFromInt(1198, 100, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 
 	_, found := selection.CartSplit().ChargesByType().GetByType(domain.ChargeTypeMain)
 	assert.False(t, found, "cart fully paid with gift card, there should be no main charge left")
@@ -176,37 +176,37 @@ func Test_CanCalculateGiftCardChargeWithRest(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(4, 1, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(4, 1, "EUR"),
 					},
 					{
 						ID:                        "2",
-						RowPriceGrossWithDiscount: domain.NewFromInt(8, 1, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(8, 1, "EUR"),
 					},
 				},
 			},
 		},
 		AppliedGiftCards: AppliedGiftCards{
 			{
-				Applied: domain.NewFromInt(10, 1, "€"),
+				Applied: domain.NewFromInt(10, 1, "EUR"),
 			},
 		},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	// verfiy complete cart splits
-	assert.Equal(t, domain.NewFromInt(10, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(2, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(10, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(2, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 
 	// verify first product charges
 	relativeGCValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(4, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(4, 1, "EUR").FloatAmount(), relativeGCValue.Value.FloatAmount())
 	relativeMainValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 1, "EUR").FloatAmount(), relativeMainValue.Value.FloatAmount())
 	// verfiy second product charges
 	relativeGCValue = selection.ItemSplit().CartItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(6, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(6, 1, "EUR").FloatAmount(), relativeGCValue.Value.FloatAmount())
 	relativeMainValue = selection.ItemSplit().CartItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(2, 1, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(2, 1, "EUR").FloatAmount(), relativeMainValue.Value.FloatAmount())
 }
 
 func Test_PayCompleteCartWithGiftCards(t *testing.T) {
@@ -219,31 +219,31 @@ func Test_PayCompleteCartWithGiftCards(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(4, 1, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(4, 1, "EUR"),
 					},
 					{
 						ID:                        "2",
-						RowPriceGrossWithDiscount: domain.NewFromInt(8, 1, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(8, 1, "EUR"),
 					},
 				},
 			},
 		},
 		AppliedGiftCards: AppliedGiftCards{
 			{
-				Applied: domain.NewFromInt(12, 1, "€"),
+				Applied: domain.NewFromInt(12, 1, "EUR"),
 			},
 		},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	require.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(12, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(12, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 	// item 1 is completely paid for
 	relativeGCValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(4, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(4, 1, "EUR").FloatAmount(), relativeGCValue.Value.FloatAmount())
 	// item 2 is completely paid for
 	relativeGCValue = selection.ItemSplit().CartItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(8, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(8, 1, "EUR").FloatAmount(), relativeGCValue.Value.FloatAmount())
 }
 
 func Test_CartWithExpensiveItems(t *testing.T) {
@@ -256,12 +256,12 @@ func Test_CartWithExpensiveItems(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(300099, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(300099, 100, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
 					Title:                   "1",
-					PriceGrossWithDiscounts: domain.NewFromInt(88895, 100, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(88895, 100, "EUR"),
 				},
 			},
 		},
@@ -269,40 +269,40 @@ func Test_CartWithExpensiveItems(t *testing.T) {
 			{
 				Code:  "1",
 				Title: "1",
-				Price: domain.NewFromInt(1200095, 100, "€"),
+				Price: domain.NewFromInt(1200095, 100, "EUR"),
 			},
 		},
 		AppliedGiftCards: []AppliedGiftCard{
 			{
 				Code:    "code-1",
-				Applied: domain.NewFromInt(50, 1, "€"),
+				Applied: domain.NewFromInt(50, 1, "EUR"),
 			},
 			{
 				Code:    "code-2",
-				Applied: domain.NewFromInt(50, 1, "€"),
+				Applied: domain.NewFromInt(50, 1, "EUR"),
 			},
 		},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(100, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(1579089, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(100, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(1579089, 100, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 
 	// verify total item charges
 	totalGCValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(0, 0, "€").FloatAmount(), totalGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 0, "EUR").FloatAmount(), totalGCValue.Value.FloatAmount())
 	totalMainValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(1200095, 100, "€").FloatAmount(), totalMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(1200095, 100, "EUR").FloatAmount(), totalMainValue.Value.FloatAmount())
 	// verify shipping item charges
 	shippingGCValue := selection.ItemSplit().ShippingItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(0, 0, "€").FloatAmount(), shippingGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 0, "EUR").FloatAmount(), shippingGCValue.Value.FloatAmount())
 	shippingMainValue := selection.ItemSplit().ShippingItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(88895, 100, "€").FloatAmount(), shippingMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(88895, 100, "EUR").FloatAmount(), shippingMainValue.Value.FloatAmount())
 	// verify cart item charges
 	itemGCValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(100, 1, "€").FloatAmount(), itemGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(100, 1, "EUR").FloatAmount(), itemGCValue.Value.FloatAmount())
 	itemMainValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(290099, 100, "€").FloatAmount(), itemMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(290099, 100, "EUR").FloatAmount(), itemMainValue.Value.FloatAmount())
 }
 
 func Test_CartWithShipping(t *testing.T) {
@@ -315,36 +315,36 @@ func Test_CartWithShipping(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(150, 1, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(150, 1, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
 					Title:                   "1",
-					PriceGrossWithDiscounts: domain.NewFromInt(99, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(99, 1, "EUR"),
 				},
 			},
 		},
 		AppliedGiftCards: []AppliedGiftCard{
 			{
 				Code:    "code-1",
-				Applied: domain.NewFromInt(120, 1, "€"),
+				Applied: domain.NewFromInt(120, 1, "EUR"),
 			},
 			{
 				Code:    "code-2",
-				Applied: domain.NewFromInt(40, 1, "€"),
+				Applied: domain.NewFromInt(40, 1, "EUR"),
 			},
 		},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	require.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(160, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(89, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(160, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(89, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 
 	// verify cart item charges
 	itemGCValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(150, 1, "€").FloatAmount(), itemGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(150, 1, "EUR").FloatAmount(), itemGCValue.Value.FloatAmount())
 	itemMainValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), itemMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 1, "EUR").FloatAmount(), itemMainValue.Value.FloatAmount())
 
 	appliedGiftCardCharges := selection.ItemSplit().CartItems["1"].ChargesByType().GetAllByType(domain.ChargeTypeGiftCard)
 	assert.Len(t, appliedGiftCardCharges, 2)
@@ -357,9 +357,9 @@ func Test_CartWithShipping(t *testing.T) {
 
 	// verify shipping item charges
 	shippingGCValue := selection.ItemSplit().ShippingItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(10, 1, "€").FloatAmount(), shippingGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(10, 1, "EUR").FloatAmount(), shippingGCValue.Value.FloatAmount())
 	shippingMainValue := selection.ItemSplit().ShippingItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(89, 1, "€").FloatAmount(), shippingMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(89, 1, "EUR").FloatAmount(), shippingMainValue.Value.FloatAmount())
 
 	cq = domain.ChargeQualifier{Type: domain.ChargeTypeGiftCard, Reference: "code-2"}
 	assert.Equal(t, 10.0, selection.ItemSplit().ShippingItems["1"].ChargesByType().GetByChargeQualifierForced(cq).Price.FloatAmount())
@@ -377,12 +377,12 @@ func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(50, 100, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(50, 100, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
 					Title:                   "1",
-					PriceGrossWithDiscounts: domain.NewFromInt(20, 100, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(20, 100, "EUR"),
 				},
 			},
 		},
@@ -390,15 +390,15 @@ func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
 			{
 				Code:  "1",
 				Title: "1",
-				Price: domain.NewFromInt(50, 100, "€"),
+				Price: domain.NewFromInt(50, 100, "EUR"),
 			},
 		},
 		AppliedGiftCards: AppliedGiftCards{},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(120, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(120, 100, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 }
 
 func Test_CreatePaymentWithFilteredCharges(t *testing.T) {
@@ -411,16 +411,16 @@ func Test_CreatePaymentWithFilteredCharges(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGrossWithDiscount: domain.NewFromInt(50, 1, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(50, 1, "EUR"),
 					},
 					{
 						ID:                        "2",
-						RowPriceGrossWithDiscount: domain.NewFromInt(20, 1, "€"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(20, 1, "EUR"),
 					},
 				},
 				ShippingItem: ShippingItem{
 					Title:                   "1",
-					PriceGrossWithDiscounts: domain.NewFromInt(20, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(20, 1, "EUR"),
 				},
 			},
 		},
@@ -428,25 +428,25 @@ func Test_CreatePaymentWithFilteredCharges(t *testing.T) {
 			{
 				Code:  "1",
 				Title: "1",
-				Price: domain.NewFromInt(10, 1, "€"),
+				Price: domain.NewFromInt(10, 1, "EUR"),
 			},
 		},
 		AppliedGiftCards: AppliedGiftCards{
 			{
 				Code:    "giftcard-1",
-				Applied: domain.NewFromInt(90, 1, "€"),
+				Applied: domain.NewFromInt(90, 1, "EUR"),
 			},
 			{
 				Code:    "giftcard-2",
-				Applied: domain.NewFromInt(5, 1, "€"),
+				Applied: domain.NewFromInt(5, 1, "EUR"),
 			},
 		},
 	}
 	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	require.NoError(t, err)
 	// force type for zero charges
-	assert.Equal(t, domain.NewFromInt(95, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(5, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(95, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(5, 1, "EUR").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 
 	// check item charges for items
 	assert.Equal(t, 2, len(selection.ItemSplit().CartItems))
@@ -466,7 +466,7 @@ func Test_CreatePaymentWithFilteredCharges(t *testing.T) {
 	items := selection.ItemSplit().TotalItems
 	charge, found := items["1"].ChargesByType().GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, domain.NewFromInt(5, 1, "€").GetPayable(), charge.Price)
+	assert.Equal(t, domain.NewFromInt(5, 1, "EUR").GetPayable(), charge.Price)
 }
 
 func Test_CreatePaymentWithDiscounts(t *testing.T) {
@@ -479,28 +479,28 @@ func Test_CreatePaymentWithDiscounts(t *testing.T) {
 				Cartitems: []Item{
 					{
 						ID:                        "1",
-						RowPriceGross:             domain.NewFromInt(9995, 100, "€"),
-						RowPriceGrossWithDiscount: domain.NewFromInt(9995-4998, 100, "€"),
+						RowPriceGross:             domain.NewFromInt(9995, 100, "EUR"),
+						RowPriceGrossWithDiscount: domain.NewFromInt(9995-4998, 100, "EUR"),
 						AppliedDiscounts: AppliedDiscounts{
 							{
 								CampaignCode: "campaign-1",
 								CouponCode:   "coupon-1",
 								Label:        "Label",
-								Applied:      domain.NewFromInt(-4998, 100, "€"),
+								Applied:      domain.NewFromInt(-4998, 100, "EUR"),
 							},
 						},
 					},
 				},
 				ShippingItem: ShippingItem{
 					Title:                   "home",
-					PriceGrossWithDiscounts: domain.NewFromInt(28, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(28, 1, "EUR"),
 				},
 			},
 		},
 		AppliedGiftCards: AppliedGiftCards{
 			{
 				Code:    "giftcard-1",
-				Applied: domain.NewFromInt(7797, 100, "€"),
+				Applied: domain.NewFromInt(7797, 100, "EUR"),
 			},
 		},
 	}
@@ -509,7 +509,7 @@ func Test_CreatePaymentWithDiscounts(t *testing.T) {
 	// force type for zero charges
 	chargesByType := selection.CartSplit().ChargesByType()
 	log.Println(chargesByType.GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(7797, 100, "€").GetPayable(), chargesByType.GetByTypeForced(domain.ChargeTypeGiftCard).Value.GetPayable())
+	assert.Equal(t, domain.NewFromInt(7797, 100, "EUR").GetPayable(), chargesByType.GetByTypeForced(domain.ChargeTypeGiftCard).Value.GetPayable())
 	log.Println(chargesByType.GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(0, 100, "").GetPayable(), chargesByType.GetByTypeForced(domain.ChargeTypeMain).Value.GetPayable())
 

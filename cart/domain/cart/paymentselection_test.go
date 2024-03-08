@@ -28,12 +28,12 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 	builder := cart.PaymentSplitByItemBuilder{}
 	builder.AddCartItem("id", "method", domain.Charge{
 		Type:  "type",
-		Price: domain.NewFromInt(100, 1, "€"),
-		Value: domain.NewFromInt(100, 1, "€"),
+		Price: domain.NewFromInt(100, 1, "EUR"),
+		Value: domain.NewFromInt(100, 1, "EUR"),
 	})
 
 	forGob := SomeTypeWithPaymentSelection{Selection: cart.NewPaymentSelection("gateway", builder.Build())}
-	assert.Equal(t, domain.NewFromInt(100, 1, "€"), forGob.Selection.ItemSplit().Sum().TotalValue())
+	assert.Equal(t, domain.NewFromInt(100, 1, "EUR"), forGob.Selection.ItemSplit().Sum().TotalValue())
 
 	err := enc.Encode(&forGob)
 	if err != nil {
@@ -46,7 +46,7 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 	}
 
 	assert.Equal(t, "gateway", received.Selection.Gateway())
-	assert.Equal(t, domain.NewFromInt(100, 1, "€"), received.Selection.ItemSplit().Sum().TotalValue())
+	assert.Equal(t, domain.NewFromInt(100, 1, "EUR"), received.Selection.ItemSplit().Sum().TotalValue())
 }
 
 func TestPaymentSplit_MarshalJSON(t *testing.T) {

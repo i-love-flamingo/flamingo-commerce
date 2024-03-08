@@ -874,7 +874,7 @@ func TestAppliedDiscounts_Sum(t *testing.T) {
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
-					Applied:      domain.NewFromFloat(-10.0, "€"),
+					Applied:      domain.NewFromFloat(-10.0, "EUR"),
 					SortOrder:    0,
 				},
 			},

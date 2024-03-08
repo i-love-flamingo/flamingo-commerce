@@ -7,8 +7,8 @@ import (
 	"math"
 	"math/big"
 	"strconv"
-	"strings"
-	"sync"
+
+	"github.com/Rhymond/go-money"
 )
 
 type (
@@ -54,9 +54,6 @@ type (
 var (
 	_ encoding.BinaryMarshaler   = Price{}
 	_ encoding.BinaryUnmarshaler = &Price{}
-
-	rwMutex         sync.RWMutex
-	loyaltyCurrency = "Miles"
 )
 
 const (
@@ -371,11 +368,21 @@ func (p Price) precisionF(precision int) *big.Float {
 // - can be currency specific (for now defaults to 2)
 // - TODO - use currency configuration or registry
 func (p Price) payableRoundingPrecision() (string, int) {
-	if strings.EqualFold(p.currency, GetLoyaltyCurrency()) {
-		return RoundingModeFloor, int(1)
+	currency := money.GetCurrency(p.currency)
+	if currency == nil {
+		return RoundingModeFloor, 1
 	}
 
-	return RoundingModeHalfUp, int(100)
+	if currency.Fraction == 0 {
+		return RoundingModeHalfUp, 1
+	}
+
+	precision := 10
+	for i := 2; i <= currency.Fraction; i++ {
+		precision *= 10
+	}
+
+	return RoundingModeHalfUp, precision
 }
 
 // SplitInPayables returns "count" payable prices (each rounded) that in sum matches the given price
@@ -698,18 +705,4 @@ func addChargeQualifier(chargesByType map[string]Charge) Charges {
 		withQualifier[qualifier] = charge
 	}
 	return Charges{chargesByQualifier: withQualifier}
-}
-
-func GetLoyaltyCurrency() string {
-	rwMutex.RLock()
-	defer rwMutex.RUnlock()
-
-	return loyaltyCurrency
-}
-
-func SetLoyaltyCurrency(currency string) {
-	rwMutex.Lock()
-	defer rwMutex.Unlock()
-
-	loyaltyCurrency = currency
 }
