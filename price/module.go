@@ -15,7 +15,7 @@ type (
 )
 
 // Configure the product URL
-func (m Module) Configure(injector *dingo.Injector) {
+func (m *Module) Configure(injector *dingo.Injector) {
 	flamingo.BindTemplateFunc(injector, "commercePriceFormat", new(templatefunctions.CommercePriceFormatFunc))
 	injector.BindMulti(new(graphql.Service)).To(pricegraphql.Service{})
 }

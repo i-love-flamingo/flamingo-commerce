@@ -30,7 +30,7 @@ func Test_CartSummary(t *testing.T) {
 					"cartSummary": map[string]interface{}{
 						"total": map[string]interface{}{
 							"amount":   10.49,
-							"currency": "€",
+							"currency": "EUR",
 						},
 					},
 				},

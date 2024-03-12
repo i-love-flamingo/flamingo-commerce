@@ -1412,7 +1412,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
-		}{ProductPricing: "gross", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
+		}{ProductPricing: "gross", DefaultTaxRate: 10.0, DefaultCurrency: "EUR"})
 
 		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, nil, domain.SimpleProduct{
 			Saleable: domain.Saleable{
@@ -1439,7 +1439,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
-		}{ProductPricing: "net", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
+		}{ProductPricing: "net", DefaultTaxRate: 10.0, DefaultCurrency: "EUR"})
 
 		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, nil, domain.SimpleProduct{
 			Saleable: domain.Saleable{
