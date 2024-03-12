@@ -365,20 +365,14 @@ func (p Price) precisionF(precision int) *big.Float {
 }
 
 // precisionF - 10 * n - n is the amount of decimal numbers after comma
-// - can be currency specific (for now defaults to 2)
-// - TODO - use currency configuration or registry
 func (p Price) payableRoundingPrecision() (string, int) {
 	currency := money.GetCurrency(p.currency)
 	if currency == nil {
 		return RoundingModeFloor, 1
 	}
 
-	if currency.Fraction == 0 {
-		return RoundingModeHalfUp, 1
-	}
-
-	precision := 10
-	for i := 2; i <= currency.Fraction; i++ {
+	precision := 1
+	for i := 1; i <= currency.Fraction; i++ {
 		precision *= 10
 	}
 
