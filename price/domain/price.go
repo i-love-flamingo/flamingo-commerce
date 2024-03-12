@@ -7,7 +7,8 @@ import (
 	"math"
 	"math/big"
 	"strconv"
-	"strings"
+
+	"github.com/Rhymond/go-money"
 )
 
 type (
@@ -364,13 +365,18 @@ func (p Price) precisionF(precision int) *big.Float {
 }
 
 // precisionF - 10 * n - n is the amount of decimal numbers after comma
-// - can be currency specific (for now defaults to 2)
-// - TODO - use currency configuration or registry
 func (p Price) payableRoundingPrecision() (string, int) {
-	if strings.ToLower(p.currency) == "miles" || strings.ToLower(p.currency) == "points" {
-		return RoundingModeFloor, int(1)
+	currency := money.GetCurrency(p.currency)
+	if currency == nil {
+		return RoundingModeFloor, 1
 	}
-	return RoundingModeHalfUp, int(100)
+
+	precision := 1
+	for i := 1; i <= currency.Fraction; i++ {
+		precision *= 10
+	}
+
+	return RoundingModeHalfUp, precision
 }
 
 // SplitInPayables returns "count" payable prices (each rounded) that in sum matches the given price

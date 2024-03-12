@@ -118,7 +118,7 @@ commerce: {
 			storage: "inmemory"
 			defaultTaxRate?: number
 			productPrices: *"gross" | "net"
-			defaultCurrency: string | *"€"
+			defaultCurrency: string | *"EUR"
 		}
 		placeOrderLogger: {
 			enabled: bool | *true
