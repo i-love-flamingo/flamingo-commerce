@@ -5,6 +5,9 @@
 **sourcing**
 * **Breaking:** Drop deprecated sourcing service `SourcingServiceDetail` and all things related.
 
+**price**
+* **Breaking:** Introduce currency library http://github.com/Rhymond/go-money for more flexible rounding. All currency codes should comply to ISO4217 from now on.
+
 ## v3.9.0
 
 **search**

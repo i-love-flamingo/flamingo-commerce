@@ -9,9 +9,10 @@ import (
 	"math/big"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 func TestPrice_IsLessThen(t *testing.T) {
@@ -67,13 +68,79 @@ func TestPrice_Multiply(t *testing.T) {
 }
 
 func TestPrice_GetPayable(t *testing.T) {
-	price := domain.NewFromFloat(12.34567, "EUR")
+	t.Parallel()
 
-	payable := price.GetPayable()
-	assert.Equal(t, float64(12.35), payable.FloatAmount())
+	t.Run("rounding with valid currency code", func(t *testing.T) {
+		t.Parallel()
 
-	price = domain.NewFromFloat(math.MaxInt64, "EUR").GetPayable()
-	assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+		price := domain.NewFromFloat(12.34567, "EUR")
+
+		payable := price.GetPayable()
+		assert.Equal(t, float64(12.35), payable.FloatAmount())
+
+		price = domain.NewFromFloat(math.MaxInt64, "EUR").GetPayable()
+		assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+	})
+
+	t.Run("rounding with miles currency code for back compatibility", func(t *testing.T) {
+		t.Parallel()
+
+		price := domain.NewFromFloat(12.34567, "MILES")
+
+		payable := price.GetPayable()
+		assert.Equal(t, float64(12), payable.FloatAmount())
+
+		price = domain.NewFromFloat(math.MaxInt64, "MILES").GetPayable()
+		assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+	})
+
+	t.Run("rounding with points currency code for back compatibility", func(t *testing.T) {
+		t.Parallel()
+
+		price := domain.NewFromFloat(12.34567, "Points")
+
+		payable := price.GetPayable()
+		assert.Equal(t, float64(12), payable.FloatAmount())
+
+		price = domain.NewFromFloat(math.MaxInt64, "Points").GetPayable()
+		assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+	})
+
+	t.Run("rounding with random currency code", func(t *testing.T) {
+		t.Parallel()
+
+		price := domain.NewFromFloat(12.34567, "asdasdasd")
+
+		payable := price.GetPayable()
+		assert.Equal(t, float64(12), payable.FloatAmount())
+
+		price = domain.NewFromFloat(math.MaxInt64, "asdasdasd").GetPayable()
+		assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+	})
+
+	t.Run("rounding with Bahraini dinar currency code", func(t *testing.T) {
+		t.Parallel()
+
+		price := domain.NewFromFloat(12.34567, "BHD")
+
+		payable := price.GetPayable()
+		assert.Equal(t, 12.346, payable.FloatAmount())
+
+		price = domain.NewFromFloat(math.MaxInt64, "BHD").GetPayable()
+		assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+	})
+
+	t.Run("rounding with Chilean Unit of Account currency code", func(t *testing.T) {
+		t.Parallel()
+
+		price := domain.NewFromFloat(12.34567, "CLF")
+
+		payable := price.GetPayable()
+		assert.Equal(t, 12.3457, payable.FloatAmount())
+
+		price = domain.NewFromFloat(math.MaxInt64, "CLF").GetPayable()
+		assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+	})
 }
 
 func TestNewFromInt(t *testing.T) {
