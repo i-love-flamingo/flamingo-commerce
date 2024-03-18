@@ -878,6 +878,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.LoyaltyEarningInfo'
         type: array
+      LoyaltyPrice:
+        $ref: '#/definitions/domain.LoyaltyPriceInfo'
       LoyaltyPrices:
         description: LoyaltyPrices holds optional infos for products that can be paid
           in a loyalty program
@@ -958,6 +960,10 @@ definitions:
         type: string
       ShortTitle:
         type: string
+      TeaserAvailableLoyaltyPriceInfos:
+        items:
+          $ref: '#/definitions/domain.LoyaltyPriceInfo'
+        type: array
       TeaserAvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'

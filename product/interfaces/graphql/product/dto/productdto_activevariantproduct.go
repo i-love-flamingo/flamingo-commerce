@@ -89,6 +89,17 @@ func (avp ActiveVariantProduct) Loyalty() ProductLoyalty {
 	}
 }
 
+func (avp ActiveVariantProduct) AvailableLoyalties() []ProductLoyalty {
+	loyalties := make([]ProductLoyalty, 0, len(avp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos))
+
+	for _, availableLoyaltyPriceInfo := range avp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos {
+		loyalty := availableLoyaltyPriceInfo
+		loyalties = append(loyalties, ProductLoyalty{Price: &loyalty})
+	}
+
+	return loyalties
+}
+
 // Attributes of the active variant
 func (avp ActiveVariantProduct) Attributes() productDomain.Attributes {
 	return avp.getActiveVariant().BaseData().Attributes

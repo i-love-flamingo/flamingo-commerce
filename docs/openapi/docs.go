@@ -2397,6 +2397,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                     }
                 },
+                "LoyaltyPrice": {
+                    "$ref": "#/definitions/domain.LoyaltyPriceInfo"
+                },
                 "LoyaltyPrices": {
                     "description": "LoyaltyPrices holds optional infos for products that can be paid in a loyalty program",
                     "type": "array",
@@ -2508,6 +2511,12 @@ const docTemplate = `{
                 },
                 "ShortTitle": {
                     "type": "string"
+                },
+                "TeaserAvailableLoyaltyPriceInfos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.LoyaltyPriceInfo"
+                    }
                 },
                 "TeaserAvailablePrices": {
                     "type": "array",

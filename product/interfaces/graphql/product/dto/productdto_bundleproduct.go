@@ -109,6 +109,17 @@ func (sp BundleProduct) Loyalty() ProductLoyalty {
 	}
 }
 
+func (sp BundleProduct) AvailableLoyalties() []ProductLoyalty {
+	loyalties := make([]ProductLoyalty, 0, len(sp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos))
+
+	for _, availableLoyaltyPriceInfo := range sp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos {
+		loyalty := availableLoyaltyPriceInfo
+		loyalties = append(loyalties, ProductLoyalty{Price: &loyalty})
+	}
+
+	return loyalties
+}
+
 // Attributes of the product
 func (sp BundleProduct) Attributes() productDomain.Attributes {
 	return sp.product.BaseData().Attributes

@@ -31,6 +31,7 @@ type (
 		ShortDescription() string
 		Meta() ProductMeta
 		Loyalty() ProductLoyalty
+		AvailableLoyalties() []ProductLoyalty
 		Attributes() productDomain.Attributes
 		Badges() ProductBadges
 	}

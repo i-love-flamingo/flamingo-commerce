@@ -90,6 +90,7 @@ type (
 		SaleableTo      time.Time
 		ActivePrice     PriceInfo
 		AvailablePrices []PriceInfo
+		LoyaltyPrice    LoyaltyPriceInfo
 		// LoyaltyPrices holds optional infos for products that can be paid in a loyalty program
 		LoyaltyPrices []LoyaltyPriceInfo
 		// LoyaltyEarnings holds optional infos about potential loyalty earnings
@@ -155,7 +156,8 @@ type (
 		MarketPlaceCode       string
 		TeaserAvailablePrices []PriceInfo
 		// TeaserLoyaltyPriceInfo is the loyalty price that can be used for teaser (e.g. on listing views)
-		TeaserLoyaltyPriceInfo *LoyaltyPriceInfo
+		TeaserLoyaltyPriceInfo           *LoyaltyPriceInfo
+		TeaserAvailableLoyaltyPriceInfos []LoyaltyPriceInfo
 		// TeaserLoyaltyEarning is the teaser for the loyalty earning used in grid / list view
 		TeaserLoyaltyEarningInfo *LoyaltyEarningInfo
 		// Badges optional slice of badges to teaser a product

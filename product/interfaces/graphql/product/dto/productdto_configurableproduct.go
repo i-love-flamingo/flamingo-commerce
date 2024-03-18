@@ -84,6 +84,17 @@ func (cp ConfigurableProduct) Loyalty() ProductLoyalty {
 	}
 }
 
+func (cp ConfigurableProduct) AvailableLoyalties() []ProductLoyalty {
+	loyalties := make([]ProductLoyalty, 0, len(cp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos))
+
+	for _, availableLoyaltyPriceInfo := range cp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos {
+		loyalty := availableLoyaltyPriceInfo
+		loyalties = append(loyalties, ProductLoyalty{Price: &loyalty})
+	}
+
+	return loyalties
+}
+
 // Attributes of the configurable
 func (cp ConfigurableProduct) Attributes() productDomain.Attributes {
 	return cp.product.BaseData().Attributes
