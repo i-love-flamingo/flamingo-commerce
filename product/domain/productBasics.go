@@ -85,12 +85,12 @@ type (
 
 	// Saleable are properties required for being selled
 	Saleable struct {
-		IsSaleable      bool
-		SaleableFrom    time.Time
-		SaleableTo      time.Time
-		ActivePrice     PriceInfo
-		AvailablePrices []PriceInfo
-		LoyaltyPrice    LoyaltyPriceInfo
+		IsSaleable         bool
+		SaleableFrom       time.Time
+		SaleableTo         time.Time
+		ActivePrice        PriceInfo
+		AvailablePrices    []PriceInfo
+		ActiveLoyaltyPrice LoyaltyPriceInfo
 		// LoyaltyPrices holds optional infos for products that can be paid in a loyalty program
 		LoyaltyPrices []LoyaltyPriceInfo
 		// LoyaltyEarnings holds optional infos about potential loyalty earnings
