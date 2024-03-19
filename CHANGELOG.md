@@ -8,6 +8,9 @@
 **price**
 * **Breaking:** Introduce currency library http://github.com/Rhymond/go-money for more flexible rounding. All currency codes should comply to ISO4217 from now on.
 
+**product**
+* Introduced multiple loyalty prices for one product by adding AvailableLoyalties() function to product interface and implementing it in existing implementations.
+
 ## v3.9.0
 
 **search**
