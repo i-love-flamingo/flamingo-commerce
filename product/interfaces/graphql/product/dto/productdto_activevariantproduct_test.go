@@ -271,6 +271,8 @@ func TestActiveVariantProduct_Loyalty(t *testing.T) {
 }
 
 func TestActiveVariantProduct_AvailableLoyalties(t *testing.T) {
+	t.Parallel()
+
 	product := getActiveVariantProduct()
 
 	require.Equal(t, 2, len(product.AvailableLoyalties()))

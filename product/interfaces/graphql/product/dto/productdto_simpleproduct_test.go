@@ -184,6 +184,8 @@ func TestSimpleProduct_Loyalty(t *testing.T) {
 }
 
 func TestSimpleProduct_AvailableLoyalties(t *testing.T) {
+	t.Parallel()
+
 	product := getSimpleProduct()
 
 	require.Equal(t, 2, len(product.AvailableLoyalties()))

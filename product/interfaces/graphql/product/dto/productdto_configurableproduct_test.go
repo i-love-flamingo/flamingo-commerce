@@ -203,6 +203,8 @@ func TestConfigurableProduct_Loyalty(t *testing.T) {
 }
 
 func TestConfigurableProduct_AvailableLoyalties(t *testing.T) {
+	t.Parallel()
+
 	product := getConfigurableProduct()
 
 	require.Equal(t, 2, len(product.AvailableLoyalties()))
