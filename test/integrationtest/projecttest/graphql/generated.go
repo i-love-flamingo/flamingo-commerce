@@ -669,7 +669,6 @@ type ComplexityRoot struct {
 	Commerce_Product_ActiveVariantProduct struct {
 		ActiveVariationSelections func(childComplexity int) int
 		Attributes                func(childComplexity int) int
-		AvailableLoyalties        func(childComplexity int) int
 		AvailablePrices           func(childComplexity int) int
 		Badges                    func(childComplexity int) int
 		Categories                func(childComplexity int) int
@@ -723,22 +722,21 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Product_BundleProduct struct {
-		Attributes         func(childComplexity int) int
-		AvailableLoyalties func(childComplexity int) int
-		AvailablePrices    func(childComplexity int) int
-		Badges             func(childComplexity int) int
-		Categories         func(childComplexity int) int
-		Choices            func(childComplexity int) int
-		Description        func(childComplexity int) int
-		Identifier         func(childComplexity int) int
-		Loyalty            func(childComplexity int) int
-		MarketPlaceCode    func(childComplexity int) int
-		Media              func(childComplexity int) int
-		Meta               func(childComplexity int) int
-		Price              func(childComplexity int) int
-		ShortDescription   func(childComplexity int) int
-		Title              func(childComplexity int) int
-		Type               func(childComplexity int) int
+		Attributes       func(childComplexity int) int
+		AvailablePrices  func(childComplexity int) int
+		Badges           func(childComplexity int) int
+		Categories       func(childComplexity int) int
+		Choices          func(childComplexity int) int
+		Description      func(childComplexity int) int
+		Identifier       func(childComplexity int) int
+		Loyalty          func(childComplexity int) int
+		MarketPlaceCode  func(childComplexity int) int
+		Media            func(childComplexity int) int
+		Meta             func(childComplexity int) int
+		Price            func(childComplexity int) int
+		ShortDescription func(childComplexity int) int
+		Title            func(childComplexity int) int
+		Type             func(childComplexity int) int
 	}
 
 	Commerce_Product_Categories struct {
@@ -763,27 +761,27 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Product_ConfigurableProduct struct {
-		Attributes         func(childComplexity int) int
-		AvailableLoyalties func(childComplexity int) int
-		AvailablePrices    func(childComplexity int) int
-		Badges             func(childComplexity int) int
-		Categories         func(childComplexity int) int
-		Description        func(childComplexity int) int
-		Identifier         func(childComplexity int) int
-		Loyalty            func(childComplexity int) int
-		MarketPlaceCode    func(childComplexity int) int
-		Media              func(childComplexity int) int
-		Meta               func(childComplexity int) int
-		Price              func(childComplexity int) int
-		ShortDescription   func(childComplexity int) int
-		Title              func(childComplexity int) int
-		Type               func(childComplexity int) int
-		VariantSelection   func(childComplexity int) int
+		Attributes       func(childComplexity int) int
+		AvailablePrices  func(childComplexity int) int
+		Badges           func(childComplexity int) int
+		Categories       func(childComplexity int) int
+		Description      func(childComplexity int) int
+		Identifier       func(childComplexity int) int
+		Loyalty          func(childComplexity int) int
+		MarketPlaceCode  func(childComplexity int) int
+		Media            func(childComplexity int) int
+		Meta             func(childComplexity int) int
+		Price            func(childComplexity int) int
+		ShortDescription func(childComplexity int) int
+		Title            func(childComplexity int) int
+		Type             func(childComplexity int) int
+		VariantSelection func(childComplexity int) int
 	}
 
 	Commerce_Product_Loyalty struct {
-		Earning func(childComplexity int) int
-		Price   func(childComplexity int) int
+		AvailablePrices func(childComplexity int) int
+		Earning         func(childComplexity int) int
+		Price           func(childComplexity int) int
 	}
 
 	Commerce_Product_Loyalty_EarningInfo struct {
@@ -856,21 +854,20 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Product_SimpleProduct struct {
-		Attributes         func(childComplexity int) int
-		AvailableLoyalties func(childComplexity int) int
-		AvailablePrices    func(childComplexity int) int
-		Badges             func(childComplexity int) int
-		Categories         func(childComplexity int) int
-		Description        func(childComplexity int) int
-		Identifier         func(childComplexity int) int
-		Loyalty            func(childComplexity int) int
-		MarketPlaceCode    func(childComplexity int) int
-		Media              func(childComplexity int) int
-		Meta               func(childComplexity int) int
-		Price              func(childComplexity int) int
-		ShortDescription   func(childComplexity int) int
-		Title              func(childComplexity int) int
-		Type               func(childComplexity int) int
+		Attributes       func(childComplexity int) int
+		AvailablePrices  func(childComplexity int) int
+		Badges           func(childComplexity int) int
+		Categories       func(childComplexity int) int
+		Description      func(childComplexity int) int
+		Identifier       func(childComplexity int) int
+		Loyalty          func(childComplexity int) int
+		MarketPlaceCode  func(childComplexity int) int
+		Media            func(childComplexity int) int
+		Meta             func(childComplexity int) int
+		Price            func(childComplexity int) int
+		ShortDescription func(childComplexity int) int
+		Title            func(childComplexity int) int
+		Type             func(childComplexity int) int
 	}
 
 	Commerce_Product_VariantSelection struct {
@@ -3733,13 +3730,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_ActiveVariantProduct.Attributes(childComplexity), true
 
-	case "Commerce_Product_ActiveVariantProduct.availableLoyalties":
-		if e.complexity.Commerce_Product_ActiveVariantProduct.AvailableLoyalties == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_ActiveVariantProduct.AvailableLoyalties(childComplexity), true
-
 	case "Commerce_Product_ActiveVariantProduct.availablePrices":
 		if e.complexity.Commerce_Product_ActiveVariantProduct.AvailablePrices == nil {
 			break
@@ -4007,13 +3997,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_BundleProduct.Attributes(childComplexity), true
 
-	case "Commerce_Product_BundleProduct.availableLoyalties":
-		if e.complexity.Commerce_Product_BundleProduct.AvailableLoyalties == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_BundleProduct.AvailableLoyalties(childComplexity), true
-
 	case "Commerce_Product_BundleProduct.availablePrices":
 		if e.complexity.Commerce_Product_BundleProduct.AvailablePrices == nil {
 			break
@@ -4203,13 +4186,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_ConfigurableProduct.Attributes(childComplexity), true
 
-	case "Commerce_Product_ConfigurableProduct.availableLoyalties":
-		if e.complexity.Commerce_Product_ConfigurableProduct.AvailableLoyalties == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_ConfigurableProduct.AvailableLoyalties(childComplexity), true
-
 	case "Commerce_Product_ConfigurableProduct.availablePrices":
 		if e.complexity.Commerce_Product_ConfigurableProduct.AvailablePrices == nil {
 			break
@@ -4307,6 +4283,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_ConfigurableProduct.VariantSelection(childComplexity), true
+
+	case "Commerce_Product_Loyalty.availablePrices":
+		if e.complexity.Commerce_Product_Loyalty.AvailablePrices == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Loyalty.AvailablePrices(childComplexity), true
 
 	case "Commerce_Product_Loyalty.earning":
 		if e.complexity.Commerce_Product_Loyalty.Earning == nil {
@@ -4627,13 +4610,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_SimpleProduct.Attributes(childComplexity), true
-
-	case "Commerce_Product_SimpleProduct.availableLoyalties":
-		if e.complexity.Commerce_Product_SimpleProduct.AvailableLoyalties == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_SimpleProduct.AvailableLoyalties(childComplexity), true
 
 	case "Commerce_Product_SimpleProduct.availablePrices":
 		if e.complexity.Commerce_Product_SimpleProduct.AvailablePrices == nil {
@@ -24131,53 +24107,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_l
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
-			case "earning":
-				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Loyalty", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_ActiveVariantProduct_availableLoyalties(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AvailableLoyalties(), nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]graphqlproductdto.ProductLoyalty)
-	fc.Result = res
-	return ec.marshalOCommerce_Product_Loyalty2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyaltyᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_ActiveVariantProduct",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "price":
-				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -25969,53 +25900,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_loyalty(
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
-			case "earning":
-				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Loyalty", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Commerce_Product_BundleProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_availableLoyalties(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AvailableLoyalties(), nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]graphqlproductdto.ProductLoyalty)
-	fc.Result = res
-	return ec.marshalOCommerce_Product_Loyalty2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyaltyᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_BundleProduct",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "price":
-				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -27327,53 +27213,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_lo
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
-			case "earning":
-				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Loyalty", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_ConfigurableProduct_availableLoyalties(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AvailableLoyalties(), nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]graphqlproductdto.ProductLoyalty)
-	fc.Result = res
-	return ec.marshalOCommerce_Product_Loyalty2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyaltyᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_ConfigurableProduct",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "price":
-				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -27568,6 +27409,65 @@ func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context,
 }
 
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Loyalty",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_type(ctx, field)
+			case "default":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_default(ctx, field)
+			case "isDiscounted":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx, field)
+			case "discounted":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_discounted(ctx, field)
+			case "discountText":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_discountText(ctx, field)
+			case "minPointsToSpent":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_minPointsToSpent(ctx, field)
+			case "maxPointsToSpent":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent(ctx, field)
+			case "context":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_context(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Loyalty_PriceInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Loyalty_availablePrices(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductLoyalty) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailablePrices, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain1.LoyaltyPriceInfo)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_Loyalty_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty",
 		Field:      field,
@@ -30185,53 +30085,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_loyalty(
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
-			case "earning":
-				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Loyalty", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Commerce_Product_SimpleProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_SimpleProduct_availableLoyalties(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AvailableLoyalties(), nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]graphqlproductdto.ProductLoyalty)
-	fc.Result = res
-	return ec.marshalOCommerce_Product_Loyalty2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyaltyᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_availableLoyalties(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_SimpleProduct",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "price":
-				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -42951,8 +42806,6 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "availableLoyalties":
-			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_availableLoyalties(ctx, field, obj)
 		case "attributes":
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -43306,8 +43159,6 @@ func (ec *executionContext) _Commerce_Product_BundleProduct(ctx context.Context,
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "availableLoyalties":
-			out.Values[i] = ec._Commerce_Product_BundleProduct_availableLoyalties(ctx, field, obj)
 		case "attributes":
 			out.Values[i] = ec._Commerce_Product_BundleProduct_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -43558,8 +43409,6 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "availableLoyalties":
-			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_availableLoyalties(ctx, field, obj)
 		case "attributes":
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -43611,6 +43460,8 @@ func (ec *executionContext) _Commerce_Product_Loyalty(ctx context.Context, sel a
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Loyalty")
 		case "price":
 			out.Values[i] = ec._Commerce_Product_Loyalty_price(ctx, field, obj)
+		case "availablePrices":
+			out.Values[i] = ec._Commerce_Product_Loyalty_availablePrices(ctx, field, obj)
 		case "earning":
 			out.Values[i] = ec._Commerce_Product_Loyalty_earning(ctx, field, obj)
 		default:
@@ -44230,8 +44081,6 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "availableLoyalties":
-			out.Values[i] = ec._Commerce_Product_SimpleProduct_availableLoyalties(ctx, field, obj)
 		case "attributes":
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -46837,6 +46686,10 @@ func (ec *executionContext) marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋfla
 	return ec._Commerce_Product_Loyalty(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNCommerce_Product_Loyalty_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx context.Context, sel ast.SelectionSet, v domain1.LoyaltyPriceInfo) graphql.Marshaler {
+	return ec._Commerce_Product_Loyalty_PriceInfo(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductMedia) graphql.Marshaler {
 	return ec._Commerce_Product_Media(ctx, sel, &v)
 }
@@ -49356,7 +49209,14 @@ func (ec *executionContext) unmarshalOCommerce_Product_ChoiceConfigurationInput2
 	return res, nil
 }
 
-func (ec *executionContext) marshalOCommerce_Product_Loyalty2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyaltyᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.ProductLoyalty) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Product_Loyalty_EarningInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyEarningInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyEarningInfo) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Product_Loyalty_EarningInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Loyalty_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []domain1.LoyaltyPriceInfo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -49383,7 +49243,7 @@ func (ec *executionContext) marshalOCommerce_Product_Loyalty2ᚕflamingoᚗmeᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Product_Loyalty_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -49401,13 +49261,6 @@ func (ec *executionContext) marshalOCommerce_Product_Loyalty2ᚕflamingoᚗmeᚋ
 	}
 
 	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_Product_Loyalty_EarningInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyEarningInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyEarningInfo) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_Product_Loyalty_EarningInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Product_Loyalty_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyPriceInfo) graphql.Marshaler {

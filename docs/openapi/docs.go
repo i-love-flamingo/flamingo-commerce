@@ -2339,6 +2339,9 @@ const docTemplate = `{
         "domain.SimpleProduct": {
             "type": "object",
             "properties": {
+                "ActiveLoyaltyPrice": {
+                    "$ref": "#/definitions/domain.LoyaltyPriceInfo"
+                },
                 "ActivePrice": {
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
@@ -2396,9 +2399,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                     }
-                },
-                "LoyaltyPrice": {
-                    "$ref": "#/definitions/domain.LoyaltyPriceInfo"
                 },
                 "LoyaltyPrices": {
                     "description": "LoyaltyPrices holds optional infos for products that can be paid in a loyalty program",
@@ -2511,12 +2511,6 @@ const docTemplate = `{
                 },
                 "ShortTitle": {
                     "type": "string"
-                },
-                "TeaserAvailableLoyaltyPriceInfos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.LoyaltyPriceInfo"
-                    }
                 },
                 "TeaserAvailablePrices": {
                     "type": "array",

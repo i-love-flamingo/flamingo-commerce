@@ -11,7 +11,6 @@ interface Commerce_Product {
     shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
-    availableLoyalties: [Commerce_Product_Loyalty!]
     attributes: Commerce_Product_Attributes!
     badges: Commerce_Product_Badges!
 }
@@ -32,7 +31,6 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
-    availableLoyalties: [Commerce_Product_Loyalty!]
     attributes: Commerce_Product_Attributes!
     badges: Commerce_Product_Badges!
 }
@@ -54,7 +52,6 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
-    availableLoyalties: [Commerce_Product_Loyalty!]
     attributes: Commerce_Product_Attributes!
     """
     Contains all possible combinations of variation attributes that point to a variant,
@@ -118,7 +115,6 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
-    availableLoyalties: [Commerce_Product_Loyalty!]
     attributes: Commerce_Product_Attributes!
     "The marketPlaceCode of the actual variant"
     variantMarketPlaceCode: String!
@@ -145,7 +141,6 @@ type Commerce_Product_BundleProduct implements Commerce_Product {
     shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
-    availableLoyalties: [Commerce_Product_Loyalty!]
     attributes: Commerce_Product_Attributes!
     badges: Commerce_Product_Badges!
     choices: [Commerce_Product_Choice!]
@@ -210,6 +205,7 @@ type Commerce_Product_Meta {
 "Loyalty information about this product"
 type Commerce_Product_Loyalty {
     price:      Commerce_Product_Loyalty_PriceInfo
+    availablePrices: [Commerce_Product_Loyalty_PriceInfo!]
     earning:    Commerce_Product_Loyalty_EarningInfo
 }
 
