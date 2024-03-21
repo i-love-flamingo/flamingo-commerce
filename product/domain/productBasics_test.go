@@ -272,15 +272,13 @@ func TestSaleable_GetLoyaltyChargeSplit(t *testing.T) {
 			// 100EUR value
 			Default: domain.NewFromInt(100, 1, "EUR"),
 		},
-		LoyaltyPrices: []LoyaltyPriceInfo{
-			{
-				Type:             "loyalty.miles",
-				MaxPointsToSpent: new(big.Float).SetInt64(50),
-				// 10 is the minimum to pay in miles (=20EUR value)
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
-				// 50 miles == 100EUR meaning 1Mile = 2EUR
-				Default: domain.NewFromInt(50, 1, "Miles"),
-			},
+		ActiveLoyaltyPrice: LoyaltyPriceInfo{
+			Type:             "loyalty.miles",
+			MaxPointsToSpent: new(big.Float).SetInt64(50),
+			// 10 is the minimum to pay in miles (=20EUR value)
+			MinPointsToSpent: *new(big.Float).SetInt64(10),
+			// 50 miles == 100EUR meaning 1Mile = 2EUR
+			Default: domain.NewFromInt(50, 1, "Miles"),
 		},
 	}
 
@@ -341,15 +339,13 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 			// 100EUR value
 			Default: domain.NewFromInt(100, 1, "EUR"),
 		},
-		LoyaltyPrices: []LoyaltyPriceInfo{
-			{
-				Type:             "loyalty.miles",
-				MaxPointsToSpent: nil,
-				// 10 is the minimum to pay in miles (=20EUR value)
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
-				// 50 miles == 100EUR meaning 1Mile = 2EUR
-				Default: domain.NewFromInt(50, 1, "Miles"),
-			},
+		ActiveLoyaltyPrice: LoyaltyPriceInfo{
+			Type:             "loyalty.miles",
+			MaxPointsToSpent: nil,
+			// 10 is the minimum to pay in miles (=20EUR value)
+			MinPointsToSpent: *new(big.Float).SetInt64(10),
+			// 50 miles == 100EUR meaning 1Mile = 2EUR
+			Default: domain.NewFromInt(50, 1, "Miles"),
 		},
 	}
 
@@ -414,15 +410,13 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			// 100EUR value
 			Default: domain.NewFromFloat(9.99, "EUR"),
 		},
-		LoyaltyPrices: []LoyaltyPriceInfo{
-			{
-				Type:             "loyalty.miles",
-				MaxPointsToSpent: nil,
-				// 10 is the minimum to pay in miles (=20EUR value)
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
-				// 50 miles == 100EUR meaning 1Mile = 2EUR
-				Default: domain.NewFromInt(53, 1, "Miles"), // one mile = 5.305305305305305 EUR
-			},
+		ActiveLoyaltyPrice: LoyaltyPriceInfo{
+			Type:             "loyalty.miles",
+			MaxPointsToSpent: nil,
+			// 10 is the minimum to pay in miles (=20EUR value)
+			MinPointsToSpent: *new(big.Float).SetInt64(10),
+			// 50 miles == 100EUR meaning 1Mile = 2EUR
+			Default: domain.NewFromInt(53, 1, "Miles"), // one mile = 5.305305305305305 EUR
 		},
 	}
 

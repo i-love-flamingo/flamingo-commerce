@@ -470,63 +470,64 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		}
 	}
 
-	for _, loyaltyPrice := range p.LoyaltyPrices {
-		chargeType := loyaltyPrice.Type
-		if chargeType == "" {
-			continue
-		}
+	if !p.ActiveLoyaltyPrice.GetFinalPrice().IsPositive() {
+		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
+	}
 
-		if !loyaltyPrice.GetFinalPrice().IsPositive() {
-			continue
-		}
+	chargeType := p.ActiveLoyaltyPrice.Type
 
-		// loyaltyAmountToSpent - set as default without potential wish the minimum
-		loyaltyAmountToSpent := loyaltyPrice.getMin(qty)
+	// loyaltyAmountToSpent - set as default without potential wish the minimum
+	loyaltyAmountToSpent := p.ActiveLoyaltyPrice.getMin(qty)
 
-		// check if the minimum points should be ignored, if so minimum will be set to 0
-		if ignoreMin {
-			loyaltyAmountToSpent = *big.NewFloat(0.0)
-		}
+	// check if the minimum points should be ignored, if so minimum will be set to 0
+	if ignoreMin {
+		loyaltyAmountToSpent = *big.NewFloat(0.0)
+	}
 
-		if loyaltyPointsWishedToPay != nil {
-			// if a loyaltyPointsWishedToPay is passed evaluate it within min and max and update loyaltyAmountToSpent:
-			wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)
+	if loyaltyPointsWishedToPay != nil {
+		// if a loyaltyPointsWishedToPay is passed evaluate it within min and max and update loyaltyAmountToSpent:
+		wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)
 
-			if wishedPrice != nil && wishedPrice.Currency() == loyaltyPrice.GetFinalPrice().Currency() {
-				wishedPriceRounded := wishedPrice.GetPayable()
+		if wishedPrice != nil && wishedPrice.Currency() == p.ActiveLoyaltyPrice.GetFinalPrice().Currency() {
+			wishedPriceRounded := wishedPrice.GetPayable()
 
-				// if wish is bigger than min we using the wish
-				if loyaltyAmountToSpent.Cmp(wishedPriceRounded.Amount()) <= 0 {
-					loyaltyAmountToSpent = *wishedPriceRounded.Amount()
-				}
-				// evaluate max
-				max := loyaltyPrice.getMax(qty)
-				if max != nil {
-					// more then max - return max
-					if max.Cmp(wishedPrice.Amount()) == -1 {
-						loyaltyAmountToSpent = *max
-					}
+			// if wish is bigger than min we using the wish
+			if loyaltyAmountToSpent.Cmp(wishedPriceRounded.Amount()) <= 0 {
+				loyaltyAmountToSpent = *wishedPriceRounded.Amount()
+			}
+			// evaluate max
+			max := p.ActiveLoyaltyPrice.getMax(qty)
+			if max != nil {
+				// more then max - return max
+				if max.Cmp(wishedPrice.Amount()) == -1 {
+					loyaltyAmountToSpent = *max
 				}
 			}
 		}
-
-		loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, loyaltyPrice, chargeType, remainingMainChargeValue)
-
-		if !loyaltyCharge.Value.IsPositive() {
-			continue
-		}
-
-		// Add the loyalty charge and at the same time reduce the remainingValue
-		remainingMainChargeValue = new(big.Float).Sub(remainingMainChargeValue, loyaltyCharge.Value.Amount())
-		requiredCharges[chargeType] = loyaltyCharge
 	}
 
-	remainingMainChargePrice := priceDomain.NewFromBigFloat(*remainingMainChargeValue, valuedPriceToPay.Currency()).GetPayable()
+	loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, p.ActiveLoyaltyPrice, chargeType, remainingMainChargeValue)
+
+	if !loyaltyCharge.Value.IsPositive() {
+		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
+	}
+
+	// Add the loyalty charge and at the same time reduce the remainingValue
+	remainingMainChargeValue = new(big.Float).Sub(remainingMainChargeValue, loyaltyCharge.Value.Amount())
+	requiredCharges[chargeType] = loyaltyCharge
+
+	return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
+}
+
+func buildCharges(requiredCharges map[string]priceDomain.Charge, remainingMainChargeValue big.Float, valuedPriceToPay priceDomain.Price) priceDomain.Charges {
+	remainingMainChargePrice := priceDomain.NewFromBigFloat(remainingMainChargeValue, valuedPriceToPay.Currency()).GetPayable()
+
 	requiredCharges[priceDomain.ChargeTypeMain] = priceDomain.Charge{
 		Price: remainingMainChargePrice,
 		Type:  priceDomain.ChargeTypeMain,
 		Value: remainingMainChargePrice,
 	}
+
 	return *priceDomain.NewCharges(requiredCharges)
 }
 
