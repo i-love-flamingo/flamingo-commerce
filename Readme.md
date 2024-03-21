@@ -18,7 +18,7 @@ A demoshop using the standalone adapters is online here https://demoshop.flaming
 
 
 * **Performance**: We do not want to rely on any frontend caching. Instead it is no problem to show every customer an individual experience.
-* **Clean architecture**: We use "domaind driven design" and "ports and adapters" to build a maintainable and clean application. 
+* **Clean architecture**: We use "domain driven design" and "ports and adapters" to build a maintainable and clean application. 
 * **Suiteable for Microservice architectures**: Adapters concept and various resilience concepts makes it easy to connect to other (micro) services.
 * **Decoupled and flexible frontend development**: Frontend development is decoupled from the "Backend for Frontend" - so that it is possible to use "any" frontend technology.
 * **Testability**: By providing "Fake Adapters" that provide test data, it is possible to test your application without external dependencies.
