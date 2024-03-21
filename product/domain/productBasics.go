@@ -156,8 +156,7 @@ type (
 		MarketPlaceCode       string
 		TeaserAvailablePrices []PriceInfo
 		// TeaserLoyaltyPriceInfo is the loyalty price that can be used for teaser (e.g. on listing views)
-		TeaserLoyaltyPriceInfo           *LoyaltyPriceInfo
-		TeaserAvailableLoyaltyPriceInfos []LoyaltyPriceInfo
+		TeaserLoyaltyPriceInfo *LoyaltyPriceInfo
 		// TeaserLoyaltyEarning is the teaser for the loyalty earning used in grid / list view
 		TeaserLoyaltyEarningInfo *LoyaltyEarningInfo
 		// Badges optional slice of badges to teaser a product

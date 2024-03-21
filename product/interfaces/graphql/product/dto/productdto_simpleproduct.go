@@ -76,21 +76,17 @@ func (sp SimpleProduct) Meta() ProductMeta {
 
 // Loyalty of the product
 func (sp SimpleProduct) Loyalty() ProductLoyalty {
+	loyalties := make([]productDomain.LoyaltyPriceInfo, 0, len(sp.product.Saleable.LoyaltyPrices))
+
+	for _, availableLoyaltyPriceInfo := range sp.product.Saleable.LoyaltyPrices {
+		loyalties = append(loyalties, availableLoyaltyPriceInfo)
+	}
+
 	return ProductLoyalty{
-		Price:   sp.product.TeaserData().TeaserLoyaltyPriceInfo,
-		Earning: sp.product.TeaserData().TeaserLoyaltyEarningInfo,
+		Price:           sp.product.TeaserData().TeaserLoyaltyPriceInfo,
+		AvailablePrices: loyalties,
+		Earning:         sp.product.TeaserData().TeaserLoyaltyEarningInfo,
 	}
-}
-
-func (sp SimpleProduct) AvailableLoyalties() []ProductLoyalty {
-	loyalties := make([]ProductLoyalty, 0, len(sp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos))
-
-	for _, availableLoyaltyPriceInfo := range sp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos {
-		loyalty := availableLoyaltyPriceInfo
-		loyalties = append(loyalties, ProductLoyalty{Price: &loyalty})
-	}
-
-	return loyalties
 }
 
 // Attributes of the product

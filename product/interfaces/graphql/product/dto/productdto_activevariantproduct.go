@@ -83,21 +83,17 @@ func (avp ActiveVariantProduct) Meta() ProductMeta {
 
 // Loyalty contains loyalty information of the active variant
 func (avp ActiveVariantProduct) Loyalty() ProductLoyalty {
+	loyalties := make([]productDomain.LoyaltyPriceInfo, 0, len(avp.getActiveVariant().Saleable.LoyaltyPrices))
+
+	for _, availableLoyaltyPriceInfo := range avp.getActiveVariant().Saleable.LoyaltyPrices {
+		loyalties = append(loyalties, availableLoyaltyPriceInfo)
+	}
+
 	return ProductLoyalty{
-		Price:   avp.product.TeaserData().TeaserLoyaltyPriceInfo,
-		Earning: avp.product.TeaserData().TeaserLoyaltyEarningInfo,
+		Price:           avp.product.TeaserData().TeaserLoyaltyPriceInfo,
+		AvailablePrices: loyalties,
+		Earning:         avp.product.TeaserData().TeaserLoyaltyEarningInfo,
 	}
-}
-
-func (avp ActiveVariantProduct) AvailableLoyalties() []ProductLoyalty {
-	loyalties := make([]ProductLoyalty, 0, len(avp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos))
-
-	for _, availableLoyaltyPriceInfo := range avp.product.TeaserData().TeaserAvailableLoyaltyPriceInfos {
-		loyalty := availableLoyaltyPriceInfo
-		loyalties = append(loyalties, ProductLoyalty{Price: &loyalty})
-	}
-
-	return loyalties
 }
 
 // Attributes of the active variant
