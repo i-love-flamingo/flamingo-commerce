@@ -85,9 +85,7 @@ func (avp ActiveVariantProduct) Meta() ProductMeta {
 func (avp ActiveVariantProduct) Loyalty() ProductLoyalty {
 	loyalties := make([]productDomain.LoyaltyPriceInfo, 0, len(avp.getActiveVariant().Saleable.LoyaltyPrices))
 
-	for _, availableLoyaltyPriceInfo := range avp.getActiveVariant().Saleable.LoyaltyPrices {
-		loyalties = append(loyalties, availableLoyaltyPriceInfo)
-	}
+	loyalties = append(loyalties, avp.getActiveVariant().Saleable.LoyaltyPrices...)
 
 	return ProductLoyalty{
 		Price:           avp.product.TeaserData().TeaserLoyaltyPriceInfo,

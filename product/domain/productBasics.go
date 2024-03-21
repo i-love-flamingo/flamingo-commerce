@@ -483,6 +483,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		loyaltyAmountToSpent = *big.NewFloat(0.0)
 	}
 
+	//nolint:nestif // to be refactored some other day
 	if loyaltyPointsWishedToPay != nil {
 		// if a loyaltyPointsWishedToPay is passed evaluate it within min and max and update loyaltyAmountToSpent:
 		wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)

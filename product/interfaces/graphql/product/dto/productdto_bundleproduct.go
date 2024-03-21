@@ -105,9 +105,7 @@ func (sp BundleProduct) Meta() ProductMeta {
 func (sp BundleProduct) Loyalty() ProductLoyalty {
 	loyalties := make([]productDomain.LoyaltyPriceInfo, 0, len(sp.product.Saleable.LoyaltyPrices))
 
-	for _, availableLoyaltyPriceInfo := range sp.product.Saleable.LoyaltyPrices {
-		loyalties = append(loyalties, availableLoyaltyPriceInfo)
-	}
+	loyalties = append(loyalties, sp.product.Saleable.LoyaltyPrices...)
 
 	return ProductLoyalty{
 		Price:           sp.product.TeaserData().TeaserLoyaltyPriceInfo,
