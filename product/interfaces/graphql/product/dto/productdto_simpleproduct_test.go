@@ -84,6 +84,16 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 				Default: priceDomain.NewFromFloat(10.00, "EUR"),
 				Context: productDomain.PriceContext{CustomerGroup: "gold-members"},
 			}},
+			LoyaltyPrices: []productDomain.LoyaltyPriceInfo{
+				{
+					Default: priceDomain.NewFromFloat(10.0, "LOYALTY"),
+					Context: productDomain.PriceContext{DeliveryCode: "inflight"},
+				},
+				{
+					Default: priceDomain.NewFromFloat(12.0, "LOYALTY"),
+					Context: productDomain.PriceContext{DeliveryCode: "domestic____home"},
+				},
+			},
 		},
 		Teaser: productDomain.TeaserData{
 			TeaserLoyaltyPriceInfo: &productDomain.LoyaltyPriceInfo{
@@ -96,22 +106,6 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 			TeaserLoyaltyEarningInfo: &productDomain.LoyaltyEarningInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
-			},
-			TeaserAvailableLoyaltyPriceInfos: []productDomain.LoyaltyPriceInfo{
-				{
-					Type:    "AwesomeLoyaltyProgram",
-					Default: priceDomain.NewFromFloat(500, "BonusPoints"),
-					Context: productDomain.PriceContext{
-						DeliveryCode: "ispu",
-					},
-				},
-				{
-					Type:    "AnotherAwesomeLoyaltyProgram",
-					Default: priceDomain.NewFromFloat(300, "BonusPoints"),
-					Context: productDomain.PriceContext{
-						DeliveryCode: "inflight",
-					},
-				},
 			},
 			Media: []productDomain.Media{
 				{
@@ -181,24 +175,17 @@ func TestSimpleProduct_Loyalty(t *testing.T) {
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Earning.Type)
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Price.Type)
 	assert.Equal(t, "ispu", product.Loyalty().Price.Context.DeliveryCode)
-}
 
-func TestSimpleProduct_AvailableLoyalties(t *testing.T) {
-	t.Parallel()
+	require.Len(t, product.Loyalty().AvailablePrices, 2)
 
-	product := getSimpleProduct()
+	firstLoyalty := product.Loyalty().AvailablePrices[0]
+	secondLoyalty := product.Loyalty().AvailablePrices[1]
 
-	require.Equal(t, 2, len(product.AvailableLoyalties()))
-	firstLoyalty := product.AvailableLoyalties()[0]
-	secondLoyalty := product.AvailableLoyalties()[1]
+	assert.Equal(t, 10.0, firstLoyalty.Default.FloatAmount())
+	assert.Equal(t, "inflight", firstLoyalty.Context.DeliveryCode)
 
-	assert.Nil(t, firstLoyalty.Earning)
-	assert.Equal(t, "AwesomeLoyaltyProgram", firstLoyalty.Price.Type)
-	assert.Equal(t, "ispu", firstLoyalty.Price.Context.DeliveryCode)
-
-	assert.Nil(t, secondLoyalty.Earning)
-	assert.Equal(t, "AnotherAwesomeLoyaltyProgram", secondLoyalty.Price.Type)
-	assert.Equal(t, "inflight", secondLoyalty.Price.Context.DeliveryCode)
+	assert.Equal(t, 12.0, secondLoyalty.Default.FloatAmount())
+	assert.Equal(t, "domestic____home", secondLoyalty.Context.DeliveryCode)
 }
 
 func TestSimpleProduct_MarketPlaceCode(t *testing.T) {

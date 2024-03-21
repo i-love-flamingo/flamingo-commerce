@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
@@ -116,22 +115,6 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
 			},
-			TeaserAvailableLoyaltyPriceInfos: []productDomain.LoyaltyPriceInfo{
-				{
-					Type:    "AwesomeLoyaltyProgram",
-					Default: priceDomain.NewFromFloat(500, "BonusPoints"),
-					Context: productDomain.PriceContext{
-						DeliveryCode: "ispu",
-					},
-				},
-				{
-					Type:    "AnotherAwesomeLoyaltyProgram",
-					Default: priceDomain.NewFromFloat(300, "BonusPoints"),
-					Context: productDomain.PriceContext{
-						DeliveryCode: "inflight",
-					},
-				},
-			},
 			Media: []productDomain.Media{
 				{
 					Type:      "teaser",
@@ -200,24 +183,8 @@ func TestConfigurableProduct_Loyalty(t *testing.T) {
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Earning.Type)
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Price.Type)
 	assert.Equal(t, "ispu", product.Loyalty().Price.Context.DeliveryCode)
-}
 
-func TestConfigurableProduct_AvailableLoyalties(t *testing.T) {
-	t.Parallel()
-
-	product := getConfigurableProduct()
-
-	require.Equal(t, 2, len(product.AvailableLoyalties()))
-	firstLoyalty := product.AvailableLoyalties()[0]
-	secondLoyalty := product.AvailableLoyalties()[1]
-
-	assert.Nil(t, firstLoyalty.Earning)
-	assert.Equal(t, "AwesomeLoyaltyProgram", firstLoyalty.Price.Type)
-	assert.Equal(t, "ispu", firstLoyalty.Price.Context.DeliveryCode)
-
-	assert.Nil(t, secondLoyalty.Earning)
-	assert.Equal(t, "AnotherAwesomeLoyaltyProgram", secondLoyalty.Price.Type)
-	assert.Equal(t, "inflight", secondLoyalty.Price.Context.DeliveryCode)
+	assert.Empty(t, product.Loyalty().AvailablePrices)
 }
 
 func TestConfigurableProduct_MarketPlaceCode(t *testing.T) {
