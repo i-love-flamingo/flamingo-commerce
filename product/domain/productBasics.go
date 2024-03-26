@@ -418,8 +418,10 @@ func (p Saleable) IsSaleableNow() bool {
 
 // GetLoyaltyPriceByType returns the loyaltyentry that matches the type
 func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) {
-	if p.ActiveLoyaltyPrice.Type == ltype {
-		return &p.ActiveLoyaltyPrice, true
+	for _, lp := range p.LoyaltyPrices {
+		if lp.Type == ltype {
+			return &lp, true
+		}
 	}
 
 	return nil, false
