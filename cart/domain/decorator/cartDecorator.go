@@ -49,7 +49,7 @@ type (
 		Group          string
 	}
 
-	ctxKey         struct{}
+	cartCtxKey     struct{}
 	deliveryCtxKey struct{}
 )
 
@@ -69,7 +69,7 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, cart cartDomain.Cart
 
 	decoratedCart := DecoratedCart{Cart: cart, Logger: df.logger}
 
-	contextWithCart := context.WithValue(ctx, ctxKey{}, cart)
+	contextWithCart := context.WithValue(ctx, cartCtxKey{}, cart)
 
 	for _, d := range cart.Deliveries {
 		contextWithDeliveryCode := context.WithValue(contextWithCart, deliveryCtxKey{}, d.DeliveryInfo.Code)
@@ -329,7 +329,7 @@ func CartFromDecoratedCartFactoryContext(ctx context.Context) *cartDomain.Cart {
 	ctx, span := trace.StartSpan(ctx, "cart/CartFromDecoratedCartFactoryContext")
 	defer span.End()
 
-	if cart, ok := ctx.Value(ctxKey{}).(cartDomain.Cart); ok {
+	if cart, ok := ctx.Value(cartCtxKey{}).(cartDomain.Cart); ok {
 		return &cart
 	}
 

@@ -10,7 +10,7 @@
 
 **product**
 * Introduced multiple loyalty prices for one product by adding AvailablePrices to ProductLoyalty.
-* Added ActiveLoyaltyPrice to Saleable and adopted charges generation to use it instead of array
+* Added ActiveLoyaltyPrice to Saleable and adapted charges generation to use it instead of array
 
 ## v3.9.0
 
