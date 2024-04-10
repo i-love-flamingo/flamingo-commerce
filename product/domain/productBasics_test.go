@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
@@ -620,5 +621,102 @@ func TestBasicProductData_IsInStockForDeliveryCode(t *testing.T) {
 		result := product.IsInStockForDeliveryCode("test")
 
 		assert.False(t, result)
+	})
+}
+
+func TestSaleable_GetLoyaltyPriceByType(t *testing.T) {
+	t.Parallel()
+
+	t.Run("returns loyalty from active loyalty price", func(t *testing.T) {
+		t.Parallel()
+
+		activeLoyaltyPrice := LoyaltyPriceInfo{
+			Type:    "valid_type",
+			Default: domain.NewFromFloat(10.00, "LOYALTY"),
+		}
+
+		availablePrice1 := LoyaltyPriceInfo{
+			Type:    "valid_type",
+			Default: domain.NewFromFloat(5.00, "LOYALTY"),
+		}
+
+		availablePrice2 := LoyaltyPriceInfo{
+			Type:    "invalid_type",
+			Default: domain.NewFromFloat(100.00, "LOYALTY"),
+		}
+
+		saleable := Saleable{
+			ActiveLoyaltyPrice: activeLoyaltyPrice,
+			LoyaltyPrices: []LoyaltyPriceInfo{
+				availablePrice1,
+				availablePrice2,
+			},
+		}
+
+		resultPrice, found := saleable.GetLoyaltyPriceByType("valid_type")
+		require.True(t, found)
+		assert.Equal(t, activeLoyaltyPrice, *resultPrice)
+	})
+
+	t.Run("returns loyalty from available loyalty prices", func(t *testing.T) {
+		t.Parallel()
+
+		activeLoyaltyPrice := LoyaltyPriceInfo{
+			Type:    "invalid_type",
+			Default: domain.NewFromFloat(10.00, "LOYALTY"),
+		}
+
+		availablePrice1 := LoyaltyPriceInfo{
+			Type:    "valid_type",
+			Default: domain.NewFromFloat(5.00, "LOYALTY"),
+		}
+
+		availablePrice2 := LoyaltyPriceInfo{
+			Type:    "invalid_type",
+			Default: domain.NewFromFloat(100.00, "LOYALTY"),
+		}
+
+		saleable := Saleable{
+			ActiveLoyaltyPrice: activeLoyaltyPrice,
+			LoyaltyPrices: []LoyaltyPriceInfo{
+				availablePrice1,
+				availablePrice2,
+			},
+		}
+
+		resultPrice, found := saleable.GetLoyaltyPriceByType("valid_type")
+		require.True(t, found)
+		assert.Equal(t, availablePrice1, *resultPrice)
+	})
+
+	t.Run("returns loyalty from available loyalty prices", func(t *testing.T) {
+		t.Parallel()
+
+		activeLoyaltyPrice := LoyaltyPriceInfo{
+			Type:    "invalid_type",
+			Default: domain.NewFromFloat(10.00, "LOYALTY"),
+		}
+
+		availablePrice1 := LoyaltyPriceInfo{
+			Type:    "invalid_type",
+			Default: domain.NewFromFloat(5.00, "LOYALTY"),
+		}
+
+		availablePrice2 := LoyaltyPriceInfo{
+			Type:    "invalid_type",
+			Default: domain.NewFromFloat(100.00, "LOYALTY"),
+		}
+
+		saleable := Saleable{
+			ActiveLoyaltyPrice: activeLoyaltyPrice,
+			LoyaltyPrices: []LoyaltyPriceInfo{
+				availablePrice1,
+				availablePrice2,
+			},
+		}
+
+		resultPrice, found := saleable.GetLoyaltyPriceByType("valid_type")
+		require.False(t, found)
+		assert.Nil(t, resultPrice)
 	})
 }
