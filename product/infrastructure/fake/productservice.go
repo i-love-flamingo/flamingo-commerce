@@ -112,7 +112,7 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		IsSaleable:   true,
 		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
 		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
-		ActiveLoyaltyPrice: domain.LoyaltyPriceInfo{
+		ActiveLoyaltyPrice: &domain.LoyaltyPriceInfo{
 			Type:    "AwesomeLoyaltyProgram",
 			Default: priceDomain.NewFromFloat(inflightLoyaltyAmount, "BonusPoints"),
 		},
@@ -463,7 +463,7 @@ func (ps *ProductService) FakeBundle(marketplaceCode string, isNew bool, isExclu
 		IsSaleable:   true,
 		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
 		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
-		ActiveLoyaltyPrice: domain.LoyaltyPriceInfo{
+		ActiveLoyaltyPrice: &domain.LoyaltyPriceInfo{
 			Type:    "AwesomeLoyaltyProgram",
 			Default: priceDomain.NewFromFloat(inflightLoyaltyAmount, "BonusPoints"),
 		},

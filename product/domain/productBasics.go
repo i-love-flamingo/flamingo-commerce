@@ -90,7 +90,7 @@ type (
 		SaleableTo         time.Time
 		ActivePrice        PriceInfo
 		AvailablePrices    []PriceInfo
-		ActiveLoyaltyPrice LoyaltyPriceInfo
+		ActiveLoyaltyPrice *LoyaltyPriceInfo
 		// LoyaltyPrices holds optional infos for products that can be paid in a loyalty program
 		LoyaltyPrices []LoyaltyPriceInfo
 		// LoyaltyEarnings holds optional infos about potential loyalty earnings
@@ -418,8 +418,8 @@ func (p Saleable) IsSaleableNow() bool {
 
 // GetLoyaltyPriceByType returns first encountered loyalty price with this type
 func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) {
-	if p.ActiveLoyaltyPrice.Type == ltype {
-		return &p.ActiveLoyaltyPrice, true
+	if p.ActiveLoyaltyPrice != nil && p.ActiveLoyaltyPrice.Type == ltype {
+		return p.ActiveLoyaltyPrice, true
 	}
 
 	for _, lp := range p.LoyaltyPrices {
@@ -449,6 +449,10 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 	requiredCharges := make(map[string]priceDomain.Charge)
 	remainingMainChargeValue := valuedPriceToPay.Amount()
 
+	if p.ActiveLoyaltyPrice == nil || !p.ActiveLoyaltyPrice.GetFinalPrice().IsPositive() {
+		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
+	}
+
 	// getLoyaltyCharge - private func that returns the loyaltyCharge of the given type. making sure the currentlyRemainingMainChargeValue is not exceeded
 	getValidLoyaltyCharge := func(loyaltyAmountWishedToSpent big.Float, loyaltyPrice LoyaltyPriceInfo, chargeType string, currentlyRemainingMainChargeValue *big.Float) priceDomain.Charge {
 		loyaltyCurrency := loyaltyPrice.GetFinalPrice().Currency()
@@ -473,10 +477,6 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 			Type:  chargeType,
 			Value: valuedLoyalityPrice,
 		}
-	}
-
-	if !p.ActiveLoyaltyPrice.GetFinalPrice().IsPositive() {
-		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
 	}
 
 	chargeType := p.ActiveLoyaltyPrice.Type
@@ -512,7 +512,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		}
 	}
 
-	loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, p.ActiveLoyaltyPrice, chargeType, remainingMainChargeValue)
+	loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, *p.ActiveLoyaltyPrice, chargeType, remainingMainChargeValue)
 
 	if !loyaltyCharge.Value.IsPositive() {
 		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
