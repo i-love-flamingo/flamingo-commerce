@@ -1,6 +1,8 @@
 # Changelog
 
-## v3.10.0 [upcoming]
+## v3.11.0 [upcoming]
+
+## v3.10.0
 
 **sourcing**
 * **Breaking:** Drop deprecated sourcing service `SourcingServiceDetail` and all things related.
