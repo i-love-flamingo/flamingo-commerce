@@ -509,7 +509,7 @@ func buildCharges(requiredCharges map[string]priceDomain.Charge, remainingMainCh
 	return *priceDomain.NewCharges(requiredCharges)
 }
 
-// getLoyaltyCharge - private func that returns the loyaltyCharge of the given type. making sure the currentlyRemainingMainChargeValue is not exceeded
+// getValidLoyaltyCharge returns the loyaltyCharge of the given type, making sure the currentlyRemainingMainChargeValue is not exceeded
 func getValidLoyaltyCharge(loyaltyAmountWishedToSpent big.Float, activeLoyaltyPrice LoyaltyPriceInfo, currentlyRemainingMainChargeValue big.Float, activePrice PriceInfo, valuedPriceToPay priceDomain.Price) priceDomain.Charge {
 	loyaltyCurrency := activeLoyaltyPrice.GetFinalPrice().Currency()
 	rateLoyaltyFinalPriceToRealFinalPrice := activeLoyaltyPrice.GetRate(activePrice.GetFinalPrice())
