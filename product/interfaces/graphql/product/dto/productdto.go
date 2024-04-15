@@ -37,8 +37,9 @@ type (
 
 	// ProductLoyalty contains all loyalty related information
 	ProductLoyalty struct {
-		Price   *productDomain.LoyaltyPriceInfo
-		Earning *productDomain.LoyaltyEarningInfo
+		Price           *productDomain.LoyaltyPriceInfo
+		AvailablePrices []productDomain.LoyaltyPriceInfo
+		Earning         *productDomain.LoyaltyEarningInfo
 	}
 
 	// ProductMedia returns media for the product

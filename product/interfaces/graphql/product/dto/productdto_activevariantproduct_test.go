@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
@@ -103,6 +104,16 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 					Default: priceDomain.NewFromFloat(10.00, "EUR"),
 					Context: productDomain.PriceContext{CustomerGroup: "gold-members"},
 				}},
+				LoyaltyPrices: []productDomain.LoyaltyPriceInfo{
+					{
+						Default: priceDomain.NewFromFloat(10.0, "LOYALTY"),
+						Context: productDomain.PriceContext{DeliveryCode: "inflight"},
+					},
+					{
+						Default: priceDomain.NewFromFloat(12.0, "LOYALTY"),
+						Context: productDomain.PriceContext{DeliveryCode: "domestic____home"},
+					},
+				},
 			},
 		},
 
@@ -168,12 +179,14 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 			TeaserLoyaltyPriceInfo: &productDomain.LoyaltyPriceInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+				Context: productDomain.PriceContext{
+					DeliveryCode: "ispu",
+				},
 			},
 			TeaserLoyaltyEarningInfo: &productDomain.LoyaltyEarningInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
 			},
-
 			Media: []productDomain.Media{
 				{
 					Type:      "teaser",
@@ -248,6 +261,18 @@ func TestActiveVariantProduct_Loyalty(t *testing.T) {
 
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Earning.Type)
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Price.Type)
+	assert.Equal(t, "ispu", product.Loyalty().Price.Context.DeliveryCode)
+
+	require.Len(t, product.Loyalty().AvailablePrices, 2)
+
+	firstLoyalty := product.Loyalty().AvailablePrices[0]
+	secondLoyalty := product.Loyalty().AvailablePrices[1]
+
+	assert.Equal(t, 10.0, firstLoyalty.Default.FloatAmount())
+	assert.Equal(t, "inflight", firstLoyalty.Context.DeliveryCode)
+
+	assert.Equal(t, 12.0, secondLoyalty.Default.FloatAmount())
+	assert.Equal(t, "domestic____home", secondLoyalty.Context.DeliveryCode)
 }
 
 func TestActiveVariantProduct_MarketPlaceCode(t *testing.T) {

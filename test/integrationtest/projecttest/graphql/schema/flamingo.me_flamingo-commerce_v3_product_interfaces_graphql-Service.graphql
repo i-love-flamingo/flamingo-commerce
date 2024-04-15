@@ -205,6 +205,7 @@ type Commerce_Product_Meta {
 "Loyalty information about this product"
 type Commerce_Product_Loyalty {
     price:      Commerce_Product_Loyalty_PriceInfo
+    availablePrices: [Commerce_Product_Loyalty_PriceInfo!]
     earning:    Commerce_Product_Loyalty_EarningInfo
 }
 

@@ -103,9 +103,14 @@ func (sp BundleProduct) Meta() ProductMeta {
 
 // Loyalty of the product
 func (sp BundleProduct) Loyalty() ProductLoyalty {
+	loyalties := make([]productDomain.LoyaltyPriceInfo, 0, len(sp.product.Saleable.LoyaltyPrices))
+
+	loyalties = append(loyalties, sp.product.Saleable.LoyaltyPrices...)
+
 	return ProductLoyalty{
-		Price:   sp.product.TeaserData().TeaserLoyaltyPriceInfo,
-		Earning: sp.product.TeaserData().TeaserLoyaltyEarningInfo,
+		Price:           sp.product.TeaserData().TeaserLoyaltyPriceInfo,
+		AvailablePrices: loyalties,
+		Earning:         sp.product.TeaserData().TeaserLoyaltyEarningInfo,
 	}
 }
 
