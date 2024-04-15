@@ -453,37 +453,6 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
 	}
 
-	// getLoyaltyCharge - private func that returns the loyaltyCharge of the given type. making sure the currentlyRemainingMainChargeValue is not exceeded
-	getValidLoyaltyCharge := func(loyaltyAmountWishedToSpent big.Float, loyaltyPrice LoyaltyPriceInfo, chargeType string, currentlyRemainingMainChargeValue *big.Float) priceDomain.Charge {
-		loyaltyCurrency := loyaltyPrice.GetFinalPrice().Currency()
-		rateLoyaltyFinalPriceToRealFinalPrice := loyaltyPrice.GetRate(p.ActivePrice.GetFinalPrice())
-		maximumPossibleLoyaltyValue := big.NewFloat(0.0)
-		if currentlyRemainingMainChargeValue.Cmp(big.NewFloat(0.0)) != 0 {
-			remainingPrice := priceDomain.NewFromBigFloat(*currentlyRemainingMainChargeValue, "").GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1)
-			maximumPossibleLoyaltyValue = new(big.Float).Quo(remainingPrice.Amount(), &rateLoyaltyFinalPriceToRealFinalPrice)
-			maximumPossibleLoyaltyValue = priceDomain.NewFromBigFloat(*maximumPossibleLoyaltyValue, "").GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1).Amount()
-		}
-
-		maximumPossibleLoyaltyPrice := priceDomain.NewFromBigFloat(*maximumPossibleLoyaltyValue, loyaltyCurrency).GetPayable()
-
-		if loyaltyAmountWishedToSpent.Cmp(maximumPossibleLoyaltyValue) > 0 {
-			loyaltyAmountWishedToSpent = *maximumPossibleLoyaltyValue
-		}
-		valuedLoyalityPrice := priceDomain.NewFromBigFloat(*new(big.Float).Mul(&rateLoyaltyFinalPriceToRealFinalPrice, &loyaltyAmountWishedToSpent), valuedPriceToPay.Currency()).GetPayable()
-		if maximumPossibleLoyaltyPrice.Amount().Cmp(&loyaltyAmountWishedToSpent) == 0 {
-			// If the wish equals the rounded maximum - we need to use the complete remaining value
-			valuedLoyalityPrice = priceDomain.NewFromBigFloat(*currentlyRemainingMainChargeValue, valuedPriceToPay.Currency())
-		}
-
-		return priceDomain.Charge{
-			Price: priceDomain.NewFromBigFloat(loyaltyAmountWishedToSpent, loyaltyCurrency).GetPayable(),
-			Type:  chargeType,
-			Value: valuedLoyalityPrice,
-		}
-	}
-
-	chargeType := p.ActiveLoyaltyPrice.Type
-
 	// loyaltyAmountToSpent - set as default without potential wish the minimum
 	loyaltyAmountToSpent := p.ActiveLoyaltyPrice.getMin(qty)
 
@@ -495,7 +464,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 	//nolint:nestif // to be refactored some other day
 	if loyaltyPointsWishedToPay != nil {
 		// if a loyaltyPointsWishedToPay is passed evaluate it within min and max and update loyaltyAmountToSpent:
-		wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)
+		wishedPrice := loyaltyPointsWishedToPay.GetByType(p.ActiveLoyaltyPrice.Type)
 
 		if wishedPrice != nil && wishedPrice.Currency() == p.ActiveLoyaltyPrice.GetFinalPrice().Currency() {
 			wishedPriceRounded := wishedPrice.GetPayable()
@@ -515,7 +484,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		}
 	}
 
-	loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, *p.ActiveLoyaltyPrice, chargeType, remainingMainChargeValue)
+	loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, *p.ActiveLoyaltyPrice, *remainingMainChargeValue, p.ActivePrice, *valuedPriceToPay)
 
 	if !loyaltyCharge.Value.IsPositive() {
 		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
@@ -523,7 +492,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 
 	// Add the loyalty charge and at the same time reduce the remainingValue
 	remainingMainChargeValue = new(big.Float).Sub(remainingMainChargeValue, loyaltyCharge.Value.Amount())
-	requiredCharges[chargeType] = loyaltyCharge
+	requiredCharges[p.ActiveLoyaltyPrice.Type] = loyaltyCharge
 
 	return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
 }
@@ -538,6 +507,37 @@ func buildCharges(requiredCharges map[string]priceDomain.Charge, remainingMainCh
 	}
 
 	return *priceDomain.NewCharges(requiredCharges)
+}
+
+// getLoyaltyCharge - private func that returns the loyaltyCharge of the given type. making sure the currentlyRemainingMainChargeValue is not exceeded
+func getValidLoyaltyCharge(loyaltyAmountWishedToSpent big.Float, activeLoyaltyPrice LoyaltyPriceInfo, currentlyRemainingMainChargeValue big.Float, activePrice PriceInfo, valuedPriceToPay priceDomain.Price) priceDomain.Charge {
+	loyaltyCurrency := activeLoyaltyPrice.GetFinalPrice().Currency()
+	rateLoyaltyFinalPriceToRealFinalPrice := activeLoyaltyPrice.GetRate(activePrice.GetFinalPrice())
+	maximumPossibleLoyaltyValue := big.NewFloat(0.0)
+
+	if currentlyRemainingMainChargeValue.Cmp(big.NewFloat(0.0)) != 0 {
+		remainingPrice := priceDomain.NewFromBigFloat(currentlyRemainingMainChargeValue, "").GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1)
+		maximumPossibleLoyaltyValue = new(big.Float).Quo(remainingPrice.Amount(), &rateLoyaltyFinalPriceToRealFinalPrice)
+		maximumPossibleLoyaltyValue = priceDomain.NewFromBigFloat(*maximumPossibleLoyaltyValue, "").GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1).Amount()
+	}
+
+	maximumPossibleLoyaltyPrice := priceDomain.NewFromBigFloat(*maximumPossibleLoyaltyValue, loyaltyCurrency).GetPayable()
+
+	if loyaltyAmountWishedToSpent.Cmp(maximumPossibleLoyaltyValue) > 0 {
+		loyaltyAmountWishedToSpent = *maximumPossibleLoyaltyValue
+	}
+
+	valuedLoyalityPrice := priceDomain.NewFromBigFloat(*new(big.Float).Mul(&rateLoyaltyFinalPriceToRealFinalPrice, &loyaltyAmountWishedToSpent), valuedPriceToPay.Currency()).GetPayable()
+	if maximumPossibleLoyaltyPrice.Amount().Cmp(&loyaltyAmountWishedToSpent) == 0 {
+		// If the wish equals the rounded maximum - we need to use the complete remaining value
+		valuedLoyalityPrice = priceDomain.NewFromBigFloat(currentlyRemainingMainChargeValue, valuedPriceToPay.Currency())
+	}
+
+	return priceDomain.Charge{
+		Price: priceDomain.NewFromBigFloat(loyaltyAmountWishedToSpent, loyaltyCurrency).GetPayable(),
+		Type:  activeLoyaltyPrice.Type,
+		Value: valuedLoyalityPrice,
+	}
 }
 
 // GetLoyaltyChargeSplit gets the Charges that need to be paid by type:
