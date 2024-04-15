@@ -779,8 +779,9 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Product_Loyalty struct {
-		Earning func(childComplexity int) int
-		Price   func(childComplexity int) int
+		AvailablePrices func(childComplexity int) int
+		Earning         func(childComplexity int) int
+		Price           func(childComplexity int) int
 	}
 
 	Commerce_Product_Loyalty_EarningInfo struct {
@@ -4282,6 +4283,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_ConfigurableProduct.VariantSelection(childComplexity), true
+
+	case "Commerce_Product_Loyalty.availablePrices":
+		if e.complexity.Commerce_Product_Loyalty.AvailablePrices == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Loyalty.AvailablePrices(childComplexity), true
 
 	case "Commerce_Product_Loyalty.earning":
 		if e.complexity.Commerce_Product_Loyalty.Earning == nil {
@@ -24099,6 +24107,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_l
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -25890,6 +25900,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_loyalty(
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -27201,6 +27213,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_lo
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -27395,6 +27409,65 @@ func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context,
 }
 
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Loyalty",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_type(ctx, field)
+			case "default":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_default(ctx, field)
+			case "isDiscounted":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx, field)
+			case "discounted":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_discounted(ctx, field)
+			case "discountText":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_discountText(ctx, field)
+			case "minPointsToSpent":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_minPointsToSpent(ctx, field)
+			case "maxPointsToSpent":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent(ctx, field)
+			case "context":
+				return ec.fieldContext_Commerce_Product_Loyalty_PriceInfo_context(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Loyalty_PriceInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Loyalty_availablePrices(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductLoyalty) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailablePrices, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain1.LoyaltyPriceInfo)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_Loyalty_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty",
 		Field:      field,
@@ -30012,6 +30085,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_loyalty(
 			switch field.Name {
 			case "price":
 				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "availablePrices":
+				return ec.fieldContext_Commerce_Product_Loyalty_availablePrices(ctx, field)
 			case "earning":
 				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
 			}
@@ -43385,6 +43460,8 @@ func (ec *executionContext) _Commerce_Product_Loyalty(ctx context.Context, sel a
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Loyalty")
 		case "price":
 			out.Values[i] = ec._Commerce_Product_Loyalty_price(ctx, field, obj)
+		case "availablePrices":
+			out.Values[i] = ec._Commerce_Product_Loyalty_availablePrices(ctx, field, obj)
 		case "earning":
 			out.Values[i] = ec._Commerce_Product_Loyalty_earning(ctx, field, obj)
 		default:
@@ -46609,6 +46686,10 @@ func (ec *executionContext) marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋfla
 	return ec._Commerce_Product_Loyalty(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNCommerce_Product_Loyalty_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx context.Context, sel ast.SelectionSet, v domain1.LoyaltyPriceInfo) graphql.Marshaler {
+	return ec._Commerce_Product_Loyalty_PriceInfo(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductMedia) graphql.Marshaler {
 	return ec._Commerce_Product_Media(ctx, sel, &v)
 }
@@ -49133,6 +49214,53 @@ func (ec *executionContext) marshalOCommerce_Product_Loyalty_EarningInfo2ᚖflam
 		return graphql.Null
 	}
 	return ec._Commerce_Product_Loyalty_EarningInfo(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Loyalty_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []domain1.LoyaltyPriceInfo) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_Loyalty_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOCommerce_Product_Loyalty_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyPriceInfo) graphql.Marshaler {

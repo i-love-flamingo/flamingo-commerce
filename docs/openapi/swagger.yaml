@@ -838,6 +838,8 @@ definitions:
     type: object
   domain.SimpleProduct:
     properties:
+      ActiveLoyaltyPrice:
+        $ref: '#/definitions/domain.LoyaltyPriceInfo'
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:

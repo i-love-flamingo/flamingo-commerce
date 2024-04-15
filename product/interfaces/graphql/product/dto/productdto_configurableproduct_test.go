@@ -107,12 +107,14 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 			TeaserLoyaltyPriceInfo: &productDomain.LoyaltyPriceInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+				Context: productDomain.PriceContext{
+					DeliveryCode: "ispu",
+				},
 			},
 			TeaserLoyaltyEarningInfo: &productDomain.LoyaltyEarningInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
 			},
-
 			Media: []productDomain.Media{
 				{
 					Type:      "teaser",
@@ -180,6 +182,9 @@ func TestConfigurableProduct_Loyalty(t *testing.T) {
 
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Earning.Type)
 	assert.Equal(t, "AwesomeLoyaltyProgram", product.Loyalty().Price.Type)
+	assert.Equal(t, "ispu", product.Loyalty().Price.Context.DeliveryCode)
+
+	assert.Empty(t, product.Loyalty().AvailablePrices)
 }
 
 func TestConfigurableProduct_MarketPlaceCode(t *testing.T) {

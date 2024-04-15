@@ -2339,6 +2339,9 @@ const docTemplate = `{
         "domain.SimpleProduct": {
             "type": "object",
             "properties": {
+                "ActiveLoyaltyPrice": {
+                    "$ref": "#/definitions/domain.LoyaltyPriceInfo"
+                },
                 "ActivePrice": {
                     "$ref": "#/definitions/domain.PriceInfo"
                 },

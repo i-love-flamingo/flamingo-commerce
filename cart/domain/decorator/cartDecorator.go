@@ -49,7 +49,8 @@ type (
 		Group          string
 	}
 
-	ctxKey struct{}
+	cartCtxKey     struct{}
+	deliveryCtxKey struct{}
 )
 
 // Inject dependencies
@@ -68,10 +69,14 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, cart cartDomain.Cart
 
 	decoratedCart := DecoratedCart{Cart: cart, Logger: df.logger}
 
+	contextWithCart := context.WithValue(ctx, cartCtxKey{}, cart)
+
 	for _, d := range cart.Deliveries {
+		contextWithDeliveryCode := context.WithValue(contextWithCart, deliveryCtxKey{}, d.DeliveryInfo.Code)
+
 		decoratedCart.DecoratedDeliveries = append(decoratedCart.DecoratedDeliveries, DecoratedDelivery{
 			Delivery:       d,
-			DecoratedItems: df.CreateDecorateCartItems(context.WithValue(ctx, ctxKey{}, cart), d.Cartitems),
+			DecoratedItems: df.CreateDecorateCartItems(contextWithDeliveryCode, d.Cartitems),
 			logger:         df.logger,
 		})
 	}
@@ -324,9 +329,20 @@ func CartFromDecoratedCartFactoryContext(ctx context.Context) *cartDomain.Cart {
 	ctx, span := trace.StartSpan(ctx, "cart/CartFromDecoratedCartFactoryContext")
 	defer span.End()
 
-	if cart, ok := ctx.Value(ctxKey{}).(cartDomain.Cart); ok {
+	if cart, ok := ctx.Value(cartCtxKey{}).(cartDomain.Cart); ok {
 		return &cart
 	}
 
 	return nil
+}
+
+func DeliveryCodeFromDecoratedCartFactoryContext(ctx context.Context) string {
+	ctx, span := trace.StartSpan(ctx, "cart/DeliveryCodeFromDecoratedCartFactoryContext")
+	defer span.End()
+
+	if deliveryCode, ok := ctx.Value(deliveryCtxKey{}).(string); ok {
+		return deliveryCode
+	}
+
+	return ""
 }

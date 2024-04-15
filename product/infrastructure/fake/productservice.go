@@ -26,6 +26,9 @@ var (
 		"Dior",
 		"Hugo Boss",
 	}
+
+	inflightLoyaltyAmount = 500.0
+	hdLoyaltyAmount       = 600.0
 )
 
 // ProductService is just mocking stuff
@@ -109,10 +112,20 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		IsSaleable:   true,
 		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
 		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
+		ActiveLoyaltyPrice: &domain.LoyaltyPriceInfo{
+			Type:    "AwesomeLoyaltyProgram",
+			Default: priceDomain.NewFromFloat(inflightLoyaltyAmount, "BonusPoints"),
+		},
 		LoyaltyPrices: []domain.LoyaltyPriceInfo{
 			{
 				Type:    "AwesomeLoyaltyProgram",
-				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+				Default: priceDomain.NewFromFloat(inflightLoyaltyAmount, "BonusPoints"),
+				Context: domain.PriceContext{DeliveryCode: "inflight"},
+			},
+			{
+				Type:    "AwesomeLoyaltyProgram",
+				Default: priceDomain.NewFromFloat(hdLoyaltyAmount, "BonusPoints"),
+				Context: domain.PriceContext{DeliveryCode: "delivery____domestichome"},
 			},
 		},
 		LoyaltyEarnings: []domain.LoyaltyEarningInfo{
@@ -450,10 +463,20 @@ func (ps *ProductService) FakeBundle(marketplaceCode string, isNew bool, isExclu
 		IsSaleable:   true,
 		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
 		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
+		ActiveLoyaltyPrice: &domain.LoyaltyPriceInfo{
+			Type:    "AwesomeLoyaltyProgram",
+			Default: priceDomain.NewFromFloat(inflightLoyaltyAmount, "BonusPoints"),
+		},
 		LoyaltyPrices: []domain.LoyaltyPriceInfo{
 			{
 				Type:    "AwesomeLoyaltyProgram",
-				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+				Default: priceDomain.NewFromFloat(inflightLoyaltyAmount, "BonusPoints"),
+				Context: domain.PriceContext{DeliveryCode: "inflight"},
+			},
+			{
+				Type:    "AwesomeLoyaltyProgram",
+				Default: priceDomain.NewFromFloat(hdLoyaltyAmount, "BonusPoints"),
+				Context: domain.PriceContext{DeliveryCode: "delivery____domestichome"},
 			},
 		},
 		LoyaltyEarnings: []domain.LoyaltyEarningInfo{
