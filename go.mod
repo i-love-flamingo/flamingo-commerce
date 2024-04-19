@@ -22,7 +22,7 @@ require (
 	github.com/leekchan/accounting v0.3.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/stvp/tempredis v0.0.0-20231107154819-8a695b693b9c
 	github.com/swaggo/swag v1.16.3
 	github.com/testcontainers/testcontainers-go v0.27.0
@@ -134,7 +134,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/sosodev/duration v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
