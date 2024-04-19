@@ -29,7 +29,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.11
 	go.opencensus.io v0.24.0
 	go.uber.org/goleak v1.3.0
-	golang.org/x/mod v0.16.0
+	golang.org/x/mod v0.17.0
 	golang.org/x/text v0.14.0
 )
 
