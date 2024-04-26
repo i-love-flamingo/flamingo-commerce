@@ -18,8 +18,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
-//go:generate go run github.com/vektra/mockery/v2@v2.42.2 --name GiftCardHandler --case snake
-//go:generate go run github.com/vektra/mockery/v2@v2.42.2 --name VoucherHandler --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.42.3 --name GiftCardHandler --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.42.3 --name VoucherHandler --case snake
 
 type (
 	// DefaultCartBehaviour defines the default cart order behaviour
