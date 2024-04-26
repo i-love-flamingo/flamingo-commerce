@@ -10,7 +10,7 @@ var (
 	ErrNotFound = errors.New("category not found")
 )
 
-//go:generate go run github.com/vektra/mockery/v2@v2.42.2 --name CategoryService --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.42.3 --name CategoryService --case snake
 
 type (
 	// CategoryService interface
