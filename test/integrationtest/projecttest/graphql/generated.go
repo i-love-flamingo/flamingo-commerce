@@ -405,6 +405,7 @@ type ComplexityRoot struct {
 		Discounts                                        func(childComplexity int) int
 		GrandTotalWithGiftCards                          func(childComplexity int) int
 		HasAppliedDiscounts                              func(childComplexity int) int
+		SumPaymentSelectionCartSplitPriceAmountByMethods func(childComplexity int, methods []string) int
 		SumPaymentSelectionCartSplitValueAmountByMethods func(childComplexity int, methods []string) int
 		SumTaxes                                         func(childComplexity int) int
 		SumTotalDiscountWithGiftCardsAmount              func(childComplexity int) int
@@ -2718,6 +2719,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Cart_Summary.HasAppliedDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Summary.sumPaymentSelectionCartSplitPriceAmountByMethods":
+		if e.complexity.Commerce_Cart_Summary.SumPaymentSelectionCartSplitPriceAmountByMethods == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Commerce_Cart_Summary.SumPaymentSelectionCartSplitPriceAmountByMethods(childComplexity, args["methods"].([]string)), true
 
 	case "Commerce_Cart_Summary.sumPaymentSelectionCartSplitValueAmountByMethods":
 		if e.complexity.Commerce_Cart_Summary.SumPaymentSelectionCartSplitValueAmountByMethods == nil {
@@ -5922,6 +5935,21 @@ func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_args(c
 		}
 	}
 	args["key"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["methods"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("methods"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["methods"] = arg0
 	return args, nil
 }
 
@@ -12085,6 +12113,8 @@ func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_cartSummary
 				return ec.fieldContext_Commerce_Cart_Summary_sumTaxes(ctx, field)
 			case "sumPaymentSelectionCartSplitValueAmountByMethods":
 				return ec.fieldContext_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods(ctx, field)
+			case "sumPaymentSelectionCartSplitPriceAmountByMethods":
+				return ec.fieldContext_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_Summary", field.Name)
 		},
@@ -17414,6 +17444,64 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Summary_sumPaymentSelecti
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumPaymentSelectionCartSplitPriceAmountByMethods(fc.Args["methods"].([]string)), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -40771,6 +40859,8 @@ func (ec *executionContext) _Commerce_Cart_Summary(ctx context.Context, sel ast.
 			out.Values[i] = ec._Commerce_Cart_Summary_sumTaxes(ctx, field, obj)
 		case "sumPaymentSelectionCartSplitValueAmountByMethods":
 			out.Values[i] = ec._Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods(ctx, field, obj)
+		case "sumPaymentSelectionCartSplitPriceAmountByMethods":
+			out.Values[i] = ec._Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

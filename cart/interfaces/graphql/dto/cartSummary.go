@@ -100,6 +100,35 @@ func (cs CartSummary) SumPaymentSelectionCartSplitValueAmountByMethods(methods [
 	return &price
 }
 
+// SumPaymentSelectionCartSplitPriceAmountByMethods sum
+func (cs CartSummary) SumPaymentSelectionCartSplitPriceAmountByMethods(methods []string) *domain.Price {
+	if cs.cart.PaymentSelection == nil {
+		return nil
+	}
+
+	prices := make([]domain.Price, 0, len(methods))
+
+	for qualifier, charge := range cs.cart.PaymentSelection.CartSplit() {
+		found := contains(methods, qualifier.Method)
+		if !found {
+			continue
+		}
+
+		prices = append(prices, charge.Price)
+	}
+
+	if len(prices) == 0 {
+		return nil
+	}
+
+	price, err := domain.SumAll(prices...)
+	if err != nil {
+		return nil
+	}
+
+	return &price
+}
+
 // Contains tells whether a contains x.
 func contains(a []string, x string) bool {
 	for _, n := range a {
