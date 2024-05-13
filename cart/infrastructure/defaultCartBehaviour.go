@@ -127,7 +127,7 @@ func (cob *DefaultCartBehaviour) Restore(ctx context.Context, cart *domaincart.C
 
 	err = cob.collectTotals(cart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -172,7 +172,7 @@ func (cob *DefaultCartBehaviour) DeleteItem(ctx context.Context, cart *domaincar
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -214,7 +214,7 @@ func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domainca
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -346,7 +346,7 @@ func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -522,7 +522,7 @@ func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -568,7 +568,7 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -603,7 +603,7 @@ func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *doma
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -628,7 +628,7 @@ func (cob *DefaultCartBehaviour) UpdateBillingAddress(ctx context.Context, cart 
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -653,7 +653,7 @@ func (cob *DefaultCartBehaviour) UpdateAdditionalData(ctx context.Context, cart 
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -685,7 +685,7 @@ func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, car
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -715,7 +715,7 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *d
 
 			err = cob.collectTotals(&newCart)
 			if err != nil {
-				return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+				return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 			}
 
 			err := cob.cartStorage.StoreCart(ctx, &newCart)
@@ -731,7 +731,7 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *d
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -795,7 +795,7 @@ func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, cart *domainc
 
 	err = cob.collectTotals(&newCart)
 	if err != nil {
-		return nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
@@ -823,7 +823,7 @@ func (cob *DefaultCartBehaviour) ApplyVoucher(ctx context.Context, cart *domainc
 
 	err = cob.collectTotals(newCartWithVoucher)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, newCartWithVoucher)
@@ -866,7 +866,7 @@ func (cob *DefaultCartBehaviour) RemoveVoucher(ctx context.Context, cart *domain
 
 	err = cob.collectTotals(newCartWithoutVoucher)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, newCartWithoutVoucher)
@@ -895,7 +895,7 @@ func (cob *DefaultCartBehaviour) ApplyGiftCard(ctx context.Context, cart *domain
 
 	err = cob.collectTotals(newCartWithGiftCard)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, newCartWithGiftCard)
@@ -924,7 +924,7 @@ func (cob *DefaultCartBehaviour) RemoveGiftCard(ctx context.Context, cart *domai
 
 	err = cob.collectTotals(newCartWithOutGiftCard)
 	if err != nil {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals cart: %w", err)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error collecting totals: %w", err)
 	}
 
 	err = cob.cartStorage.StoreCart(ctx, newCartWithOutGiftCard)
@@ -973,6 +973,7 @@ func (cob *DefaultCartBehaviour) resetPaymentSelectionIfInvalid(ctx context.Cont
 	return cart, nil, nil
 }
 
+//nolint:cyclop // collecting total this way is more explicit
 func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) error {
 	var err error
 
@@ -1007,6 +1008,7 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) error {
 
 		if !delivery.ShippingItem.PriceGrossWithDiscounts.IsZero() {
 			delivery.GrandTotal = delivery.GrandTotal.ForceAdd(delivery.ShippingItem.PriceGrossWithDiscounts)
+
 			discounts, err := delivery.ShippingItem.AppliedDiscounts.Sum()
 			if err != nil {
 				return fmt.Errorf("failed to sum discounts: %w", err)
@@ -1055,7 +1057,7 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) error {
 
 	cart.GrandTotalWithGiftCards, err = cart.GrandTotal.Sub(cart.TotalGiftCardAmount)
 	if err != nil {
-		return fmt.Errorf("failed to calculate grand totals with gift carts: %w", err)
+		return fmt.Errorf("failed to calculate grand total with gift cards: %w", err)
 	}
 
 	if cart.GrandTotalWithGiftCards.IsNegative() {
@@ -1064,7 +1066,7 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) error {
 
 	cart.GrandTotalNetWithGiftCards, err = cart.GrandTotalNet.Sub(cart.TotalGiftCardAmount)
 	if err != nil {
-		return fmt.Errorf("failed to clculate grand totals net with gift carts: %w", err)
+		return fmt.Errorf("failed to calculate grand total net with gift cards: %w", err)
 	}
 
 	if cart.GrandTotalNetWithGiftCards.IsNegative() {
