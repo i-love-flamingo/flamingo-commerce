@@ -72,7 +72,7 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, cart cartDomain.Cart
 	contextWithCart := context.WithValue(ctx, cartCtxKey{}, cart)
 
 	for _, d := range cart.Deliveries {
-		contextWithDeliveryCode := context.WithValue(contextWithCart, deliveryCtxKey{}, d.DeliveryInfo.Code)
+		contextWithDeliveryCode := ContextWithDeliveryCode(contextWithCart, d.DeliveryInfo.Code)
 
 		decoratedCart.DecoratedDeliveries = append(decoratedCart.DecoratedDeliveries, DecoratedDelivery{
 			Delivery:       d,
@@ -345,4 +345,12 @@ func DeliveryCodeFromDecoratedCartFactoryContext(ctx context.Context) string {
 	}
 
 	return ""
+}
+
+func ContextWithDeliveryCode(ctx context.Context, deliveryCode string) context.Context {
+	if _, ok := ctx.Value(deliveryCtxKey{}).(string); !ok {
+		return context.WithValue(ctx, deliveryCtxKey{}, deliveryCode)
+	}
+
+	return ctx
 }

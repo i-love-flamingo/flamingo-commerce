@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -396,6 +397,8 @@ func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *do
 
 		return delivery, nil
 	}
+
+	ctx = decorator.ContextWithDeliveryCode(ctx, delivery.DeliveryInfo.Code)
 
 	// create and add new item
 	cartItem, err := cob.buildItemForCart(ctx, addRequest)
