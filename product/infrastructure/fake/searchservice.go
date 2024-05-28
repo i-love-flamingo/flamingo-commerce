@@ -171,15 +171,13 @@ func (s *SearchService) findSorts(filters []searchDomain.Filter) []searchDomain.
 	result := make([]searchDomain.SortOption, 0)
 	// first check if the searchDomain.SortFilter is given
 	for _, v := range filters {
-		switch filter := v.(type) {
-		case *searchDomain.SortFilter:
+		if filter,ok := v.(*searchDomain.SortFilter); ok {
 			result = append(result, searchDomain.SortOption{
 				Label:        filter.Field(),
 				Field:        filter.Field(),
 				SelectedAsc:  !filter.Descending(),
 				SelectedDesc: filter.Descending(),
 			})
-		default:
 		}
 	}
 	return result
