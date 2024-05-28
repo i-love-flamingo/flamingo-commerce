@@ -123,6 +123,7 @@ func (s *SearchService) SearchBy(ctx context.Context, attribute string, _ []stri
 		}
 		return s.livesearch(ctx, query)
 	}
+
 	return s.Search(ctx, filters...)
 }
 
@@ -171,7 +172,7 @@ func (s *SearchService) findSorts(filters []searchDomain.Filter) []searchDomain.
 	result := make([]searchDomain.SortOption, 0)
 	// first check if the searchDomain.SortFilter is given
 	for _, v := range filters {
-		if filter,ok := v.(*searchDomain.SortFilter); ok {
+		if filter, ok := v.(*searchDomain.SortFilter); ok {
 			result = append(result, searchDomain.SortOption{
 				Label:        filter.Field(),
 				Field:        filter.Field(),
@@ -180,6 +181,7 @@ func (s *SearchService) findSorts(filters []searchDomain.Filter) []searchDomain.
 			})
 		}
 	}
+
 	return result
 }
 

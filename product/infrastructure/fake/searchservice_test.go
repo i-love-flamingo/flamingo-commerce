@@ -150,9 +150,9 @@ func TestSearchService_SearchBy(t *testing.T) {
 						NumResults:     0,
 						SelectedFacets: []searchDomain.Facet{},
 						SortOptions: []searchDomain.SortOption{
-							searchDomain.SortOption{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: true},
-							searchDomain.SortOption{Field: "size", Label: "size", SelectedDesc: true, SelectedAsc: false},
-							searchDomain.SortOption{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: true},
+							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: true},
+							{Field: "size", Label: "size", SelectedDesc: true, SelectedAsc: false},
+							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: true},
 						},
 					},
 					Hits:       []searchDomain.Document{},
