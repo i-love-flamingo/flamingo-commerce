@@ -76,6 +76,7 @@ func TestSearchService_SearchBy(t *testing.T) {
 				attribute: "livesearch",
 				filters: []searchDomain.Filter{
 					searchDomain.NewQueryFilter("camera"),
+					searchDomain.NewSortFilter("will-not-be-considered", searchDomain.SortDirectionAscending),
 				},
 			},
 			want: &domain.SearchResult{
@@ -122,6 +123,127 @@ func TestSearchService_SearchBy(t *testing.T) {
 							AdditionalAttributes: map[string]interface{}{"additional": "value"},
 						},
 					},
+				},
+				Hits: []domain.BasicProduct{},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:   "get livesearch results from json file with sort",
+			fields: fields{liveSearchJSON: filepath.Join("testdata", "livesearch.json")},
+			args: args{
+				attribute: "not-livesearch",
+				filters: []searchDomain.Filter{
+					searchDomain.NewSortFilter("camera", searchDomain.SortDirectionAscending),
+					searchDomain.NewQueryFilter("camera"),
+					searchDomain.NewSortFilter("size", searchDomain.SortDirectionDescending),
+					searchDomain.NewSortFilter("no-direction", ""),
+				},
+			},
+			want: &domain.SearchResult{
+				Result: searchDomain.Result{
+					SearchMeta: searchDomain.SearchMeta{
+						Query:          "",
+						OriginalQuery:  "",
+						Page:           1,
+						NumPages:       10,
+						NumResults:     0,
+						SelectedFacets: []searchDomain.Facet{},
+						SortOptions: []searchDomain.SortOption{
+							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: true},
+							{Field: "size", Label: "size", SelectedDesc: true, SelectedAsc: false},
+							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: true},
+						},
+					},
+					Hits:       []searchDomain.Document{},
+					Suggestion: []searchDomain.Suggestion{},
+					Facets: searchDomain.FacetCollection{
+						"brandCode": searchDomain.Facet{
+							Type:  searchDomain.ListFacet,
+							Name:  "brandCode",
+							Label: "Brand",
+							Items: []*searchDomain.FacetItem{{
+								Label:    "Apple",
+								Value:    "apple",
+								Active:   false,
+								Selected: false,
+								Count:    2,
+							}},
+							Position: 0,
+						},
+
+						"retailerCode": searchDomain.Facet{
+							Type:  searchDomain.ListFacet,
+							Name:  "retailerCode",
+							Label: "Retailer",
+							Items: []*searchDomain.FacetItem{{
+								Label:    "Test Retailer",
+								Value:    "retailer",
+								Active:   false,
+								Selected: false,
+								Count:    2,
+							}},
+							Position: 0,
+						},
+
+						"categoryCodes": searchDomain.Facet{
+							Type:  searchDomain.TreeFacet,
+							Name:  "categoryCodes",
+							Label: "Category",
+							Items: []*searchDomain.FacetItem{
+								{
+									Label:    "Electronics",
+									Value:    "electronics",
+									Active:   false,
+									Selected: false,
+									Count:    0,
+									Items: []*searchDomain.FacetItem{{
+										Label:    "Flat Screens & TV",
+										Value:    "flat-screen_tvs",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}, {
+										Label:    "Headphones",
+										Value:    "headphones",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+										Items: []*searchDomain.FacetItem{{
+											Label:    "Accessories",
+											Value:    "headphone_accessories",
+											Active:   false,
+											Selected: false,
+											Count:    0,
+										}},
+									}, {
+										Label:    "Tablets",
+										Value:    "tablets",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}},
+								},
+								{
+									Label:    "Clothes & Fashion",
+									Value:    "clothing",
+									Active:   false,
+									Selected: false,
+									Count:    0,
+									Items: []*searchDomain.FacetItem{{
+										Label:    "Jumpsuits",
+										Value:    "jumpsuits",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}},
+								},
+							},
+							Position: 0,
+						},
+					},
+					Promotions: nil,
+					Actions:    nil,
 				},
 				Hits: []domain.BasicProduct{},
 			},

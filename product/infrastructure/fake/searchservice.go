@@ -63,7 +63,7 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 				NumPages:       10,
 				NumResults:     len(hits),
 				SelectedFacets: selectedFacets,
-				SortOptions:    nil,
+				SortOptions:    s.findSorts(filters),
 			},
 			Hits:       documents,
 			Suggestion: []searchDomain.Suggestion{},
@@ -123,7 +123,8 @@ func (s *SearchService) SearchBy(ctx context.Context, attribute string, _ []stri
 		}
 		return s.livesearch(ctx, query)
 	}
-	return s.Search(ctx)
+
+	return s.Search(ctx, filters...)
 }
 
 func (s *SearchService) findProducts(ctx context.Context, filters []searchDomain.Filter, marketPlaceCodes []string) []domain.BasicProduct {
@@ -165,6 +166,23 @@ func (s *SearchService) findCurrentPage(filters []searchDomain.Filter) int {
 	}
 
 	return currentPage
+}
+
+func (s *SearchService) findSorts(filters []searchDomain.Filter) []searchDomain.SortOption {
+	result := make([]searchDomain.SortOption, 0)
+	// first check if the searchDomain.SortFilter is given
+	for _, v := range filters {
+		if filter, ok := v.(*searchDomain.SortFilter); ok {
+			result = append(result, searchDomain.SortOption{
+				Label:        filter.Field(),
+				Field:        filter.Field(),
+				SelectedAsc:  !filter.Descending(),
+				SelectedDesc: filter.Descending(),
+			})
+		}
+	}
+
+	return result
 }
 
 func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]searchDomain.Facet, []searchDomain.Facet) {

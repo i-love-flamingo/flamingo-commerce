@@ -2,6 +2,10 @@
 
 ## v3.11.0 [upcoming]
 
+**search**
+* The fake search service now interprets the passed sort options.
+  
+
 ## v3.10.0
 
 **sourcing**
