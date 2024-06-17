@@ -645,7 +645,9 @@ func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
 		return *big.NewFloat(0)
 	}
 
-	roundedValuedPrice := valuedPrice.GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 100)
+	precisionToCents := 100
+
+	roundedValuedPrice := valuedPrice.GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, precisionToCents)
 
 	return *new(big.Float).Quo(roundedValuedPrice.Amount(), l.GetFinalPrice().Amount())
 }
