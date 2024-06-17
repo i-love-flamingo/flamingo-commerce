@@ -645,9 +645,7 @@ func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
 		return *big.NewFloat(0)
 	}
 
-	valuedPriceAsLoyalty := valuedPrice.GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1)
-
-	return *new(big.Float).Quo(valuedPriceAsLoyalty.Amount(), l.GetFinalPrice().Amount())
+	return *new(big.Float).Quo(valuedPrice.Amount(), l.GetFinalPrice().Amount())
 }
 
 // HasMax checks if product has a maximum (points to spend) restriction
