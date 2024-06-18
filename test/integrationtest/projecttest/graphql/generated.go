@@ -6622,7 +6622,7 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData_customAttributes(ctx c
 	return ec.marshalNCommerce_Cart_CustomAttributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AdditionalData_customAttributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AdditionalData_customAttributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AdditionalData",
 		Field:      field,
@@ -6670,7 +6670,7 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData_reservedOrderID(ctx co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AdditionalData_reservedOrderID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AdditionalData_reservedOrderID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AdditionalData",
 		Field:      field,
@@ -6714,7 +6714,7 @@ func (ec *executionContext) _Commerce_Cart_Address_vat(ctx context.Context, fiel
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_vat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_vat(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -6758,7 +6758,7 @@ func (ec *executionContext) _Commerce_Cart_Address_firstname(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_firstname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_firstname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -6802,7 +6802,7 @@ func (ec *executionContext) _Commerce_Cart_Address_lastname(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_lastname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_lastname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -6846,7 +6846,7 @@ func (ec *executionContext) _Commerce_Cart_Address_middleName(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_middleName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_middleName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -6890,7 +6890,7 @@ func (ec *executionContext) _Commerce_Cart_Address_title(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -6934,7 +6934,7 @@ func (ec *executionContext) _Commerce_Cart_Address_salutation(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_salutation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_salutation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -6978,7 +6978,7 @@ func (ec *executionContext) _Commerce_Cart_Address_street(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_street(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_street(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7022,7 +7022,7 @@ func (ec *executionContext) _Commerce_Cart_Address_streetNr(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_streetNr(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_streetNr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7063,7 +7063,7 @@ func (ec *executionContext) _Commerce_Cart_Address_additionalAddressLines(ctx co
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_additionalAddressLines(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_additionalAddressLines(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7107,7 +7107,7 @@ func (ec *executionContext) _Commerce_Cart_Address_company(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_company(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_company(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7151,7 +7151,7 @@ func (ec *executionContext) _Commerce_Cart_Address_city(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_city(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_city(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7195,7 +7195,7 @@ func (ec *executionContext) _Commerce_Cart_Address_postCode(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_postCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_postCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7239,7 +7239,7 @@ func (ec *executionContext) _Commerce_Cart_Address_state(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_state(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7283,7 +7283,7 @@ func (ec *executionContext) _Commerce_Cart_Address_regionCode(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_regionCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_regionCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7327,7 +7327,7 @@ func (ec *executionContext) _Commerce_Cart_Address_country(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_country(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7371,7 +7371,7 @@ func (ec *executionContext) _Commerce_Cart_Address_countryCode(ctx context.Conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_countryCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_countryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7415,7 +7415,7 @@ func (ec *executionContext) _Commerce_Cart_Address_telephone(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_telephone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_telephone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7459,7 +7459,7 @@ func (ec *executionContext) _Commerce_Cart_Address_email(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Address_email(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Address_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Address",
 		Field:      field,
@@ -7503,7 +7503,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_vat(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_vat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_vat(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7547,7 +7547,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_firstname(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_firstname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_firstname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7591,7 +7591,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_lastname(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_lastname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_lastname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7635,7 +7635,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_middleName(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_middleName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_middleName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7679,7 +7679,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_title(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7723,7 +7723,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_salutation(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_salutation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_salutation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7767,7 +7767,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_street(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_street(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_street(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7811,7 +7811,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_streetNr(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_streetNr(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_streetNr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7855,7 +7855,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine1(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_addressLine1(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_addressLine1(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7899,7 +7899,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine2(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_addressLine2(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_addressLine2(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7943,7 +7943,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_company(ctx context.Conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_company(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_company(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -7987,7 +7987,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_city(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_city(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_city(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8031,7 +8031,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_postCode(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_postCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_postCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8075,7 +8075,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_state(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_state(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8119,7 +8119,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_regionCode(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_regionCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_regionCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8163,7 +8163,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_country(ctx context.Conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_country(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8207,7 +8207,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_countryCode(ctx context.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_countryCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_countryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8251,7 +8251,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_phoneNumber(ctx context.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_phoneNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_phoneNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8295,7 +8295,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_email(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_email(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AddressForm",
 		Field:      field,
@@ -8339,7 +8339,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_campaignCode(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_campaignCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_campaignCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscount",
 		Field:      field,
@@ -8383,7 +8383,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_couponCode(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_couponCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_couponCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscount",
 		Field:      field,
@@ -8427,7 +8427,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_label(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscount",
 		Field:      field,
@@ -8471,7 +8471,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_applied(ctx context.C
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_applied(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_applied(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscount",
 		Field:      field,
@@ -8521,7 +8521,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_type(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscount",
 		Field:      field,
@@ -8565,7 +8565,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_isItemRelated(ctx con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_isItemRelated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_isItemRelated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscount",
 		Field:      field,
@@ -8609,7 +8609,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_sortOrder(ctx context
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_sortOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_sortOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscount",
 		Field:      field,
@@ -8650,7 +8650,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_items(ctx context.Co
 	return ec.marshalOCommerce_Cart_AppliedDiscount2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscountᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscounts_items(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscounts_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedDiscounts",
 		Field:      field,
@@ -8836,7 +8836,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_code(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedGiftCard",
 		Field:      field,
@@ -8880,7 +8880,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_applied(ctx context.C
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_applied(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_applied(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedGiftCard",
 		Field:      field,
@@ -8930,7 +8930,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_remaining(ctx context
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_remaining(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_remaining(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedGiftCard",
 		Field:      field,
@@ -8980,7 +8980,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_hasRemaining(ctx cont
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_hasRemaining(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_hasRemaining(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_AppliedGiftCard",
 		Field:      field,
@@ -9021,7 +9021,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_formData(ctx conte
 	return ec.marshalOCommerce_Cart_AddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_BillingAddressForm_formData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_BillingAddressForm_formData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_BillingAddressForm",
 		Field:      field,
@@ -9102,7 +9102,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_validationInfo(ctx
 	return ec.marshalOCommerce_Cart_Form_ValidationInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_BillingAddressForm_validationInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_BillingAddressForm_validationInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_BillingAddressForm",
 		Field:      field,
@@ -9149,7 +9149,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_processed(ctx cont
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_BillingAddressForm_processed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_BillingAddressForm_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_BillingAddressForm",
 		Field:      field,
@@ -9193,7 +9193,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_id(ctx context.Context, field gr
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9237,7 +9237,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_entityID(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_entityID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_entityID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9278,7 +9278,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_billingAddress(ctx context.Conte
 	return ec.marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_billingAddress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_billingAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9357,7 +9357,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_purchaser(ctx context.Context, f
 	return ec.marshalOCommerce_Cart_Person2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_purchaser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_purchaser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9406,7 +9406,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_deliveries(ctx context.Context, 
 	return ec.marshalOCommerce_Cart_Delivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_deliveries(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_deliveries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9478,7 +9478,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_additionalData(ctx context.Conte
 	return ec.marshalNCommerce_Cart_AdditionalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAdditionalData(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_additionalData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_additionalData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9525,7 +9525,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_paymentSelection(ctx context.Con
 	return ec.marshalOCommerce_Cart_PaymentSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPaymentSelection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_paymentSelection(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_paymentSelection(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9569,7 +9569,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx c
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_belongsToAuthenticatedUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9613,7 +9613,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_authenticatedUserID(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_authenticatedUserID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_authenticatedUserID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9654,7 +9654,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_appliedCouponCodes(ctx context.C
 	return ec.marshalOCommerce_Cart_CouponCode2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCodeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_appliedCouponCodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_appliedCouponCodes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9702,7 +9702,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_defaultCurrency(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_defaultCurrency(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_defaultCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9743,7 +9743,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_totalitems(ctx context.Context, 
 	return ec.marshalOCommerce_Cart_Totalitem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_totalitems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_totalitems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9797,7 +9797,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_itemCount(ctx context.Context, f
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_itemCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_itemCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9841,7 +9841,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_productCount(ctx context.Context
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_productCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_productCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9885,7 +9885,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_isPaymentSelected(ctx context.Co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_isPaymentSelected(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_isPaymentSelected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9929,7 +9929,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_grandTotal(ctx context.Context, 
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_grandTotal(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_grandTotal(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -9979,7 +9979,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumTotalTaxAmount(ctx context.Co
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_sumTotalTaxAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_sumTotalTaxAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10029,7 +10029,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNet(ctx context.Context,
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalNet(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalNet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10076,7 +10076,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_appliedGiftCards(ctx context.Con
 	return ec.marshalOCommerce_Cart_AppliedGiftCard2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCardᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_appliedGiftCards(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_appliedGiftCards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10207,7 +10207,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryCodes(ctx context.Con
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getDeliveryCodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getDeliveryCodes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10251,7 +10251,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getMainShippingEMail(ctx context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getMainShippingEMail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getMainShippingEMail(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10295,7 +10295,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_isEmpty(ctx context.Context, fie
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_isEmpty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_isEmpty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10707,7 +10707,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getVoucherSavings(ctx context.Co
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getVoucherSavings(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getVoucherSavings(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10757,7 +10757,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getCartTeaser(ctx context.Contex
 	return ec.marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTeaser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getCartTeaser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getCartTeaser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10809,7 +10809,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingNet(ctx context.Context,
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingNet(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingNet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10859,7 +10859,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingNetWithDiscounts(ctx con
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingNetWithDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingNetWithDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10909,7 +10909,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingGross(ctx context.Contex
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingGross(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingGross(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -10959,7 +10959,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingGrossWithDiscounts(ctx c
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingGrossWithDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_shippingGrossWithDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11009,7 +11009,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasShippingCosts(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasShippingCosts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasShippingCosts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11050,7 +11050,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_allShippingTitles(ctx context.Co
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_allShippingTitles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_allShippingTitles(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11094,7 +11094,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGross(ctx context.Contex
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalGross(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalGross(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11144,7 +11144,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx c
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalGrossWithDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11194,7 +11194,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx con
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_subTotalNetWithDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11244,7 +11244,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_totalDiscountAmount(ctx context.
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_totalDiscountAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_totalDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11294,7 +11294,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_nonItemRelatedDiscountAmount(ctx
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_nonItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_nonItemRelatedDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11344,7 +11344,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_itemRelatedDiscountAmount(ctx co
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_itemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_itemRelatedDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11394,7 +11394,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedCouponCode(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasAppliedCouponCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasAppliedCouponCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11438,7 +11438,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getPaymentReference(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getPaymentReference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getPaymentReference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11544,7 +11544,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_grandTotalCharges(ctx context.Co
 	return ec.marshalNCommerce_Price_Charges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐCharges(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_grandTotalCharges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_grandTotalCharges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11600,7 +11600,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedGiftCards(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasAppliedGiftCards(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasAppliedGiftCards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11644,7 +11644,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasRemainingGiftCards(ctx contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasRemainingGiftCards(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasRemainingGiftCards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
@@ -11688,7 +11688,7 @@ func (ec *executionContext) _Commerce_Cart_CouponCode_code(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_CouponCode_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_CouponCode_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_CouponCode",
 		Field:      field,
@@ -11790,7 +11790,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_cart(ctx context.Contex
 	return ec.marshalNCommerce_Cart_Cart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_cart(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_cart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedCart",
 		Field:      field,
@@ -11929,7 +11929,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_decoratedDeliveries(ctx
 	return ec.marshalOCommerce_Cart_DecoratedDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDeliveryᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_decoratedDeliveries(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_decoratedDeliveries(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedCart",
 		Field:      field,
@@ -12037,7 +12037,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_getAllPaymentRequiredIt
 	return ec.marshalNCommerce_Cart_PricedItems2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPricedItems(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_getAllPaymentRequiredItems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_getAllPaymentRequiredItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedCart",
 		Field:      field,
@@ -12089,7 +12089,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_cartSummary(ctx context
 	return ec.marshalNCommerce_Cart_Summary2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartSummary(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_cartSummary(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_cartSummary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedCart",
 		Field:      field,
@@ -12153,7 +12153,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_delivery(ctx contex
 	return ec.marshalNCommerce_Cart_Delivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedDelivery_delivery(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedDelivery_delivery(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedDelivery",
 		Field:      field,
@@ -12222,7 +12222,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_decoratedItems(ctx 
 	return ec.marshalOCommerce_Cart_DecoratedItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedDelivery_decoratedItems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedDelivery_decoratedItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedDelivery",
 		Field:      field,
@@ -12269,7 +12269,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem_item(ctx context.Contex
 	return ec.marshalOCommerce_Cart_Item2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedItem_item(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedItem_item(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedItem",
 		Field:      field,
@@ -12344,7 +12344,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem_product(ctx context.Con
 	return ec.marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedItem_product(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedItem_product(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DecoratedItem",
 		Field:      field,
@@ -12388,7 +12388,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_gateway(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DefaultPaymentSelection_gateway(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DefaultPaymentSelection_gateway(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DefaultPaymentSelection",
 		Field:      field,
@@ -12432,7 +12432,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_totalValue(ct
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DefaultPaymentSelection_totalValue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DefaultPaymentSelection_totalValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DefaultPaymentSelection",
 		Field:      field,
@@ -12479,7 +12479,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_cartSplit(ctx
 	return ec.marshalOCommerce_Cart_PaymentSelection_Split2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPaymentSelectionSplitᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DefaultPaymentSelection_cartSplit(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DefaultPaymentSelection_cartSplit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DefaultPaymentSelection",
 		Field:      field,
@@ -12526,7 +12526,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_deliveryInfo(ctx context.Con
 	return ec.marshalOCommerce_Cart_DeliveryInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_deliveryInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_deliveryInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12583,7 +12583,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_cartitems(ctx context.Contex
 	return ec.marshalOCommerce_Cart_Item2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_cartitems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_cartitems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12658,7 +12658,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_shippingItem(ctx context.Con
 	return ec.marshalOCommerce_Cart_ShippingItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐShippingItem(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_shippingItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_shippingItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12715,7 +12715,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGross(ctx context.Co
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalGross(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalGross(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12762,7 +12762,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_grandTotal(ctx context.Conte
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_grandTotal(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_grandTotal(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12809,7 +12809,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumTotalTaxAmount(ctx contex
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_sumTotalTaxAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_sumTotalTaxAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12856,7 +12856,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNet(ctx context.Cont
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalNet(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalNet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12903,7 +12903,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_totalDiscountAmount(ctx cont
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_totalDiscountAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_totalDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12950,7 +12950,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_nonItemRelatedDiscountAmount
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_nonItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_nonItemRelatedDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -12997,7 +12997,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_itemRelatedDiscountAmount(ct
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_itemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_itemRelatedDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -13044,7 +13044,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGrossWithDiscounts(c
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalGrossWithDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalGrossWithDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -13094,7 +13094,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_subTotalNetWithDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -13144,7 +13144,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_hasItems(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_hasItems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_hasItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
@@ -13188,7 +13188,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_deliveryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13229,7 +13229,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_formData(ctx cont
 	return ec.marshalOCommerce_Cart_AddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_formData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_formData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13313,7 +13313,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_useBillingAddress
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_useBillingAddress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_useBillingAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13354,7 +13354,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_method(ctx contex
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_method(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13395,7 +13395,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_carrier(ctx conte
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_carrier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_carrier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13436,7 +13436,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_desiredTime(ctx c
 	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_desiredTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_desiredTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13477,7 +13477,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_validationInfo(ct
 	return ec.marshalOCommerce_Cart_Form_ValidationInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_validationInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_validationInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13524,7 +13524,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_processed(ctx con
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_processed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryAddressForm",
 		Field:      field,
@@ -13568,7 +13568,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_code(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryInfo",
 		Field:      field,
@@ -13612,7 +13612,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_workflow(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_workflow(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_workflow(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryInfo",
 		Field:      field,
@@ -13656,7 +13656,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_method(ctx context.Conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_method(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryInfo",
 		Field:      field,
@@ -13700,7 +13700,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_carrier(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_carrier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_carrier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryInfo",
 		Field:      field,
@@ -13741,7 +13741,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_deliveryLocation(ctx con
 	return ec.marshalOCommerce_Cart_DeliveryLocation2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryLocation(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_deliveryLocation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_deliveryLocation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryInfo",
 		Field:      field,
@@ -13792,7 +13792,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_desiredTime(ctx context.
 	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_desiredTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_desiredTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryInfo",
 		Field:      field,
@@ -13836,7 +13836,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_additionalData(ctx conte
 	return ec.marshalNCommerce_Cart_CustomAttributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_additionalData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_additionalData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryInfo",
 		Field:      field,
@@ -13884,7 +13884,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_type(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryLocation",
 		Field:      field,
@@ -13925,7 +13925,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_address(ctx context.
 	return ec.marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_address(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryLocation",
 		Field:      field,
@@ -14007,7 +14007,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_useBillingAddress(ct
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_useBillingAddress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_useBillingAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryLocation",
 		Field:      field,
@@ -14051,7 +14051,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_code(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_DeliveryLocation",
 		Field:      field,
@@ -14095,7 +14095,7 @@ func (ec *executionContext) _Commerce_Cart_ExistingCustomerData_id(ctx context.C
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ExistingCustomerData_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ExistingCustomerData_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ExistingCustomerData",
 		Field:      field,
@@ -14139,7 +14139,7 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_messageKey(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Form_Error_messageKey(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Form_Error_messageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Form_Error",
 		Field:      field,
@@ -14183,7 +14183,7 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_defaultLabel(ctx context.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Form_Error_defaultLabel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Form_Error_defaultLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Form_Error",
 		Field:      field,
@@ -14227,7 +14227,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_messageKey(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_messageKey(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_messageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Form_FieldError",
 		Field:      field,
@@ -14271,7 +14271,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_defaultLabel(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_defaultLabel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_defaultLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Form_FieldError",
 		Field:      field,
@@ -14315,7 +14315,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_fieldName(ctx context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_fieldName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_fieldName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Form_FieldError",
 		Field:      field,
@@ -14356,7 +14356,7 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_fieldErrors(ctx c
 	return ec.marshalOCommerce_Cart_Form_FieldError2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐFieldErrorᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Form_ValidationInfo_fieldErrors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Form_ValidationInfo_fieldErrors(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Form_ValidationInfo",
 		Field:      field,
@@ -14405,7 +14405,7 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_generalErrors(ctx
 	return ec.marshalOCommerce_Cart_Form_Error2ᚕflamingoᚗmeᚋformᚋdomainᚐErrorᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Form_ValidationInfo_generalErrors(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Form_ValidationInfo_generalErrors(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Form_ValidationInfo",
 		Field:      field,
@@ -14455,7 +14455,7 @@ func (ec *executionContext) _Commerce_Cart_Item_id(ctx context.Context, field gr
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14499,7 +14499,7 @@ func (ec *executionContext) _Commerce_Cart_Item_externalReference(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_externalReference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_externalReference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14543,7 +14543,7 @@ func (ec *executionContext) _Commerce_Cart_Item_marketplaceCode(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_marketplaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_marketplaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14587,7 +14587,7 @@ func (ec *executionContext) _Commerce_Cart_Item_variantMarketPlaceCode(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_variantMarketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14631,7 +14631,7 @@ func (ec *executionContext) _Commerce_Cart_Item_productName(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_productName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_productName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14675,7 +14675,7 @@ func (ec *executionContext) _Commerce_Cart_Item_sourceID(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_sourceID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_sourceID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14719,7 +14719,7 @@ func (ec *executionContext) _Commerce_Cart_Item_qty(ctx context.Context, field g
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_qty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_qty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14760,7 +14760,7 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataKeys(ctx context.C
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_additionalDataKeys(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_additionalDataKeys(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14801,7 +14801,7 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataValues(ctx context
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_additionalDataValues(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_additionalDataValues(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14949,7 +14949,7 @@ func (ec *executionContext) _Commerce_Cart_Item_singlePriceGross(ctx context.Con
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_singlePriceGross(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_singlePriceGross(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -14999,7 +14999,7 @@ func (ec *executionContext) _Commerce_Cart_Item_singlePriceNet(ctx context.Conte
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_singlePriceNet(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_singlePriceNet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -15049,7 +15049,7 @@ func (ec *executionContext) _Commerce_Cart_Item_rowPriceGross(ctx context.Contex
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceGross(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceGross(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -15099,7 +15099,7 @@ func (ec *executionContext) _Commerce_Cart_Item_rowPriceNet(ctx context.Context,
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceNet(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceNet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -15149,7 +15149,7 @@ func (ec *executionContext) _Commerce_Cart_Item_appliedDiscounts(ctx context.Con
 	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_appliedDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -15201,7 +15201,7 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_itemID(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ItemValidationError_itemID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ItemValidationError_itemID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ItemValidationError",
 		Field:      field,
@@ -15245,7 +15245,7 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ItemValidationError_errorMessageKey(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ItemValidationError_errorMessageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ItemValidationError",
 		Field:      field,
@@ -15289,7 +15289,7 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_key(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_KeyValue_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_KeyValue_key(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_KeyValue",
 		Field:      field,
@@ -15333,7 +15333,7 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_value(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_KeyValue_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_KeyValue_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_KeyValue",
 		Field:      field,
@@ -15377,7 +15377,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split_qualifier(ctx 
 	return ec.marshalNCommerce_Cart_PaymentSelection_SplitQualifier2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐSplitQualifier(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_Split_qualifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_Split_qualifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PaymentSelection_Split",
 		Field:      field,
@@ -15429,7 +15429,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split_charge(ctx con
 	return ec.marshalNCommerce_Price_Charge2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐCharge(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_Split_charge(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_Split_charge(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PaymentSelection_Split",
 		Field:      field,
@@ -15483,7 +15483,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_type(
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PaymentSelection_SplitQualifier",
 		Field:      field,
@@ -15527,7 +15527,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_metho
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_method(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PaymentSelection_SplitQualifier",
 		Field:      field,
@@ -15571,7 +15571,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_refer
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PaymentSelection_SplitQualifier",
 		Field:      field,
@@ -15612,7 +15612,7 @@ func (ec *executionContext) _Commerce_Cart_Person_address(ctx context.Context, f
 	return ec.marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Person_address(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Person_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Person",
 		Field:      field,
@@ -15694,7 +15694,7 @@ func (ec *executionContext) _Commerce_Cart_Person_personalDetails(ctx context.Co
 	return ec.marshalNCommerce_Cart_PersonalDetails2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPersonalDetails(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Person_personalDetails(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Person_personalDetails(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Person",
 		Field:      field,
@@ -15745,7 +15745,7 @@ func (ec *executionContext) _Commerce_Cart_Person_existingCustomerData(ctx conte
 	return ec.marshalOCommerce_Cart_ExistingCustomerData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Person_existingCustomerData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Person_existingCustomerData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Person",
 		Field:      field,
@@ -15793,7 +15793,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_dateOfBirth(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_dateOfBirth(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_dateOfBirth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PersonalDetails",
 		Field:      field,
@@ -15837,7 +15837,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportCountry(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_passportCountry(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_passportCountry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PersonalDetails",
 		Field:      field,
@@ -15881,7 +15881,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportNumber(ctx co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_passportNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_passportNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PersonalDetails",
 		Field:      field,
@@ -15925,7 +15925,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_nationality(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_nationality(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_nationality(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PersonalDetails",
 		Field:      field,
@@ -15969,7 +15969,7 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_orderNumber(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PlacedOrderInfo_orderNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PlacedOrderInfo_orderNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PlacedOrderInfo",
 		Field:      field,
@@ -16013,7 +16013,7 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_deliveryCode(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PlacedOrderInfo_deliveryCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PlacedOrderInfo_deliveryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PlacedOrderInfo",
 		Field:      field,
@@ -16057,7 +16057,7 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem_amount(ctx context.Con
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedCartItem_amount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedCartItem_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedCartItem",
 		Field:      field,
@@ -16107,7 +16107,7 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem_itemID(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedCartItem_itemID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedCartItem_itemID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedCartItem",
 		Field:      field,
@@ -16148,7 +16148,7 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_cartItems(ctx context.Con
 	return ec.marshalOCommerce_Cart_PricedCartItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPricedCartItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedItems_cartItems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedItems_cartItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedItems",
 		Field:      field,
@@ -16195,7 +16195,7 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_shippingItems(ctx context
 	return ec.marshalOCommerce_Cart_PricedShippingItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPricedShippingItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedItems_shippingItems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedItems_shippingItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedItems",
 		Field:      field,
@@ -16242,7 +16242,7 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_totalItems(ctx context.Co
 	return ec.marshalOCommerce_Cart_PricedTotalItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPricedTotalItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedItems_totalItems(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedItems_totalItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedItems",
 		Field:      field,
@@ -16292,7 +16292,7 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem_amount(ctx context
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedShippingItem_amount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedShippingItem_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedShippingItem",
 		Field:      field,
@@ -16342,7 +16342,7 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem_deliveryInfoCode(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedShippingItem_deliveryInfoCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedShippingItem_deliveryInfoCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedShippingItem",
 		Field:      field,
@@ -16386,7 +16386,7 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_amount(ctx context.Co
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedTotalItem_amount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedTotalItem_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedTotalItem",
 		Field:      field,
@@ -16436,7 +16436,7 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_code(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_PricedTotalItem_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_PricedTotalItem_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_PricedTotalItem",
 		Field:      field,
@@ -16480,7 +16480,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_isRestricted(ctx
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_isRestricted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_isRestricted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_QtyRestrictionResult",
 		Field:      field,
@@ -16524,7 +16524,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx c
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_maxAllowed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_QtyRestrictionResult",
 		Field:      field,
@@ -16568,7 +16568,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_remainingDiffere
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_remainingDifference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_remainingDifference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_QtyRestrictionResult",
 		Field:      field,
@@ -16612,7 +16612,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_restrictorName(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_restrictorName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_restrictorName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_QtyRestrictionResult",
 		Field:      field,
@@ -16653,7 +16653,7 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_validationInfo(
 	return ec.marshalOCommerce_Cart_Form_ValidationInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_SelectedPaymentResult_validationInfo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_SelectedPaymentResult_validationInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_SelectedPaymentResult",
 		Field:      field,
@@ -16700,7 +16700,7 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_processed(ctx c
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_SelectedPaymentResult_processed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_SelectedPaymentResult_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_SelectedPaymentResult",
 		Field:      field,
@@ -16744,7 +16744,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_title(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ShippingItem",
 		Field:      field,
@@ -16788,7 +16788,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceNet(ctx context.Con
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_priceNet(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_priceNet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ShippingItem",
 		Field:      field,
@@ -16838,7 +16838,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_taxAmount(ctx context.Co
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_taxAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_taxAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ShippingItem",
 		Field:      field,
@@ -16888,7 +16888,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceGross(ctx context.C
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_priceGross(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_priceGross(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ShippingItem",
 		Field:      field,
@@ -16938,7 +16938,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_appliedDiscounts(ctx con
 	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_appliedDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_appliedDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ShippingItem",
 		Field:      field,
@@ -16990,7 +16990,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_totalWithDiscountInclTax
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_totalWithDiscountInclTax(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_totalWithDiscountInclTax(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ShippingItem",
 		Field:      field,
@@ -17040,7 +17040,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_tax(ctx context.Context,
 	return ec.marshalNCommerce_Cart_Tax2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTax(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_tax(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_tax(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ShippingItem",
 		Field:      field,
@@ -17092,7 +17092,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_discounts(ctx context.Context
 	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Summary_discounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_discounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Summary",
 		Field:      field,
@@ -17141,7 +17141,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_totalDiscountAmount(ctx conte
 	return ec.marshalOCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Summary_totalDiscountAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_totalDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Summary",
 		Field:      field,
@@ -17188,7 +17188,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_totalGiftCardAmount(ctx conte
 	return ec.marshalOCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Summary_totalGiftCardAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_totalGiftCardAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Summary",
 		Field:      field,
@@ -17235,7 +17235,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_grandTotalWithGiftCards(ctx c
 	return ec.marshalOCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Summary_grandTotalWithGiftCards(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_grandTotalWithGiftCards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Summary",
 		Field:      field,
@@ -17282,7 +17282,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumTotalDiscountWithGiftCards
 	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Summary_sumTotalDiscountWithGiftCardsAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_sumTotalDiscountWithGiftCardsAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Summary",
 		Field:      field,
@@ -17332,7 +17332,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_hasAppliedDiscounts(ctx conte
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Summary_hasAppliedDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_hasAppliedDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Summary",
 		Field:      field,
@@ -17373,7 +17373,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumTaxes(ctx context.Context,
 	return ec.marshalOCommerce_Cart_Taxes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐTaxes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Summary_sumTaxes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Summary_sumTaxes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Summary",
 		Field:      field,
@@ -17539,7 +17539,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_amount(ctx context.Context, field
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Tax_amount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Tax_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Tax",
 		Field:      field,
@@ -17589,7 +17589,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_type(ctx context.Context, field g
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Tax_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Tax_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Tax",
 		Field:      field,
@@ -17630,7 +17630,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_rate(ctx context.Context, field g
 	return ec.marshalOFloat2ᚖmathᚋbigᚐFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Tax_rate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Tax_rate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Tax",
 		Field:      field,
@@ -17674,7 +17674,7 @@ func (ec *executionContext) _Commerce_Cart_Taxes_items(ctx context.Context, fiel
 	return ec.marshalNCommerce_Cart_Tax2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTax(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Taxes_items(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Taxes_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Taxes",
 		Field:      field,
@@ -17786,7 +17786,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_productCount(ctx context.Conte
 	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_productCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_productCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Teaser",
 		Field:      field,
@@ -17827,7 +17827,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_ItemCount(ctx context.Context,
 	return ec.marshalOInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_ItemCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_ItemCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Teaser",
 		Field:      field,
@@ -17868,7 +17868,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_DeliveryCodes(ctx context.Cont
 	return ec.marshalOString2ᚕstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_DeliveryCodes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_DeliveryCodes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Teaser",
 		Field:      field,
@@ -17912,7 +17912,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_code(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Totalitem",
 		Field:      field,
@@ -17956,7 +17956,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_title(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Totalitem",
 		Field:      field,
@@ -18000,7 +18000,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_price(ctx context.Context, 
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Totalitem",
 		Field:      field,
@@ -18050,7 +18050,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_type(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Totalitem",
 		Field:      field,
@@ -18091,7 +18091,7 @@ func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result_
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_UpdateDeliveryShippingOptions_Result_processed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_UpdateDeliveryShippingOptions_Result_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_UpdateDeliveryShippingOptions_Result",
 		Field:      field,
@@ -18135,7 +18135,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_hasCommonError(ctx c
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_hasCommonError(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_hasCommonError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ValidationResult",
 		Field:      field,
@@ -18179,7 +18179,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_commonErrorMessageKe
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_commonErrorMessageKey(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_commonErrorMessageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ValidationResult",
 		Field:      field,
@@ -18220,7 +18220,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_itemResults(ctx cont
 	return ec.marshalOCommerce_Cart_ItemValidationError2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationErrorᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_itemResults(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_itemResults(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_ValidationResult",
 		Field:      field,
@@ -18270,7 +18270,7 @@ func (ec *executionContext) _Commerce_CategoryData_code(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryData_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryData_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryData",
 		Field:      field,
@@ -18314,7 +18314,7 @@ func (ec *executionContext) _Commerce_CategoryData_name(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryData_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryData_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryData",
 		Field:      field,
@@ -18358,7 +18358,7 @@ func (ec *executionContext) _Commerce_CategoryData_path(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryData_path(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryData_path(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryData",
 		Field:      field,
@@ -18402,7 +18402,7 @@ func (ec *executionContext) _Commerce_CategoryData_active(ctx context.Context, f
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryData_active(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryData_active(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryData",
 		Field:      field,
@@ -18446,7 +18446,7 @@ func (ec *executionContext) _Commerce_CategoryData_promoted(ctx context.Context,
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryData_promoted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryData_promoted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryData",
 		Field:      field,
@@ -18490,7 +18490,7 @@ func (ec *executionContext) _Commerce_CategoryData_attributes(ctx context.Contex
 	return ec.marshalNCommerce_Category_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryData_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryData_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryData",
 		Field:      field,
@@ -18542,7 +18542,7 @@ func (ec *executionContext) _Commerce_CategoryTree_code(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryTree_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryTree_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryTree",
 		Field:      field,
@@ -18586,7 +18586,7 @@ func (ec *executionContext) _Commerce_CategoryTree_name(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryTree_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryTree_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryTree",
 		Field:      field,
@@ -18630,7 +18630,7 @@ func (ec *executionContext) _Commerce_CategoryTree_path(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryTree_path(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryTree_path(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryTree",
 		Field:      field,
@@ -18674,7 +18674,7 @@ func (ec *executionContext) _Commerce_CategoryTree_active(ctx context.Context, f
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryTree_active(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryTree_active(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryTree",
 		Field:      field,
@@ -18715,7 +18715,7 @@ func (ec *executionContext) _Commerce_CategoryTree_subTrees(ctx context.Context,
 	return ec.marshalOCommerce_Tree2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐTree(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryTree_subTrees(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryTree_subTrees(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryTree",
 		Field:      field,
@@ -18759,7 +18759,7 @@ func (ec *executionContext) _Commerce_CategoryTree_hasChilds(ctx context.Context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryTree_hasChilds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryTree_hasChilds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryTree",
 		Field:      field,
@@ -18803,7 +18803,7 @@ func (ec *executionContext) _Commerce_CategoryTree_documentCount(ctx context.Con
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_CategoryTree_documentCount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_CategoryTree_documentCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_CategoryTree",
 		Field:      field,
@@ -18847,7 +18847,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_code(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_Attribute_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_Attribute_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_Attribute",
 		Field:      field,
@@ -18891,7 +18891,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_label(ctx context.Conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_Attribute_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_Attribute_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_Attribute",
 		Field:      field,
@@ -18932,7 +18932,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_values(ctx context.Cont
 	return ec.marshalOCommerce_Category_AttributeValue2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttributeValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_Attribute_values(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_Attribute_values(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_Attribute",
 		Field:      field,
@@ -18982,7 +18982,7 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_value(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_AttributeValue_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_AttributeValue_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_AttributeValue",
 		Field:      field,
@@ -19026,7 +19026,7 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_label(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_AttributeValue_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_AttributeValue_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_AttributeValue",
 		Field:      field,
@@ -19179,7 +19179,7 @@ func (ec *executionContext) _Commerce_Category_Attributes_all(ctx context.Contex
 	return ec.marshalOCommerce_Category_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttributeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_Attributes_all(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_Attributes_all(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_Attributes",
 		Field:      field,
@@ -19231,7 +19231,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult_category(ctx context
 	return ec.marshalNCommerce_Category2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐCategory(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_SearchResult_category(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_SearchResult_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_SearchResult",
 		Field:      field,
@@ -19275,7 +19275,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult_productSearchResult(
 	return ec.marshalNCommerce_Product_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚐSearchResultDTO(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Category_SearchResult_productSearchResult(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Category_SearchResult_productSearchResult(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Category_SearchResult",
 		Field:      field,
@@ -19332,7 +19332,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_cart(ctx contex
 	return ec.marshalOCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_cart(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_cart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderContext",
 		Field:      field,
@@ -19385,7 +19385,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_orderInfos(ctx 
 	return ec.marshalOCommerce_Checkout_PlacedOrderInfos2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_orderInfos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_orderInfos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderContext",
 		Field:      field,
@@ -19437,7 +19437,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_state(ctx conte
 	return ec.marshalNCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐState(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_state(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderContext",
 		Field:      field,
@@ -19481,7 +19481,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_uuid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_uuid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderContext",
 		Field:      field,
@@ -19525,7 +19525,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_gateway(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
 		Field:      field,
@@ -19569,7 +19569,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_paymentProv
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_paymentProvider(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_paymentProvider(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
 		Field:      field,
@@ -19613,7 +19613,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_method(ctx 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_method(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
 		Field:      field,
@@ -19657,7 +19657,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_amount(ctx 
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_amount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
 		Field:      field,
@@ -19707,7 +19707,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
 		Field:      field,
@@ -19751,7 +19751,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_ke
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_Form_Parameter_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_Form_Parameter_key(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_Form_Parameter",
 		Field:      field,
@@ -19792,7 +19792,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_va
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_Form_Parameter_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_Form_Parameter_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_Form_Parameter",
 		Field:      field,
@@ -19836,7 +19836,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_methodData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_methodData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
 		Field:      field,
@@ -19880,7 +19880,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_details(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_details(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
 		Field:      field,
@@ -19924,7 +19924,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_options(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
 		Field:      field,
@@ -19965,7 +19965,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_merchantValidationURL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_merchantValidationURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
 		Field:      field,
@@ -20009,7 +20009,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_completeURL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_completeURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
 		Field:      field,
@@ -20053,7 +20053,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Failed_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_Failed",
 		Field:      field,
@@ -20097,7 +20097,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_reas
 	return ec.marshalNCommerce_Checkout_PlaceOrderState_State_FailedReason2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋdomainᚋplaceorderᚋprocessᚐFailedReason(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Failed_reason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Failed_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_Failed",
 		Field:      field,
@@ -20138,7 +20138,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer_reason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer",
 		Field:      field,
@@ -20179,7 +20179,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_reason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
 		Field:      field,
@@ -20223,7 +20223,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	return ec.marshalNCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_validationResult(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_validationResult(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
 		Field:      field,
@@ -20272,7 +20272,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_Error_reason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_Error_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_Error",
 		Field:      field,
@@ -20313,7 +20313,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer_reason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer",
 		Field:      field,
@@ -20354,7 +20354,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError_reason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
 		Field:      field,
@@ -20398,7 +20398,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
 		Field:      field,
@@ -20442,7 +20442,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_URL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
 		Field:      field,
@@ -20483,7 +20483,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	return ec.marshalOCommerce_Checkout_PlaceOrderState_Form_Parameter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐFormParameterᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_Parameters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_Parameters(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
 		Field:      field,
@@ -20533,7 +20533,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_na
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Redirect_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Redirect_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_Redirect",
 		Field:      field,
@@ -20577,7 +20577,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_UR
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Redirect_URL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Redirect_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_Redirect",
 		Field:      field,
@@ -20621,7 +20621,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_na
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowHTML_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowHTML_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowHTML",
 		Field:      field,
@@ -20665,7 +20665,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HT
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowHTML_HTML(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowHTML_HTML(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowHTML",
 		Field:      field,
@@ -20709,7 +20709,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
 		Field:      field,
@@ -20753,7 +20753,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
 		Field:      field,
@@ -20797,7 +20797,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
 		Field:      field,
@@ -20841,7 +20841,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentMethod(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentMethod(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
 		Field:      field,
@@ -20885,7 +20885,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 	return ec.marshalNCommerce_Checkout_PlaceOrderState_PaymentRequestAPI2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentRequestAPI(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentRequestAPI(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentRequestAPI(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
 		Field:      field,
@@ -20941,7 +20941,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_nam
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Success_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Success_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_Success",
 		Field:      field,
@@ -20985,7 +20985,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK",
 		Field:      field,
@@ -21029,7 +21029,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_URL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK",
 		Field:      field,
@@ -21073,7 +21073,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK",
 		Field:      field,
@@ -21117,7 +21117,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Wait_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Wait_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_Wait",
 		Field:      field,
@@ -21161,7 +21161,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlaceOrderState_State_WaitForCustomer",
 		Field:      field,
@@ -21202,7 +21202,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx
 	return ec.marshalOCommerce_Checkout_PlaceOrderPaymentInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋapplicationᚐPlaceOrderPaymentInfoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlacedOrderInfos_paymentInfos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlacedOrderInfos",
 		Field:      field,
@@ -21255,7 +21255,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_placedOrderInfos
 	return ec.marshalOCommerce_Cart_PlacedOrderInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋplaceorderᚐPlacedOrderInfoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlacedOrderInfos_placedOrderInfos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlacedOrderInfos_placedOrderInfos(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlacedOrderInfos",
 		Field:      field,
@@ -21305,7 +21305,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_PlacedOrderInfos_email(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_PlacedOrderInfos_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_PlacedOrderInfos",
 		Field:      field,
@@ -21349,7 +21349,7 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Checkout_StartPlaceOrder_Result_uuid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Checkout_StartPlaceOrder_Result",
 		Field:      field,
@@ -21393,7 +21393,7 @@ func (ec *executionContext) _Commerce_Customer_Address_id(ctx context.Context, f
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21434,7 +21434,7 @@ func (ec *executionContext) _Commerce_Customer_Address_additionalAddressLines(ct
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_additionalAddressLines(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_additionalAddressLines(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21478,7 +21478,7 @@ func (ec *executionContext) _Commerce_Customer_Address_city(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_city(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_city(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21522,7 +21522,7 @@ func (ec *executionContext) _Commerce_Customer_Address_company(ctx context.Conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_company(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_company(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21566,7 +21566,7 @@ func (ec *executionContext) _Commerce_Customer_Address_countryCode(ctx context.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_countryCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_countryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21610,7 +21610,7 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultBilling(ctx contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_defaultBilling(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_defaultBilling(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21654,7 +21654,7 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultShipping(ctx conte
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_defaultShipping(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_defaultShipping(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21698,7 +21698,7 @@ func (ec *executionContext) _Commerce_Customer_Address_firstName(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_firstName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_firstName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21742,7 +21742,7 @@ func (ec *executionContext) _Commerce_Customer_Address_lastName(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_lastName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_lastName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21786,7 +21786,7 @@ func (ec *executionContext) _Commerce_Customer_Address_postCode(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_postCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_postCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21830,7 +21830,7 @@ func (ec *executionContext) _Commerce_Customer_Address_prefix(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_prefix(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_prefix(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21874,7 +21874,7 @@ func (ec *executionContext) _Commerce_Customer_Address_regionCode(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_regionCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_regionCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21918,7 +21918,7 @@ func (ec *executionContext) _Commerce_Customer_Address_street(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_street(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_street(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -21962,7 +21962,7 @@ func (ec *executionContext) _Commerce_Customer_Address_streetNumber(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_streetNumber(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_streetNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -22006,7 +22006,7 @@ func (ec *executionContext) _Commerce_Customer_Address_state(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_state(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -22050,7 +22050,7 @@ func (ec *executionContext) _Commerce_Customer_Address_telephone(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_telephone(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_telephone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -22094,7 +22094,7 @@ func (ec *executionContext) _Commerce_Customer_Address_email(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Address_email(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Address_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Address",
 		Field:      field,
@@ -22138,7 +22138,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_gender(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_gender(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_gender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22182,7 +22182,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_firstName(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_firstName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_firstName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22226,7 +22226,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_lastName(ctx context.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_lastName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_lastName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22270,7 +22270,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_middleName(ctx context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_middleName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_middleName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22314,7 +22314,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_mainEmail(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_mainEmail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_mainEmail(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22358,7 +22358,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_prefix(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_prefix(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_prefix(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22399,7 +22399,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.C
 	return ec.marshalODate2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_birthday(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_birthday(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22443,7 +22443,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_nationality(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_nationality(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_PersonData",
 		Field:      field,
@@ -22487,7 +22487,7 @@ func (ec *executionContext) _Commerce_Customer_Result_id(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Result_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Result_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Result",
 		Field:      field,
@@ -22531,7 +22531,7 @@ func (ec *executionContext) _Commerce_Customer_Result_personalData(ctx context.C
 	return ec.marshalNCommerce_Customer_PersonData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐPersonData(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Result_personalData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Result_personalData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Result",
 		Field:      field,
@@ -22678,7 +22678,7 @@ func (ec *executionContext) _Commerce_Customer_Result_addresses(ctx context.Cont
 	return ec.marshalOCommerce_Customer_Address2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddressᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Result_addresses(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Result_addresses(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Result",
 		Field:      field,
@@ -22755,7 +22755,7 @@ func (ec *executionContext) _Commerce_Customer_Result_defaultShippingAddress(ctx
 	return ec.marshalOCommerce_Customer_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Result_defaultShippingAddress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Result_defaultShippingAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Result",
 		Field:      field,
@@ -22832,7 +22832,7 @@ func (ec *executionContext) _Commerce_Customer_Result_defaultBillingAddress(ctx 
 	return ec.marshalOCommerce_Customer_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Result_defaultBillingAddress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Result_defaultBillingAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Result",
 		Field:      field,
@@ -22912,7 +22912,7 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_isLoggedIn(ctx cont
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Status_Result_isLoggedIn(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Status_Result_isLoggedIn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Status_Result",
 		Field:      field,
@@ -22956,7 +22956,7 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_userID(ctx context.
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Customer_Status_Result_userID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Customer_Status_Result_userID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Customer_Status_Result",
 		Field:      field,
@@ -22997,7 +22997,7 @@ func (ec *executionContext) _Commerce_Price_amount(ctx context.Context, field gr
 	return ec.marshalOFloat2float64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_amount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price",
 		Field:      field,
@@ -23041,7 +23041,7 @@ func (ec *executionContext) _Commerce_Price_currency(ctx context.Context, field 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_currency(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_currency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price",
 		Field:      field,
@@ -23085,7 +23085,7 @@ func (ec *executionContext) _Commerce_Price_Charge_price(ctx context.Context, fi
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_Charge_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_Charge_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price_Charge",
 		Field:      field,
@@ -23135,7 +23135,7 @@ func (ec *executionContext) _Commerce_Price_Charge_value(ctx context.Context, fi
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_Charge_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_Charge_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price_Charge",
 		Field:      field,
@@ -23185,7 +23185,7 @@ func (ec *executionContext) _Commerce_Price_Charge_type(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_Charge_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_Charge_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price_Charge",
 		Field:      field,
@@ -23229,7 +23229,7 @@ func (ec *executionContext) _Commerce_Price_Charge_reference(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_Charge_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_Charge_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price_Charge",
 		Field:      field,
@@ -23273,7 +23273,7 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_type(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_ChargeQualifier_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_ChargeQualifier_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price_ChargeQualifier",
 		Field:      field,
@@ -23317,7 +23317,7 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_reference(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_ChargeQualifier_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_ChargeQualifier_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price_ChargeQualifier",
 		Field:      field,
@@ -23358,7 +23358,7 @@ func (ec *executionContext) _Commerce_Price_Charges_items(ctx context.Context, f
 	return ec.marshalOCommerce_Price_Charge2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Price_Charges_items(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Price_Charges_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Price_Charges",
 		Field:      field,
@@ -23640,7 +23640,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_type(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -23684,7 +23684,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCo
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -23728,7 +23728,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_identifier(ct
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -23772,7 +23772,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx con
 	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_media(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_media(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -23822,7 +23822,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx con
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -23887,7 +23887,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_availablePric
 	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_availablePrices(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -23955,7 +23955,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -23999,7 +23999,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_categories(ct
 	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_categories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24049,7 +24049,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24093,7 +24093,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_shortDescript
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_shortDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24137,7 +24137,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx cont
 	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_meta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_meta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24185,7 +24185,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_loyalty(ctx c
 	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_loyalty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_loyalty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24237,7 +24237,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_attributes(ct
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24293,7 +24293,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variantMarket
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_variantMarketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24334,7 +24334,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variationSele
 	return ec.marshalOCommerce_Product_VariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_variationSelections(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_variationSelections(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24383,7 +24383,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariati
 	return ec.marshalOCommerce_Product_ActiveVariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelectionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_activeVariationSelections(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_activeVariationSelections(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24437,7 +24437,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_badges(ctx co
 	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_badges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_badges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariantProduct",
 		Field:      field,
@@ -24487,7 +24487,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_code(ctx 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariationSelection",
 		Field:      field,
@@ -24531,7 +24531,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_label(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariationSelection",
 		Field:      field,
@@ -24575,7 +24575,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_value(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariationSelection",
 		Field:      field,
@@ -24619,7 +24619,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_unitCode(
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_unitCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ActiveVariationSelection",
 		Field:      field,
@@ -24663,7 +24663,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_code(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attribute_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -24707,7 +24707,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_codeLabel(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attribute_codeLabel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_codeLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -24751,7 +24751,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_label(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attribute_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -24795,7 +24795,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_value(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attribute_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -24839,7 +24839,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_unitCode(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attribute_unitCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -24880,7 +24880,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_values(ctx context.Conte
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attribute_values(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_values(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -24921,7 +24921,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_labels(ctx context.Conte
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attribute_labels(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_labels(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -24962,7 +24962,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_attributeKeys(ctx conte
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attributes_attributeKeys(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attributes_attributeKeys(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attributes",
 		Field:      field,
@@ -25003,7 +25003,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_attributes(ctx context.
 	return ec.marshalOCommerce_Product_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Attributes_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Attributes_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attributes",
 		Field:      field,
@@ -25251,7 +25251,7 @@ func (ec *executionContext) _Commerce_Product_Badge_code(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Badge_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Badge_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Badge",
 		Field:      field,
@@ -25295,7 +25295,7 @@ func (ec *executionContext) _Commerce_Product_Badge_label(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Badge_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Badge_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Badge",
 		Field:      field,
@@ -25336,7 +25336,7 @@ func (ec *executionContext) _Commerce_Product_Badges_all(ctx context.Context, fi
 	return ec.marshalOCommerce_Product_Badge2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadgeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Badges_all(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Badges_all(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Badges",
 		Field:      field,
@@ -25383,7 +25383,7 @@ func (ec *executionContext) _Commerce_Product_Badges_first(ctx context.Context, 
 	return ec.marshalOCommerce_Product_Badge2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadge(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Badges_first(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Badges_first(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Badges",
 		Field:      field,
@@ -25433,7 +25433,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_type(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25477,7 +25477,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_marketPlaceCode(ctx 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25521,7 +25521,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_identifier(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25565,7 +25565,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_media(ctx context.Co
 	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_media(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_media(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25615,7 +25615,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_price(ctx context.Co
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25680,7 +25680,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_availablePrices(ctx 
 	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_availablePrices(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25748,7 +25748,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_title(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25792,7 +25792,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_categories(ctx conte
 	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_categories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25842,7 +25842,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_description(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25886,7 +25886,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_shortDescription(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_shortDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25930,7 +25930,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_meta(ctx context.Con
 	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_meta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_meta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -25978,7 +25978,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_loyalty(ctx context.
 	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_loyalty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_loyalty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -26030,7 +26030,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_attributes(ctx conte
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -26086,7 +26086,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_badges(ctx context.C
 	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_badges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_badges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -26133,7 +26133,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_choices(ctx context.
 	return ec.marshalOCommerce_Product_Choice2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_choices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_choices(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_BundleProduct",
 		Field:      field,
@@ -26191,7 +26191,7 @@ func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Contex
 	return ec.marshalNCommerce_Product_CategoryTeaser2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Categories_main(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Categories_main(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Categories",
 		Field:      field,
@@ -26242,7 +26242,7 @@ func (ec *executionContext) _Commerce_Product_Categories_all(ctx context.Context
 	return ec.marshalOCommerce_Product_CategoryTeaser2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaserᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Categories_all(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Categories_all(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Categories",
 		Field:      field,
@@ -26296,7 +26296,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_code(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_CategoryTeaser",
 		Field:      field,
@@ -26340,7 +26340,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_path(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_path(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_path(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_CategoryTeaser",
 		Field:      field,
@@ -26384,7 +26384,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_name(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_CategoryTeaser",
 		Field:      field,
@@ -26425,7 +26425,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_parent(ctx context.
 	return ec.marshalOCommerce_Product_CategoryTeaser2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_parent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_parent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_CategoryTeaser",
 		Field:      field,
@@ -26479,7 +26479,7 @@ func (ec *executionContext) _Commerce_Product_Choice_identifier(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Choice_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Choice",
 		Field:      field,
@@ -26523,7 +26523,7 @@ func (ec *executionContext) _Commerce_Product_Choice_required(ctx context.Contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Choice_required(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_required(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Choice",
 		Field:      field,
@@ -26567,7 +26567,7 @@ func (ec *executionContext) _Commerce_Product_Choice_label(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Choice_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Choice",
 		Field:      field,
@@ -26608,7 +26608,7 @@ func (ec *executionContext) _Commerce_Product_Choice_options(ctx context.Context
 	return ec.marshalOCommerce_Product_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOptionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Choice_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_options(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Choice",
 		Field:      field,
@@ -26655,7 +26655,7 @@ func (ec *executionContext) _Commerce_Product_Choice_active(ctx context.Context,
 	return ec.marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Choice_active(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_active(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Choice",
 		Field:      field,
@@ -26696,7 +26696,7 @@ func (ec *executionContext) _Commerce_Product_Choice_activeOption(ctx context.Co
 	return ec.marshalOCommerce_Product_Option2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Choice_activeOption(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_activeOption(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Choice",
 		Field:      field,
@@ -26746,7 +26746,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_type(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -26790,7 +26790,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCod
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -26834,7 +26834,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_identifier(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -26878,7 +26878,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_media(ctx cont
 	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_media(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_media(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -26928,7 +26928,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx cont
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -26993,7 +26993,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_availablePrice
 	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_availablePrices(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27061,7 +27061,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27105,7 +27105,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_categories(ctx
 	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_categories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27155,7 +27155,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ct
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27199,7 +27199,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_shortDescripti
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_shortDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27243,7 +27243,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_meta(ctx conte
 	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_meta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_meta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27291,7 +27291,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_loyalty(ctx co
 	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_loyalty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_loyalty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27343,7 +27343,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_attributes(ctx
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27399,7 +27399,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variantSelecti
 	return ec.marshalNCommerce_Product_VariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_variantSelection(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_variantSelection(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27449,7 +27449,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_badges(ctx con
 	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_badges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_badges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_ConfigurableProduct",
 		Field:      field,
@@ -27496,7 +27496,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context,
 	return ec.marshalOCommerce_Product_Loyalty_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty",
 		Field:      field,
@@ -27555,7 +27555,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_availablePrices(ctx contex
 	return ec.marshalOCommerce_Product_Loyalty_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_availablePrices(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty",
 		Field:      field,
@@ -27614,7 +27614,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_earning(ctx context.Contex
 	return ec.marshalOCommerce_Product_Loyalty_EarningInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyEarningInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_earning(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_earning(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty",
 		Field:      field,
@@ -27664,7 +27664,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_type(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_EarningInfo_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_EarningInfo_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_EarningInfo",
 		Field:      field,
@@ -27708,7 +27708,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_default(ctx co
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_EarningInfo_default(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_EarningInfo_default(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_EarningInfo",
 		Field:      field,
@@ -27758,7 +27758,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_type(ctx context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -27802,7 +27802,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_default(ctx cont
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_default(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_default(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -27852,7 +27852,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_isDiscounted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -27896,7 +27896,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discounted(ctx c
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_discounted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_discounted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -27946,7 +27946,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discountText(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_discountText(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_discountText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -27990,7 +27990,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_minPointsToSpent
 	return ec.marshalNFloat2mathᚋbigᚐFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_minPointsToSpent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_minPointsToSpent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -28034,7 +28034,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent
 	return ec.marshalNFloat2ᚖmathᚋbigᚐFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -28078,7 +28078,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_context(ctx cont
 	return ec.marshalNCommerce_Product_PriceContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceContext(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_context(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_context(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Loyalty_PriceInfo",
 		Field:      field,
@@ -28129,7 +28129,7 @@ func (ec *executionContext) _Commerce_Product_Media_all(ctx context.Context, fie
 	return ec.marshalOCommerce_Product_MediaItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐMediaᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Media_all(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Media_all(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Media",
 		Field:      field,
@@ -28252,7 +28252,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_type(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_MediaItem",
 		Field:      field,
@@ -28296,7 +28296,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_mimeType(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_mimeType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_mimeType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_MediaItem",
 		Field:      field,
@@ -28340,7 +28340,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_usage(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_usage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_usage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_MediaItem",
 		Field:      field,
@@ -28384,7 +28384,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_title(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_MediaItem",
 		Field:      field,
@@ -28428,7 +28428,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_reference(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_MediaItem",
 		Field:      field,
@@ -28469,7 +28469,7 @@ func (ec *executionContext) _Commerce_Product_Meta_keywords(ctx context.Context,
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Meta_keywords(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Meta_keywords(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Meta",
 		Field:      field,
@@ -28513,7 +28513,7 @@ func (ec *executionContext) _Commerce_Product_Option_product(ctx context.Context
 	return ec.marshalNCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Option_product(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Option_product(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Option",
 		Field:      field,
@@ -28557,7 +28557,7 @@ func (ec *executionContext) _Commerce_Product_Option_qty(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_Option_qty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_Option_qty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Option",
 		Field:      field,
@@ -28601,7 +28601,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_customerGroup(ctx con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_customerGroup(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_customerGroup(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceContext",
 		Field:      field,
@@ -28645,7 +28645,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_deliveryCode(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_deliveryCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_deliveryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceContext",
 		Field:      field,
@@ -28689,7 +28689,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_channelCode(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_channelCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_channelCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceContext",
 		Field:      field,
@@ -28733,7 +28733,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_locale(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_locale(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_locale(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceContext",
 		Field:      field,
@@ -28777,7 +28777,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_default(ctx context.Cont
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_default(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_default(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -28827,7 +28827,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discounted(ctx context.C
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_discounted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_discounted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -28877,7 +28877,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discountText(ctx context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_discountText(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_discountText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -28921,7 +28921,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBase(ctx context.C
 	return ec.marshalNCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBase(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBase(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -28971,7 +28971,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseAmount(ctx con
 	return ec.marshalNFloat2mathᚋbigᚐFloat(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBaseAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBaseAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -29015,7 +29015,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseUnit(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBaseUnit(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBaseUnit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -29059,7 +29059,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_isDiscounted(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_isDiscounted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_isDiscounted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -29100,7 +29100,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_campaignRules(ctx contex
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_campaignRules(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_campaignRules(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -29144,7 +29144,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_denyMoreDiscounts(ctx co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_denyMoreDiscounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_denyMoreDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -29188,7 +29188,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_context(ctx context.Cont
 	return ec.marshalNCommerce_Product_PriceContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceContext(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_context(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_context(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -29242,7 +29242,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_taxClass(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_taxClass(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_taxClass(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_PriceInfo",
 		Field:      field,
@@ -29283,7 +29283,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_products(ctx context.
 	return ec.marshalOCommerce_Product2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_products(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_products(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SearchResult",
 		Field:      field,
@@ -29327,7 +29327,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_facets(ctx context.Co
 	return ec.marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacetᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_facets(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_facets(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SearchResult",
 		Field:      field,
@@ -29368,7 +29368,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_suggestions(ctx conte
 	return ec.marshalOCommerce_Search_Suggestion2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSuggestionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_suggestions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_suggestions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SearchResult",
 		Field:      field,
@@ -29418,7 +29418,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_searchMeta(ctx contex
 	return ec.marshalNCommerce_Search_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSearchMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_searchMeta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_searchMeta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SearchResult",
 		Field:      field,
@@ -29476,7 +29476,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_hasSelectedFacet(ctx 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_hasSelectedFacet(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_hasSelectedFacet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SearchResult",
 		Field:      field,
@@ -29517,7 +29517,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_promotion(ctx context
 	return ec.marshalOCommerce_Search_Promotion2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐPromotionDTO(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_promotion(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_promotion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SearchResult",
 		Field:      field,
@@ -29568,7 +29568,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_actions(ctx context.C
 	return ec.marshalOCommerce_Search_Action2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐActionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_actions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_actions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SearchResult",
 		Field:      field,
@@ -29618,7 +29618,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -29662,7 +29662,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -29706,7 +29706,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_identifier(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -29750,7 +29750,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_media(ctx context.Co
 	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_media(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_media(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -29800,7 +29800,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Co
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_price(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -29865,7 +29865,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_availablePrices(ctx 
 	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_availablePrices(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -29933,7 +29933,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -29977,7 +29977,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_categories(ctx conte
 	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_categories(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -30027,7 +30027,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -30071,7 +30071,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_shortDescription(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_shortDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -30115,7 +30115,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_meta(ctx context.Con
 	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_meta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_meta(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -30163,7 +30163,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_loyalty(ctx context.
 	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_loyalty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_loyalty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -30215,7 +30215,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_attributes(ctx conte
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -30271,7 +30271,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_badges(ctx context.C
 	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_badges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_badges(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_SimpleProduct",
 		Field:      field,
@@ -30321,7 +30321,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_variants(ctx cont
 	return ec.marshalNCommerce_Product_VariantSelection_Match2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_variants(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_variants(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection",
 		Field:      field,
@@ -30371,7 +30371,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_attributes(ctx co
 	return ec.marshalNCommerce_Product_VariantSelection_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection",
 		Field:      field,
@@ -30423,7 +30423,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_label(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Attribute",
 		Field:      field,
@@ -30467,7 +30467,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_code(ct
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Attribute",
 		Field:      field,
@@ -30511,7 +30511,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_options
 	return ec.marshalNCommerce_Product_VariantSelection_Attribute_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOptionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_options(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Attribute",
 		Field:      field,
@@ -30563,7 +30563,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Attribute_Option",
 		Field:      field,
@@ -30604,7 +30604,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Attribute_Option",
 		Field:      field,
@@ -30648,7 +30648,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 	return ec.marshalNCommerce_Product_VariantSelection_Option_OtherAttributesRestriction2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestrictionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Attribute_Option",
 		Field:      field,
@@ -30695,7 +30695,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_attributes(
 	return ec.marshalOCommerce_Product_VariantSelection_Match_Attributes2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchAttributesᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_attributes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Match",
 		Field:      field,
@@ -30745,7 +30745,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_variant(ctx
 	return ec.marshalNCommerce_Product_VariantSelection_Match_Variant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchVariant(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_variant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_variant(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Match",
 		Field:      field,
@@ -30793,7 +30793,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_key(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Match_Attributes",
 		Field:      field,
@@ -30837,7 +30837,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Match_Attributes",
 		Field:      field,
@@ -30881,7 +30881,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant_mar
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Match_Variant",
 		Field:      field,
@@ -30925,7 +30925,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Option_OtherAttributesRestriction",
 		Field:      field,
@@ -30969,7 +30969,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariantSelection_Option_OtherAttributesRestriction",
 		Field:      field,
@@ -31013,7 +31013,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection",
 		Field:      field,
@@ -31057,7 +31057,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection",
 		Field:      field,
@@ -31098,7 +31098,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_options(ctx con
 	return ec.marshalOCommerce_Product_VariationSelection_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOption(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_options(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection",
 		Field:      field,
@@ -31152,7 +31152,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ct
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection_Option",
 		Field:      field,
@@ -31196,7 +31196,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_unitCode
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_unitCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection_Option",
 		Field:      field,
@@ -31240,7 +31240,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ct
 	return ec.marshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_state(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection_Option",
 		Field:      field,
@@ -31284,7 +31284,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variant(
 	return ec.marshalNCommerce_Product_VariationSelection_OptionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionVariant(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_variant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_variant(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection_Option",
 		Field:      field,
@@ -31332,7 +31332,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant_m
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_VariationSelection_OptionVariant",
 		Field:      field,
@@ -31376,7 +31376,7 @@ func (ec *executionContext) _Commerce_Search_Action_type(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Action_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Action_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Action",
 		Field:      field,
@@ -31420,7 +31420,7 @@ func (ec *executionContext) _Commerce_Search_Action_content(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Action_content(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Action_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Action",
 		Field:      field,
@@ -31464,7 +31464,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacet",
 		Field:      field,
@@ -31508,7 +31508,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacet",
 		Field:      field,
@@ -31552,7 +31552,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_position(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacet",
 		Field:      field,
@@ -31596,7 +31596,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_items(ctx context.Context
 	return ec.marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_items(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacet",
 		Field:      field,
@@ -31650,7 +31650,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_hasSelectedItem(ctx conte
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_hasSelectedItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacet",
 		Field:      field,
@@ -31694,7 +31694,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacetItem",
 		Field:      field,
@@ -31738,7 +31738,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacetItem",
 		Field:      field,
@@ -31782,7 +31782,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_selected(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacetItem",
 		Field:      field,
@@ -31826,7 +31826,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_count(ctx context.Con
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_count(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_ListFacetItem",
 		Field:      field,
@@ -31870,7 +31870,7 @@ func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Meta_query(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Meta_query(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Meta",
 		Field:      field,
@@ -31914,7 +31914,7 @@ func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Meta_originalQuery(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Meta_originalQuery(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Meta",
 		Field:      field,
@@ -31958,7 +31958,7 @@ func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, fiel
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Meta_page(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Meta_page(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Meta",
 		Field:      field,
@@ -32002,7 +32002,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, 
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Meta_numPages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Meta_numPages(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Meta",
 		Field:      field,
@@ -32046,7 +32046,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Meta_numResults(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Meta_numResults(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Meta",
 		Field:      field,
@@ -32087,7 +32087,7 @@ func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Contex
 	return ec.marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOptionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Meta_sortOptions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Meta_sortOptions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Meta",
 		Field:      field,
@@ -32139,7 +32139,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_title(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Promotion_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Promotion_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Promotion",
 		Field:      field,
@@ -32183,7 +32183,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_content(ctx context.Conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Promotion_content(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Promotion_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Promotion",
 		Field:      field,
@@ -32227,7 +32227,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_url(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Promotion_url(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Promotion_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Promotion",
 		Field:      field,
@@ -32268,7 +32268,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_media(ctx context.Context
 	return ec.marshalOCommerce_Search_PromotionMedia2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Promotion_media(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Promotion_media(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Promotion",
 		Field:      field,
@@ -32324,7 +32324,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_type(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_PromotionMedia",
 		Field:      field,
@@ -32368,7 +32368,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_mimeType(ctx context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_mimeType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_mimeType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_PromotionMedia",
 		Field:      field,
@@ -32412,7 +32412,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_usage(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_usage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_usage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_PromotionMedia",
 		Field:      field,
@@ -32456,7 +32456,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_title(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_PromotionMedia",
 		Field:      field,
@@ -32500,7 +32500,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_reference(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_PromotionMedia",
 		Field:      field,
@@ -32544,7 +32544,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacet",
 		Field:      field,
@@ -32588,7 +32588,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacet",
 		Field:      field,
@@ -32632,7 +32632,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Con
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_position(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacet",
 		Field:      field,
@@ -32676,7 +32676,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_items(ctx context.Contex
 	return ec.marshalNCommerce_Search_RangeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_items(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacet",
 		Field:      field,
@@ -32738,7 +32738,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_hasSelectedItem(ctx cont
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_hasSelectedItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacet",
 		Field:      field,
@@ -32782,7 +32782,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -32826,7 +32826,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -32870,7 +32870,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selected(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -32914,7 +32914,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Co
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_count(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -32958,7 +32958,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_min(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_min(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -33002,7 +33002,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_max(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_max(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -33046,7 +33046,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selectedMin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selectedMin(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -33090,7 +33090,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selectedMax(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selectedMax(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_RangeFacetItem",
 		Field:      field,
@@ -33134,7 +33134,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_SortOption_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_SortOption_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_SortOption",
 		Field:      field,
@@ -33178,7 +33178,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_SortOption_field(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_SortOption_field(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_SortOption",
 		Field:      field,
@@ -33222,7 +33222,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_selected(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_SortOption_selected(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_SortOption_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_SortOption",
 		Field:      field,
@@ -33266,7 +33266,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Suggestion_text(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Suggestion_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Suggestion",
 		Field:      field,
@@ -33310,7 +33310,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_Suggestion_highlight(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_Suggestion_highlight(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_Suggestion",
 		Field:      field,
@@ -33354,7 +33354,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacet",
 		Field:      field,
@@ -33398,7 +33398,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacet",
 		Field:      field,
@@ -33442,7 +33442,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_position(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacet",
 		Field:      field,
@@ -33486,7 +33486,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_items(ctx context.Context
 	return ec.marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_items(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacet",
 		Field:      field,
@@ -33544,7 +33544,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_hasSelectedItem(ctx conte
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_hasSelectedItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacet",
 		Field:      field,
@@ -33588,7 +33588,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacetItem",
 		Field:      field,
@@ -33632,7 +33632,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacetItem",
 		Field:      field,
@@ -33676,7 +33676,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_selected(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacetItem",
 		Field:      field,
@@ -33720,7 +33720,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Con
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_count(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacetItem",
 		Field:      field,
@@ -33764,7 +33764,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_active(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_active(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacetItem",
 		Field:      field,
@@ -33805,7 +33805,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_items(ctx context.Con
 	return ec.marshalOCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItemᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_items(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Search_TreeFacetItem",
 		Field:      field,
@@ -33860,7 +33860,7 @@ func (ec *executionContext) _Mutation_flamingo(ctx context.Context, field graphq
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_flamingo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_flamingo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -34687,7 +34687,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_Clean(ctx context.Context, f
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_Clean(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_Clean(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -34924,7 +34924,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_CancelPlaceOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_CancelPlaceOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -34968,7 +34968,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_ClearPlaceOrder(ctx cont
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_ClearPlaceOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_ClearPlaceOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -35012,7 +35012,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx co
 	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_RefreshPlaceOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -35066,7 +35066,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrderBlockin
 	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_RefreshPlaceOrderBlocking(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_RefreshPlaceOrderBlocking(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -35117,7 +35117,7 @@ func (ec *executionContext) _Query_flamingo(ctx context.Context, field graphql.C
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_flamingo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_flamingo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35281,7 +35281,7 @@ func (ec *executionContext) _Query_Commerce_Customer_Status(ctx context.Context,
 	return ec.marshalOCommerce_Customer_Status_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerStatusResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Commerce_Customer_Status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_Commerce_Customer_Status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35328,7 +35328,7 @@ func (ec *executionContext) _Query_Commerce_Customer(ctx context.Context, field 
 	return ec.marshalOCommerce_Customer_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Commerce_Customer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_Commerce_Customer(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35386,7 +35386,7 @@ func (ec *executionContext) _Query_Commerce_Cart_DecoratedCart(ctx context.Conte
 	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Commerce_Cart_DecoratedCart(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_Commerce_Cart_DecoratedCart(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35442,7 +35442,7 @@ func (ec *executionContext) _Query_Commerce_Cart_Validator(ctx context.Context, 
 	return ec.marshalNCommerce_Cart_ValidationResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Commerce_Cart_Validator(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_Commerce_Cart_Validator(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35559,7 +35559,7 @@ func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Commerce_Checkout_ActivePlaceOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_Commerce_Checkout_ActivePlaceOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35603,7 +35603,7 @@ func (ec *executionContext) _Query_Commerce_Checkout_CurrentContext(ctx context.
 	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_Commerce_Checkout_CurrentContext(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_Commerce_Checkout_CurrentContext(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35841,7 +35841,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -35899,7 +35899,7 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -35940,7 +35940,7 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -35984,7 +35984,7 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 	return ec.marshalN__DirectiveLocation2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_locations(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_locations(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -36028,7 +36028,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -36082,7 +36082,7 @@ func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_isRepeatable(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_isRepeatable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -36126,7 +36126,7 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -36167,7 +36167,7 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -36211,7 +36211,7 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_isDeprecated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -36252,7 +36252,7 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___EnumValue_deprecationReason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___EnumValue_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__EnumValue",
 		Field:      field,
@@ -36296,7 +36296,7 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -36337,7 +36337,7 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -36381,7 +36381,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -36435,7 +36435,7 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -36501,7 +36501,7 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_isDeprecated(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -36542,7 +36542,7 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_deprecationReason(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -36586,7 +36586,7 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -36627,7 +36627,7 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -36671,7 +36671,7 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -36734,7 +36734,7 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___InputValue_defaultValue(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___InputValue_defaultValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__InputValue",
 		Field:      field,
@@ -36775,7 +36775,7 @@ func (ec *executionContext) ___Schema_description(ctx context.Context, field gra
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -36819,7 +36819,7 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 	return ec.marshalN__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_types(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_types(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -36885,7 +36885,7 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 	return ec.marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_queryType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_queryType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -36948,7 +36948,7 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_mutationType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_mutationType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -37011,7 +37011,7 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_subscriptionType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_subscriptionType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -37077,7 +37077,7 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 	return ec.marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirectiveᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Schema_directives(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Schema_directives(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Schema",
 		Field:      field,
@@ -37133,7 +37133,7 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 	return ec.marshalN__TypeKind2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_kind(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_kind(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -37174,7 +37174,7 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -37215,7 +37215,7 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -37322,7 +37322,7 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 	return ec.marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_interfaces(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_interfaces(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -37385,7 +37385,7 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 	return ec.marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_possibleTypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_possibleTypes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -37510,7 +37510,7 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 	return ec.marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_inputFields(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_inputFields(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -37561,7 +37561,7 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 	return ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_ofType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_ofType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -37624,7 +37624,7 @@ func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field gr
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -39105,7 +39105,7 @@ func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.Sel
 		case "getDeliveryByCode":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -39517,7 +39517,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.C
 		case "cartSplit":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44846,7 +44846,7 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 		case "sortOptions":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -45554,7 +45554,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "flamingo":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -45573,7 +45573,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "Commerce_Product":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -45614,7 +45614,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "Commerce_Customer_Status":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -45633,7 +45633,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "Commerce_Customer":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -45784,7 +45784,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "Commerce_Category":
 			field := field
 
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
