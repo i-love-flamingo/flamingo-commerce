@@ -11,7 +11,7 @@ require (
 	flamingo.me/graphql v1.11.3
 	flamingo.me/pugtemplate v1.3.1
 	github.com/99designs/gqlgen v0.17.49
-	github.com/Rhymond/go-money v1.0.12
+	github.com/Rhymond/go-money v1.0.13
 	github.com/gavv/httpexpect/v2 v2.16.0
 	github.com/go-playground/form/v4 v4.2.1
 	github.com/go-redsync/redsync/v4 v4.11.0
