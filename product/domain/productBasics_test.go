@@ -536,7 +536,6 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		p := Saleable{
 			ActivePrice: PriceInfo{
-				// 100EUR value
 				Default: domain.NewFromFloat(9.50, "EUR"),
 			},
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
@@ -567,7 +566,6 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		p := Saleable{
 			ActivePrice: PriceInfo{
-				// 94.9 EUR value
 				Default: domain.NewFromFloat(9.49, "EUR"),
 			},
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
@@ -581,7 +579,6 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		wishedMax := NewWishedToPay()
 		wishedMax.Add("loyalty.miles", domain.NewFromInt(math.MaxInt64, 1, "Miles"))
 
-		// 107.06 would be 567.98 miles - so  we pay 568 miles we expect to pay everything in miles.
 		expectedMilesMax := int64(530)
 		newValue := domain.NewFromFloat(94.9, "EUR")
 		charges := p.GetLoyaltyChargeSplit(&newValue, &wishedMax, 10)
@@ -619,7 +616,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(300)
 		newValue = domain.NewFromFloat(1.00, "EUR")
@@ -629,17 +626,17 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(900)
-		newValue = domain.NewFromFloat(3.00, "EUR")
+		newValue = domain.NewFromFloat(3.00, "EUR") // reduced price still calculated perfectly
 		charges = p.GetLoyaltyChargeSplit(&newValue, &wishedMax, 3)
 		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
 		assert.Equal(t, domain.NewFromInt(expectedMilesMax, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "3 expected to be 900 miles")
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 
 	t.Run("item for 1.49 EUR or 447 Miles", func(t *testing.T) {
@@ -669,7 +666,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(300)
 		newValue = domain.NewFromFloat(1.00, "EUR")
@@ -679,7 +676,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(1341)
 		newValue = domain.NewFromFloat(4.47, "EUR")
@@ -689,7 +686,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 
 	t.Run("item for 1.01 EUR or 303 Miles", func(t *testing.T) {
@@ -719,7 +716,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		// 1.0 would be 300 miles - so  we pay 300 miles we expect to pay everything in miles.
 		expectedMilesMax = int64(300)
@@ -730,7 +727,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(909)
 		newValue = domain.NewFromFloat(3.03, "EUR")
@@ -740,7 +737,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 
 	t.Run("item for 1.99 EUR or 597 Miles", func(t *testing.T) {
@@ -770,7 +767,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(300)
 		newValue = domain.NewFromFloat(1.00, "EUR")
@@ -780,7 +777,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(1791)
 		newValue = domain.NewFromFloat(5.97, "EUR")
@@ -790,7 +787,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 
 	t.Run("item for 1.50 EUR or 2 Miles", func(t *testing.T) {
@@ -820,7 +817,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(1)
 		newValue = domain.NewFromFloat(1.00, "EUR")
@@ -830,7 +827,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(5)
 		newValue = domain.NewFromFloat(4.50, "EUR")
@@ -840,7 +837,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 
 	t.Run("item for 1.49 EUR or 1 Mile", func(t *testing.T) {
@@ -870,7 +867,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(1)
 		newValue = domain.NewFromFloat(1.00, "EUR")
@@ -880,7 +877,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(4)
 		newValue = domain.NewFromFloat(4.47, "EUR")
@@ -890,7 +887,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 
 	t.Run("item for 1.01 EUR or 1 Mile", func(t *testing.T) {
@@ -920,7 +917,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(1)
 		newValue = domain.NewFromFloat(1.00, "EUR")
@@ -930,7 +927,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(3)
 		newValue = domain.NewFromFloat(3.03, "EUR")
@@ -940,7 +937,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 
 	t.Run("item for 1.99 EUR or 2 Miles", func(t *testing.T) {
@@ -969,7 +966,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 		require.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(1)
 		newValue = domain.NewFromFloat(1.00, "EUR")
@@ -979,7 +976,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 
 		expectedMilesMax = int64(6)
 		newValue = domain.NewFromFloat(5.97, "EUR")
@@ -989,7 +986,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
-		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price)
+		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
 	})
 }
 
