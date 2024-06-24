@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 	"testing"
@@ -600,7 +601,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(30),
 				Default:          domain.NewFromInt(450, 1, "Miles"),
 			},
 		}
@@ -637,6 +638,20 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(90)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(4.50, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 90 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(4.200000123, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should de left to pay 4.20, but got %f", chargeMain.Price.FloatAmount()))
 	})
 
 	t.Run("item for 1.49 EUR or 447 Miles", func(t *testing.T) {
@@ -649,7 +664,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(30),
 				Default:          domain.NewFromInt(447, 1, "Miles"),
 			},
 		}
@@ -687,6 +702,20 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(90)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(4.00, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 90 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(3.70000123, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should de left to pay 3.7, but got %f", chargeMain.Price.FloatAmount()))
 	})
 
 	t.Run("item for 1.01 EUR or 303 Miles", func(t *testing.T) {
@@ -699,7 +728,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(30),
 				Default:          domain.NewFromInt(303, 1, "Miles"),
 			},
 		}
@@ -738,6 +767,20 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(90)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(3.03, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 90 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(2.729999999, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should de left to pay 2.73, but got %f", chargeMain.Price.FloatAmount()))
 	})
 
 	t.Run("item for 1.99 EUR or 597 Miles", func(t *testing.T) {
@@ -750,7 +793,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(30),
 				Default:          domain.NewFromInt(597, 1, "Miles"), // 300 miles = 1 EUR
 			},
 		}
@@ -788,6 +831,69 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(90)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(5.97, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 90 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(5.6666666, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should de left to pay 5.67, but got %f", chargeMain.Price.FloatAmount()))
+	})
+
+	t.Run("item for 1.50 EUR or 450 Miles with max 90", func(t *testing.T) {
+		t.Parallel()
+
+		p := Saleable{
+			ActivePrice: PriceInfo{
+				Default: domain.NewFromFloat(1.50, "EUR"),
+			},
+			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
+				Type:             "loyalty.miles",
+				MaxPointsToSpent: new(big.Float).SetInt64(90),
+				MinPointsToSpent: *new(big.Float).SetInt64(30),
+				Default:          domain.NewFromInt(450, 1, "Miles"),
+			},
+		}
+
+		wishedMax := NewWishedToPay()
+		wishedMax.Add("loyalty.miles", domain.NewFromInt(math.MaxInt64, 1, "Miles")) // we wish to pay everything in miles
+
+		expectedMilesMax := int64(90)
+		newValue := domain.NewFromFloat(1.5, "EUR")
+		charges := p.GetLoyaltyChargeSplit(&newValue, &wishedMax, 1)
+		chargeLoyaltyMiles, _ := charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMilesMax, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount())
+
+		chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
+		require.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(1.20, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should be left to pay 1.20 but got %f", chargeMain.Price.FloatAmount()))
+
+		expectedMilesMax = int64(90)
+		newValue = domain.NewFromFloat(1.00, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wishedMax, 1)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMilesMax, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount())
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(0.70, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should be left to pay 1.20 but got %f", chargeMain.Price.FloatAmount()))
+
+		expectedMilesMax = int64(270)
+		newValue = domain.NewFromFloat(3.00, "EUR") // reduced price still calculated perfectly
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wishedMax, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMilesMax, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount())
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(2.10, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should be left to pay 2.10 but got %f", chargeMain.Price.FloatAmount()))
 	})
 
 	t.Run("item for 1.50 EUR or 2 Miles", func(t *testing.T) {
@@ -800,7 +906,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(1),
 				//Default:          domain.NewFromInt(2, 1, "Miles"), // Should come unrounded!!!
 				Default: domain.NewFromFloat(1.5, "Miles"),
 			},
@@ -838,6 +944,20 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(3)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(4.10, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 3 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(1.10, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should de left to pay 1.10, but got %f", chargeMain.Price.FloatAmount()))
 	})
 
 	t.Run("item for 1.49 EUR or 1 Mile", func(t *testing.T) {
@@ -850,7 +970,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(1),
 				//Default:          domain.NewFromInt(447, 1, "Miles"), // Should come unrounded!!!
 				Default: domain.NewFromFloat(1.49, "Miles"),
 			},
@@ -888,6 +1008,20 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(3)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(3.47, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 3 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewZero("EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("we should gift 0.47 cents in this case, but got %f to pay", chargeMain.Price.FloatAmount()))
 	})
 
 	t.Run("item for 1.01 EUR or 1 Mile", func(t *testing.T) {
@@ -900,7 +1034,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(1),
 				//Default:          domain.NewFromInt(303, 1, "Miles"), // Should come unrounded!!!
 				Default: domain.NewFromFloat(1.01, "Miles"),
 			},
@@ -938,6 +1072,20 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(3)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(3.50, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 3 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(0.50, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should de left to pay 0.50, but got %f", chargeMain.Price.FloatAmount()))
 	})
 
 	t.Run("item for 1.99 EUR or 2 Miles", func(t *testing.T) {
@@ -950,7 +1098,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			ActiveLoyaltyPrice: &LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				MinPointsToSpent: *new(big.Float).SetInt64(1),
 				Default:          domain.NewFromFloat(1.99, "Miles"),
 			},
 		}
@@ -987,6 +1135,20 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 		assert.True(t, found)
 		assert.Equal(t, domain.NewFromInt(0, 1, "EUR"), chargeMain.Price, "should be nothing left to pay")
+
+		expectedMiles := int64(3)
+
+		wished := NewWishedToPay()
+		wished.Add("loyalty.miles", domain.NewZero("Miles"))
+
+		newValue = domain.NewFromFloat(5.97, "EUR")
+		charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 3)
+		chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+		assert.Equal(t, domain.NewFromInt(expectedMiles, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "you cannot pay less then 3 Miles")
+
+		chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
+		assert.True(t, found)
+		assert.Equal(t, domain.NewFromFloat(2.97, "EUR").GetPayable(), chargeMain.Price.GetPayable(), fmt.Sprintf("should de left to pay 2.97, but got %f", chargeMain.Price.FloatAmount()))
 	})
 }
 
