@@ -183,6 +183,6 @@ require (
 )
 
 exclude (
-	github.com/coreos/etcd v3.3.10+incompatible
+	github.com/coreos/etcd v3.3.27+incompatible
 	github.com/gomodule/redigo v2.0.0+incompatible
 )
