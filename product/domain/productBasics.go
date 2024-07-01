@@ -484,7 +484,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		}
 	}
 
-	loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, *p.ActiveLoyaltyPrice, *remainingMainChargeValue, p.ActivePrice, *valuedPriceToPay)
+	loyaltyCharge := getValidLoyaltyCharge(loyaltyAmountToSpent, *p.ActiveLoyaltyPrice, p.ActivePrice, *valuedPriceToPay)
 
 	if !loyaltyCharge.Value.IsPositive() {
 		return buildCharges(requiredCharges, *remainingMainChargeValue, *valuedPriceToPay)
@@ -510,13 +510,15 @@ func buildCharges(requiredCharges map[string]priceDomain.Charge, remainingMainCh
 }
 
 // getValidLoyaltyCharge returns the loyaltyCharge of the given type, making sure the currentlyRemainingMainChargeValue is not exceeded
-func getValidLoyaltyCharge(loyaltyAmountWishedToSpent big.Float, activeLoyaltyPrice LoyaltyPriceInfo, currentlyRemainingMainChargeValue big.Float, activePrice PriceInfo, valuedPriceToPay priceDomain.Price) priceDomain.Charge {
+func getValidLoyaltyCharge(loyaltyAmountWishedToSpent big.Float, activeLoyaltyPrice LoyaltyPriceInfo, activePrice PriceInfo, valuedPriceToPay priceDomain.Price) priceDomain.Charge {
+	currentlyRemainingMainChargeValue := valuedPriceToPay.Amount()
+
 	loyaltyCurrency := activeLoyaltyPrice.GetFinalPrice().Currency()
 	rateLoyaltyFinalPriceToRealFinalPrice := activeLoyaltyPrice.GetRate(activePrice.GetFinalPrice())
 	maximumPossibleLoyaltyValue := big.NewFloat(0.0)
 
 	if currentlyRemainingMainChargeValue.Cmp(big.NewFloat(0.0)) != 0 {
-		remainingPrice := priceDomain.NewFromBigFloat(currentlyRemainingMainChargeValue, "").GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1)
+		remainingPrice := valuedPriceToPay.GetPayable()
 		maximumPossibleLoyaltyValue = new(big.Float).Quo(remainingPrice.Amount(), &rateLoyaltyFinalPriceToRealFinalPrice)
 		maximumPossibleLoyaltyValue = priceDomain.NewFromBigFloat(*maximumPossibleLoyaltyValue, "").GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1).Amount()
 	}
@@ -527,16 +529,16 @@ func getValidLoyaltyCharge(loyaltyAmountWishedToSpent big.Float, activeLoyaltyPr
 		loyaltyAmountWishedToSpent = *maximumPossibleLoyaltyValue
 	}
 
-	valuedLoyalityPrice := priceDomain.NewFromBigFloat(*new(big.Float).Mul(&rateLoyaltyFinalPriceToRealFinalPrice, &loyaltyAmountWishedToSpent), valuedPriceToPay.Currency()).GetPayable()
+	valuedLoyaltyPrice := priceDomain.NewFromBigFloat(*new(big.Float).Mul(&rateLoyaltyFinalPriceToRealFinalPrice, &loyaltyAmountWishedToSpent), valuedPriceToPay.Currency()).GetPayable()
 	if maximumPossibleLoyaltyPrice.Amount().Cmp(&loyaltyAmountWishedToSpent) == 0 {
 		// If the wish equals the rounded maximum - we need to use the complete remaining value
-		valuedLoyalityPrice = priceDomain.NewFromBigFloat(currentlyRemainingMainChargeValue, valuedPriceToPay.Currency())
+		valuedLoyaltyPrice = priceDomain.NewFromBigFloat(*currentlyRemainingMainChargeValue, valuedPriceToPay.Currency())
 	}
 
 	return priceDomain.Charge{
 		Price: priceDomain.NewFromBigFloat(loyaltyAmountWishedToSpent, loyaltyCurrency).GetPayable(),
 		Type:  activeLoyaltyPrice.Type,
-		Value: valuedLoyalityPrice,
+		Value: valuedLoyaltyPrice,
 	}
 }
 
@@ -645,9 +647,7 @@ func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
 		return *big.NewFloat(0)
 	}
 
-	valuedPriceAsLoyalty := valuedPrice.GetPayableByRoundingMode(priceDomain.RoundingModeHalfUp, 1)
-
-	return *new(big.Float).Quo(valuedPriceAsLoyalty.Amount(), l.GetFinalPrice().Amount())
+	return *new(big.Float).Quo(valuedPrice.GetPayable().Amount(), l.GetFinalPrice().Amount())
 }
 
 // HasMax checks if product has a maximum (points to spend) restriction
