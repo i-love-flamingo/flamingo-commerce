@@ -1,10 +1,18 @@
 # Changelog
 
-## v3.11.0 [upcoming]
+## v3.12.0 [upcoming]
+
+## v3.11.0
 
 **search**
 * The fake search service now interprets the passed sort options.
-  
+
+**cart**
+* add possibility to get price in main currency for a payment method
+* during add to cart delivery method is now saved in context
+
+**product**
+* **Fix:** price in loyalty points, during calculation of loyalty charge, is now rounded mathematically according to possible currency fractions 
 
 ## v3.10.0
 
