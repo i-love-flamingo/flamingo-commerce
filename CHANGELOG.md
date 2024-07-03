@@ -10,6 +10,7 @@
 **cart**
 * add possibility to get price in main currency for a payment method
 * during add to cart delivery method is now saved in context
+* **Fix:** error throw by `collectTotals(cart)` in DefaultCartBehaviour is now bubble up
 
 **product**
 * **Fix:** price in loyalty points, during calculation of loyalty charge, is now rounded mathematically according to possible currency fractions 
