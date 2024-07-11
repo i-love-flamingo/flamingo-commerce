@@ -1,4 +1,5 @@
-inpackage: False
-testonly: False
-with-expecter: True
-keeptree: False
+inpackage: false
+testonly: false
+with-expecter: true
+keeptree: false
+disable-version-string: true
