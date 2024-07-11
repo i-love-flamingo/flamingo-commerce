@@ -15,7 +15,7 @@ require (
 	github.com/gavv/httpexpect/v2 v2.16.0
 	github.com/go-playground/form/v4 v4.2.1
 	github.com/go-redsync/redsync/v4 v4.11.0
-	github.com/go-test/deep v1.1.0
+	github.com/go-test/deep v1.1.1
 	github.com/gomodule/redigo v1.9.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
