@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 
+	"flamingo.me/flamingo/v3/framework/config"
+
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -17,6 +19,7 @@ type (
 		productService         *ProductService
 		liveSearchJSON         string
 		categoryFacetItemsJSON string
+		sortConfig             []sortConfig
 	}
 	liveSearchData struct {
 		Marketplacecodes []string                  `json:"marketplacecodes"`
@@ -24,20 +27,31 @@ type (
 		Promotions       []searchDomain.Promotion  `json:"promotions"`
 		Actions          []searchDomain.Action     `json:"actions"`
 	}
+
+	// sortConfig contains sorting configuration for search results
+	sortConfig struct {
+		Key   string
+		Label string
+		Asc   string
+		Desc  string
+	}
 )
 
 // Inject dependencies
 func (s *SearchService) Inject(
 	productService *ProductService,
 	cfg *struct {
-		LiveSearchJSON         string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
-		CategoryFacetItemsJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+		LiveSearchJSON         string       `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
+		CategoryFacetItemsJSON string       `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+		SortConfig             config.Slice `inject:"config:commerce.product.fakeservice.sorting"`
 	},
 ) *SearchService {
 	s.productService = productService
 	if cfg != nil {
 		s.liveSearchJSON = cfg.LiveSearchJSON
 		s.categoryFacetItemsJSON = cfg.CategoryFacetItemsJSON
+
+		_ = cfg.SortConfig.MapInto(&s.sortConfig)
 	}
 
 	return s
@@ -63,7 +77,7 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 				NumPages:       10,
 				NumResults:     len(hits),
 				SelectedFacets: selectedFacets,
-				SortOptions:    s.findSorts(filters),
+				SortOptions:    mapSortOptions(s.sortConfig),
 			},
 			Hits:       documents,
 			Suggestion: []searchDomain.Suggestion{},
@@ -168,17 +182,18 @@ func (s *SearchService) findCurrentPage(filters []searchDomain.Filter) int {
 	return currentPage
 }
 
-func (s *SearchService) findSorts(filters []searchDomain.Filter) []searchDomain.SortOption {
-	result := make([]searchDomain.SortOption, 0)
-	// first check if the searchDomain.SortFilter is given
-	for _, v := range filters {
-		if filter, ok := v.(*searchDomain.SortFilter); ok {
-			result = append(result, searchDomain.SortOption{
-				Label:        filter.Field(),
-				Field:        filter.Field(),
-				SelectedAsc:  !filter.Descending(),
-				SelectedDesc: filter.Descending(),
-			})
+// mapSortOptions maps searchperience delivered sort options to corresponding domain objects.
+func mapSortOptions(sortConfigs []sortConfig) []searchDomain.SortOption {
+	result := make([]searchDomain.SortOption, len(sortConfigs))
+
+	for i, sortConfig := range sortConfigs {
+		result[i] = searchDomain.SortOption{
+			Label:        sortConfig.Label,
+			Field:        sortConfig.Key,
+			Asc:          sortConfig.Asc,
+			Desc:         sortConfig.Desc,
+			SelectedAsc:  false,
+			SelectedDesc: true,
 		}
 	}
 
