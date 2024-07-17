@@ -219,7 +219,7 @@ func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx contex
 
 	if len(availableSources) == 0 {
 		if lastStockError != nil {
-			errString := err.Error()
+			errString := lastStockError.Error()
 			return availableSources, fmt.Errorf("%w with error: %s", ErrNoSourceAvailable, errString)
 		}
 		return availableSources, fmt.Errorf("%w %s", ErrNoSourceAvailable, formatSources(sources))
