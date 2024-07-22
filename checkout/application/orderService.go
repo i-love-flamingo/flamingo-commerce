@@ -194,7 +194,7 @@ func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, de
 	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/placeOrder")
 	defer span.End()
 
-	if os.skipCartValidation {
+	if !os.skipCartValidation {
 		validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 		if !validationResult.IsValid() {
 			// record cartValidationFailCount metric
@@ -388,7 +388,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		return nil, errors.New("no payment gateway selected")
 	}
 
-	if os.skipCartValidation {
+	if !os.skipCartValidation {
 		validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 		if !validationResult.IsValid() {
 			// record cartValidationFailCount metric
