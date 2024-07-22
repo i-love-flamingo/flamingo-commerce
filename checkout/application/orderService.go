@@ -34,7 +34,7 @@ type (
 		decoratedCartFactory   *decorator.DecoratedCartFactory
 
 		// configs
-		validateCartBeforePlacingOrder bool
+		skipCartValidation bool
 	}
 
 	// PlaceOrderInfo struct defines the data of payments on placed orders
@@ -129,7 +129,7 @@ func (os *OrderService) Inject(
 	webCartPaymentGatewayProvider interfaces.WebCartPaymentGatewayProvider,
 	decoratedCartFactory *decorator.DecoratedCartFactory,
 	cfg *struct {
-		ValidateCartBeforePlacing bool `inject:"config:commerce.checkout.placeorder.validateCartBeforePlacing"`
+		SkipCartValidation bool `inject:"config:commerce.checkout.orderService.skipCartValidation"`
 	},
 ) *OrderService {
 	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
@@ -140,7 +140,7 @@ func (os *OrderService) Inject(
 	os.decoratedCartFactory = decoratedCartFactory
 
 	if cfg != nil {
-		os.validateCartBeforePlacingOrder = cfg.ValidateCartBeforePlacing
+		os.skipCartValidation = cfg.SkipCartValidation
 	}
 
 	return os
@@ -194,7 +194,7 @@ func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, de
 	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/placeOrder")
 	defer span.End()
 
-	if os.validateCartBeforePlacingOrder {
+	if os.skipCartValidation {
 		validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 		if !validationResult.IsValid() {
 			// record cartValidationFailCount metric
@@ -388,7 +388,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		return nil, errors.New("no payment gateway selected")
 	}
 
-	if os.validateCartBeforePlacingOrder {
+	if os.skipCartValidation {
 		validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 		if !validationResult.IsValid() {
 			// record cartValidationFailCount metric
