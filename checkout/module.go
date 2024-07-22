@@ -120,6 +120,9 @@ commerce: checkout: {
 	showEmptyCartPageIfNoItems?:      bool
 	redirectToCartOnInvalidCart?:     bool
 	privacyPolicyRequired?:           bool
+	orderService:{
+		skipCartValidation: bool | *false
+	}
 	placeorder: {
 		lock: {
 			type: *"memory" | "redis"
