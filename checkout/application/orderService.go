@@ -65,6 +65,9 @@ const (
 )
 
 var (
+	// ErrCartValidationFailed is returned if the cart you are trying to place is invalid
+	ErrCartValidationFailed = errors.New("cart is invalid")
+
 	// cartValidationFailCount counts validation failures on carts
 	cartValidationFailCount = stats.Int64("flamingo-commerce/checkout/orders/cart_validation_failed", "Count of failures while validating carts", stats.UnitDimensionless)
 
@@ -198,7 +201,7 @@ func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, de
 			stats.Record(ctx, cartValidationFailCount.M(1))
 			os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
 
-			return nil, errors.New("cart is invalid")
+			return nil, ErrCartValidationFailed
 		}
 	}
 
@@ -392,7 +395,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 			stats.Record(ctx, cartValidationFailCount.M(1))
 			os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
 
-			return nil, errors.New("cart is invalid")
+			return nil, ErrCartValidationFailed
 		}
 	}
 
