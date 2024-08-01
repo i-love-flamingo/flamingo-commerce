@@ -10,13 +10,11 @@ package cart
 import (
 	"context"
 	"encoding/json"
-
-	"flamingo.me/flamingo/v3/core/auth"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-
-	"github.com/pkg/errors"
+	"errors"
 
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/core/auth"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (

@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -13,7 +14,6 @@ import (
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 )
 
 //go:generate go run github.com/vektra/mockery/v2@v2.43.2 --name CartCache --case snake
