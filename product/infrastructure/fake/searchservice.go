@@ -63,6 +63,17 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 	currentPage := s.findCurrentPage(filters)
 	facets, selectedFacets := s.createFacets(filters)
 
+	var promotions []searchDomain.Promotion
+	if len(hits) > 0 {
+		promotions = append(promotions, searchDomain.Promotion{
+			Title:                "Promotion",
+			Content:              "",
+			URL:                  "http://promotion.example.com/",
+			Media:                []searchDomain.Media{{}},
+			AdditionalAttributes: nil,
+		})
+	}
+
 	documents := make([]searchDomain.Document, len(hits))
 	for i, hit := range hits {
 		documents[i] = hit
@@ -82,6 +93,7 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 			Hits:       documents,
 			Suggestion: []searchDomain.Suggestion{},
 			Facets:     facets,
+			Promotions: promotions,
 		},
 		Hits: hits,
 	}, nil
