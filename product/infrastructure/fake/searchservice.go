@@ -77,7 +77,7 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 				NumPages:       10,
 				NumResults:     len(hits),
 				SelectedFacets: selectedFacets,
-				SortOptions:    mapSortOptions(s.sortConfig),
+				SortOptions:    mapSortOptions(s.sortConfig, filters),
 			},
 			Hits:       documents,
 			Suggestion: []searchDomain.Suggestion{},
@@ -183,7 +183,15 @@ func (s *SearchService) findCurrentPage(filters []searchDomain.Filter) int {
 }
 
 // mapSortOptions maps searchperience delivered sort options to corresponding domain objects.
-func mapSortOptions(sortConfigs []sortConfig) []searchDomain.SortOption {
+func mapSortOptions(sortConfigs []sortConfig, filters []searchDomain.Filter) []searchDomain.SortOption {
+	lookup := make(map[string]bool, 1) // only one field expected
+
+	for _, filter := range filters {
+		if sortFiler, ok := filter.(*searchDomain.SortFilter); ok {
+			lookup[sortFiler.Field()] = true // direction always true for that filter name
+		}
+	}
+
 	result := make([]searchDomain.SortOption, len(sortConfigs))
 
 	for i, sortConfig := range sortConfigs {
@@ -192,8 +200,8 @@ func mapSortOptions(sortConfigs []sortConfig) []searchDomain.SortOption {
 			Field:        sortConfig.Key,
 			Asc:          sortConfig.Asc,
 			Desc:         sortConfig.Desc,
-			SelectedAsc:  false,
-			SelectedDesc: true,
+			SelectedAsc:  lookup[sortConfig.Asc],
+			SelectedDesc: lookup[sortConfig.Desc],
 		}
 	}
 

@@ -64,10 +64,10 @@ type (
 		SelectedDesc bool
 		// Asc - represents the field that is used to trigger ascending search.
 		// Deprecated: use "Field" and "SelectedAsc" instead to set which field should be sortable
-		Asc string
+		Asc string // Should it be deprecated ?? marked as deprecated in 2019 and used in 2020
 		// Desc - represents the field that is used to trigger descending search.
 		// Deprecated: use "Field" and "SelectedDesc" instead to set which field should be sortable
-		Desc string
+		Desc string // Should it be deprecated ?? marked as deprecated in 2019 and used in 2020
 	}
 
 	// FacetType for type facets

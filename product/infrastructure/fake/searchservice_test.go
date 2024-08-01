@@ -6,18 +6,30 @@ import (
 	"path/filepath"
 	"testing"
 
+	"flamingo.me/flamingo/v3/framework/config"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+)
+
+type (
+	testSortConfig struct {
+		Key   string
+		Label string
+		Asc   string
+		Desc  string
+	}
 )
 
 func TestSearchService_Search(t *testing.T) {
 	s := fake.SearchService{}
 	s.Inject(&fake.ProductService{}, &struct {
-		LiveSearchJSON         string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
-		CategoryFacetItemsJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+		LiveSearchJSON         string       `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
+		CategoryFacetItemsJSON string       `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+		SortConfig             config.Slice `inject:"config:commerce.product.fakeservice.sorting"`
 	}{})
 
 	t.Run("Category Facet", func(t *testing.T) {
@@ -150,9 +162,9 @@ func TestSearchService_SearchBy(t *testing.T) {
 						NumResults:     0,
 						SelectedFacets: []searchDomain.Facet{},
 						SortOptions: []searchDomain.SortOption{
-							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: true},
-							{Field: "size", Label: "size", SelectedDesc: true, SelectedAsc: false},
-							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: true},
+							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: true, Asc: "camera"},
+							{Field: "size", Label: "size", SelectedDesc: true, SelectedAsc: false, Desc: "size"},
+							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: true, Asc: "no-direction"},
 						},
 					},
 					Hits:       []searchDomain.Document{},
@@ -258,10 +270,28 @@ func TestSearchService_SearchBy(t *testing.T) {
 			s := new(fake.SearchService).Inject(
 				new(fake.ProductService),
 				&struct {
-					LiveSearchJSON         string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
-					CategoryFacetItemsJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+					LiveSearchJSON         string       `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
+					CategoryFacetItemsJSON string       `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+					SortConfig             config.Slice `inject:"config:commerce.product.fakeservice.sorting"`
 				}{
 					LiveSearchJSON: tt.fields.liveSearchJSON,
+					SortConfig: config.Slice{
+						testSortConfig{
+							Key:   "camera",
+							Label: "camera",
+							Asc:   "camera",
+						},
+						testSortConfig{
+							Key:   "size",
+							Label: "size",
+							Desc:  "size",
+						},
+						testSortConfig{
+							Key:   "no-direction",
+							Label: "no-direction",
+							Asc:   "no-direction",
+						},
+					},
 				},
 			)
 			got, err := s.SearchBy(context.Background(), tt.args.attribute, nil, tt.args.filters...)
