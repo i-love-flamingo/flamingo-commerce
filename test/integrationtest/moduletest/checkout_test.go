@@ -26,8 +26,17 @@ func Test_CheckoutStartPage(t *testing.T) {
 		},
 		"",
 		config.Map{
-			"flamingo.systemendpoint.serviceAddr":     ":0",
-			"commerce.product.fakeservice.enabled":    true,
+			"flamingo.systemendpoint.serviceAddr": ":0",
+			"commerce.product.fakeservice": config.Map{
+				"enabled": true,
+				"sorting": config.Slice{
+					config.Map{
+						"desc":  "recommended",
+						"key":   "recommended",
+						"label": "Recommended",
+					},
+				},
+			},
 			"commerce.cart.emailAdapter.emailAddress": "test@test.de",
 			"commerce.customer.useNilCustomerAdapter": true,
 			"core.auth.web": config.Map{

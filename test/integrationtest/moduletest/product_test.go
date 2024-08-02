@@ -9,9 +9,10 @@ import (
 
 	"flamingo.me/dingo"
 
+	"flamingo.me/flamingo/v3/framework/config"
+
 	"flamingo.me/flamingo-commerce/v3/product"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
-	"flamingo.me/flamingo/v3/framework/config"
 )
 
 func Test_ProductPage(t *testing.T) {
@@ -21,8 +22,17 @@ func Test_ProductPage(t *testing.T) {
 		},
 		"",
 		config.Map{
-			"flamingo.systemendpoint.serviceAddr":  ":0",
-			"commerce.product.fakeservice.enabled": true,
+			"flamingo.systemendpoint.serviceAddr": ":0",
+			"commerce.product.fakeservice": config.Map{
+				"enabled": true,
+				"sorting": config.Slice{
+					config.Map{
+						"desc":  "recommended",
+						"key":   "recommended",
+						"label": "Recommended",
+					},
+				},
+			},
 		},
 	)
 	defer info.ShutdownFunc()

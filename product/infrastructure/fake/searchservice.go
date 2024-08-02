@@ -51,7 +51,10 @@ func (s *SearchService) Inject(
 		s.liveSearchJSON = cfg.LiveSearchJSON
 		s.categoryFacetItemsJSON = cfg.CategoryFacetItemsJSON
 
-		_ = cfg.SortConfig.MapInto(&s.sortConfig)
+		err := cfg.SortConfig.MapInto(&s.sortConfig)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return s
@@ -194,7 +197,7 @@ func (s *SearchService) findCurrentPage(filters []searchDomain.Filter) int {
 	return currentPage
 }
 
-// mapSortOptions maps searchperience delivered sort options to corresponding domain objects.
+// mapSortOptions maps configured sort options to the ones potentially provided via filter
 func mapSortOptions(sortConfigs []sortConfig, filters []searchDomain.Filter) []searchDomain.SortOption {
 	lookup := make(map[string]bool, 1) // only one field expected
 
