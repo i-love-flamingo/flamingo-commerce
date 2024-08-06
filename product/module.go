@@ -68,6 +68,12 @@ func (*Module) CueConfig() string {
 	// language=cue
 	return `
 commerce: {
+	SearchSorting :: {
+		key: string
+		label: string
+		asc?: string
+		desc?: string
+	}
 	product: {
 		view:  {
 			template: *"product/product" | !=""
@@ -82,6 +88,7 @@ commerce: {
 			if enabled {
 			  jsonTestDataFolder?: string & !=""
 			  jsonTestDataLiveSearch?: string & !=""
+			  sorting: [...SearchSorting]
 			}
 			deliveryCodes: [...string] | *["testCode1", "testCode2"]
 		}

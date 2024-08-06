@@ -63,10 +63,8 @@ type (
 		// SelectedDesc true if sorting by this field is active
 		SelectedDesc bool
 		// Asc - represents the field that is used to trigger ascending search.
-		// Deprecated: use "Field" and "SelectedAsc" instead to set which field should be sortable
 		Asc string
 		// Desc - represents the field that is used to trigger descending search.
-		// Deprecated: use "Field" and "SelectedDesc" instead to set which field should be sortable
 		Desc string
 	}
 
