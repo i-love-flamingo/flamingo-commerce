@@ -5,7 +5,8 @@
 * add config `commerce.checkout.orderService.skipCartValidation` to disable cart validation that happens right before placing an order in the OrderService
 
 **search**
-* fixed fake service to interpret sort options and gives away empty promotion
+* **Breaking:** fixed fake service to interpret sort options and gives away empty promotion
+* removed deprecation notice from fields `Asc` and `Desc` in `SortOption` struct
 
 ## v3.11.0
 

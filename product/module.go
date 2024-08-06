@@ -88,7 +88,7 @@ commerce: {
 			if enabled {
 			  jsonTestDataFolder?: string & !=""
 			  jsonTestDataLiveSearch?: string & !=""
-			  sorting: [SearchSorting, ...SearchSorting]
+			  sorting: [...SearchSorting]
 			}
 			deliveryCodes: [...string] | *["testCode1", "testCode2"]
 		}
