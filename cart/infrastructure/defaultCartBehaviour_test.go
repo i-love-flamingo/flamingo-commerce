@@ -132,7 +132,8 @@ func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 		assert.NoError(t, err)
 
 		got, _, err := cob.CleanDelivery(context.Background(), cart, "dev-3")
-		assert.EqualError(t, err, "DefaultCartBehaviour: delivery dev-3 not found")
+		assert.ErrorIs(t, err, domaincart.ErrDeliveryCodeNotFound)
+		assert.ErrorContains(t, err, "dev-3")
 		assert.Nil(t, got)
 	})
 }

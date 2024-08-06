@@ -3,10 +3,9 @@ package cart
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"math/big"
-
-	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -276,7 +275,7 @@ func (c Cart) GetDeliveryByItemID(itemID string) (*Delivery, error) {
 		}
 	}
 
-	return nil, errors.Errorf("delivery not found for %q", itemID)
+	return nil, fmt.Errorf("%w for %q", ErrDeliveryCodeNotFound, itemID)
 }
 
 // GetByItemID gets an item by its id
@@ -289,7 +288,7 @@ func (c Cart) GetByItemID(itemID string) (*Item, error) {
 		}
 	}
 
-	return nil, errors.Errorf("itemId %q in cart does not exist", itemID)
+	return nil, fmt.Errorf("%w for itemID %q", ErrItemNotFound, itemID)
 }
 
 // GetTotalQty for the product in the cart
@@ -315,7 +314,7 @@ func (c Cart) GetByExternalReference(ref string) (*Item, error) {
 		}
 	}
 
-	return nil, errors.Errorf("uitemID %v in cart not existing", ref)
+	return nil, fmt.Errorf("%w for external reference %q", ErrItemNotFound, ref)
 }
 
 // ItemCount returns amount of cart items in the current cart
