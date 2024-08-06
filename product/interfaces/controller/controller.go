@@ -2,10 +2,10 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"net/url"
 
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
@@ -189,13 +189,11 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 
 	// catch error
 	if err != nil {
-		switch errors.Cause(err).(type) {
-		case domain.ProductNotFound:
+		if errors.As(err, &domain.ProductNotFound{}) {
 			return vc.Responder.NotFound(err)
-
-		default:
-			return vc.Responder.ServerError(err)
 		}
+
+		return vc.Responder.ServerError(err)
 	}
 
 	var viewData productViewData

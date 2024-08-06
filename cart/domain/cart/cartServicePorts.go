@@ -10,13 +10,11 @@ package cart
 import (
 	"context"
 	"encoding/json"
-
-	"flamingo.me/flamingo/v3/core/auth"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-
-	"github.com/pkg/errors"
+	"errors"
 
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/core/auth"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
@@ -120,11 +118,11 @@ type (
 
 var (
 	// ErrCartNotFound is used if a cart was not found
-	ErrCartNotFound = errors.New("Cart not found")
+	ErrCartNotFound = errors.New("cart not found")
 	// ErrItemNotFound is used if a item on cart was not found
-	ErrItemNotFound = errors.New("Item not found")
+	ErrItemNotFound = errors.New("item not found")
 	// ErrDeliveryCodeNotFound is used if a delivery was not found
-	ErrDeliveryCodeNotFound = errors.New("Delivery not found")
+	ErrDeliveryCodeNotFound = errors.New("delivery not found")
 )
 
 // CreateDeliveryInfoUpdateCommand - factory to get the update command based on the given deliveryInfos (which might come from cart)

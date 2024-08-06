@@ -3,12 +3,12 @@ package application
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"fmt"
 
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/core/auth"
-	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -582,7 +582,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		if !errors.Is(err, context.Canceled) {
-			cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteItem").Error(errors.Wrap(err, "Trying to delete SKU :"+item.MarketplaceCode))
+			cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteItem").Error(fmt.Errorf("trying to delete SKU %q: %w", item.MarketplaceCode, err))
 		}
 		return err
 	}

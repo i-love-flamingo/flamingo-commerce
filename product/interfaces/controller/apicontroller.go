@@ -2,9 +2,9 @@ package controller
 
 import (
 	"context"
+	"errors"
 
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -28,7 +28,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	} //@name productResultError
+	} // @name productResultError
 )
 
 // Inject dependencies
@@ -53,19 +53,17 @@ func (c *APIController) Inject(responder *web.Responder,
 func (c *APIController) Get(ctx context.Context, r *web.Request) web.Result {
 	product, err := c.productService.Get(ctx, r.Params["marketplacecode"])
 	if err != nil {
-		switch errors.Cause(err).(type) {
-		case domain.ProductNotFound:
+		if errors.As(err, &domain.ProductNotFound{}) {
 			return c.responder.Data(APIResult{
 				Success: false,
 				Error:   &resultError{Code: "404", Message: err.Error()},
 			})
-
-		default:
-			return c.responder.Data(APIResult{
-				Success: false,
-				Error:   &resultError{Code: "500", Message: err.Error()},
-			})
 		}
+
+		return c.responder.Data(APIResult{
+			Success: false,
+			Error:   &resultError{Code: "500", Message: err.Error()},
+		})
 	}
 
 	return c.responder.Data(APIResult{

@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/big"
 	"math/rand"
@@ -10,7 +11,6 @@ import (
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/pkg/errors"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -552,7 +552,7 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 
 	// create delivery if it does not yet exist
 	if !newCart.HasDeliveryForCode(deliveryCode) {
-		return nil, nil, errors.Errorf("DefaultCartBehaviour: delivery %s not found", deliveryCode)
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: %w with code %q", domaincart.ErrDeliveryCodeNotFound, deliveryCode)
 	}
 
 	var position int
