@@ -552,7 +552,7 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 
 	// create delivery if it does not yet exist
 	if !newCart.HasDeliveryForCode(deliveryCode) {
-		return nil, nil, fmt.Errorf("DefaultCartBehaviour: delivery %s not found", deliveryCode) //nolint:err113 //not worth introducing a dedicated error
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: %w with code %q", domaincart.ErrDeliveryCodeNotFound, deliveryCode)
 	}
 
 	var position int

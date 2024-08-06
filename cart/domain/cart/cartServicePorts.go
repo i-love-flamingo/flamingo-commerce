@@ -118,11 +118,11 @@ type (
 
 var (
 	// ErrCartNotFound is used if a cart was not found
-	ErrCartNotFound = errors.New("Cart not found")
+	ErrCartNotFound = errors.New("cart not found")
 	// ErrItemNotFound is used if a item on cart was not found
-	ErrItemNotFound = errors.New("Item not found")
+	ErrItemNotFound = errors.New("item not found")
 	// ErrDeliveryCodeNotFound is used if a delivery was not found
-	ErrDeliveryCodeNotFound = errors.New("Delivery not found")
+	ErrDeliveryCodeNotFound = errors.New("delivery not found")
 )
 
 // CreateDeliveryInfoUpdateCommand - factory to get the update command based on the given deliveryInfos (which might come from cart)

@@ -275,7 +275,7 @@ func (c Cart) GetDeliveryByItemID(itemID string) (*Delivery, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("delivery not found for %q", itemID) //nolint:err113 //not worth introducing a dedicated error
+	return nil, fmt.Errorf("%w for %q", ErrDeliveryCodeNotFound, itemID)
 }
 
 // GetByItemID gets an item by its id
@@ -288,7 +288,7 @@ func (c Cart) GetByItemID(itemID string) (*Item, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("itemId %q in cart does not exist", itemID) //nolint:err113 //not worth introducing a dedicated error
+	return nil, fmt.Errorf("%w for itemID %q", ErrItemNotFound, itemID)
 }
 
 // GetTotalQty for the product in the cart
@@ -314,7 +314,7 @@ func (c Cart) GetByExternalReference(ref string) (*Item, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("cant find item with external reference %q", ref) //nolint:err113 //not worth introducing a dedicated error
+	return nil, fmt.Errorf("%w for external reference %q", ErrItemNotFound, ref)
 }
 
 // ItemCount returns amount of cart items in the current cart
