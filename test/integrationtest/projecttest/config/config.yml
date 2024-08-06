@@ -72,6 +72,20 @@ commerce:
     fakeservice:
       enabled: true
       jsonTestDataFolder: "graphql/testdata/products"
+      sorting:
+        - desc: recommended
+          key: recommended
+          label: Recommended
+        - asc: priceAsc
+          desc: priceDesc
+          key: price
+          label: Price
+        - desc: sellingCountMonth
+          key: sellingCountMonth
+          label: Most popular
+        - desc: createdAtDesc
+          key: createdAtDesc
+          label: Newest
 
     priceIsGross: true
   customer:

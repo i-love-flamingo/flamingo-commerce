@@ -6,18 +6,30 @@ import (
 	"path/filepath"
 	"testing"
 
+	"flamingo.me/flamingo/v3/framework/config"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+)
+
+type (
+	testSortConfig struct {
+		Key   string
+		Label string
+		Asc   string
+		Desc  string
+	}
 )
 
 func TestSearchService_Search(t *testing.T) {
 	s := fake.SearchService{}
 	s.Inject(&fake.ProductService{}, &struct {
-		LiveSearchJSON         string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
-		CategoryFacetItemsJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+		LiveSearchJSON         string       `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
+		CategoryFacetItemsJSON string       `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+		SortConfig             config.Slice `inject:"config:commerce.product.fakeservice.sorting"`
 	}{})
 
 	t.Run("Category Facet", func(t *testing.T) {
@@ -150,9 +162,250 @@ func TestSearchService_SearchBy(t *testing.T) {
 						NumResults:     0,
 						SelectedFacets: []searchDomain.Facet{},
 						SortOptions: []searchDomain.SortOption{
-							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: true},
-							{Field: "size", Label: "size", SelectedDesc: true, SelectedAsc: false},
-							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: true},
+							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: true, Asc: "camera"},
+							{Field: "size", Label: "size", SelectedDesc: true, SelectedAsc: false, Desc: "size"},
+							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: true, Asc: "no-direction"},
+							{Field: "price", Label: "price", SelectedDesc: false, SelectedAsc: false, Asc: "priceAsc", Desc: "priceDesc"},
+						},
+					},
+					Hits:       []searchDomain.Document{},
+					Suggestion: []searchDomain.Suggestion{},
+					Facets: searchDomain.FacetCollection{
+						"brandCode": searchDomain.Facet{
+							Type:  searchDomain.ListFacet,
+							Name:  "brandCode",
+							Label: "Brand",
+							Items: []*searchDomain.FacetItem{{
+								Label:    "Apple",
+								Value:    "apple",
+								Active:   false,
+								Selected: false,
+								Count:    2,
+							}},
+							Position: 0,
+						},
+
+						"retailerCode": searchDomain.Facet{
+							Type:  searchDomain.ListFacet,
+							Name:  "retailerCode",
+							Label: "Retailer",
+							Items: []*searchDomain.FacetItem{{
+								Label:    "Test Retailer",
+								Value:    "retailer",
+								Active:   false,
+								Selected: false,
+								Count:    2,
+							}},
+							Position: 0,
+						},
+
+						"categoryCodes": searchDomain.Facet{
+							Type:  searchDomain.TreeFacet,
+							Name:  "categoryCodes",
+							Label: "Category",
+							Items: []*searchDomain.FacetItem{
+								{
+									Label:    "Electronics",
+									Value:    "electronics",
+									Active:   false,
+									Selected: false,
+									Count:    0,
+									Items: []*searchDomain.FacetItem{{
+										Label:    "Flat Screens & TV",
+										Value:    "flat-screen_tvs",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}, {
+										Label:    "Headphones",
+										Value:    "headphones",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+										Items: []*searchDomain.FacetItem{{
+											Label:    "Accessories",
+											Value:    "headphone_accessories",
+											Active:   false,
+											Selected: false,
+											Count:    0,
+										}},
+									}, {
+										Label:    "Tablets",
+										Value:    "tablets",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}},
+								},
+								{
+									Label:    "Clothes & Fashion",
+									Value:    "clothing",
+									Active:   false,
+									Selected: false,
+									Count:    0,
+									Items: []*searchDomain.FacetItem{{
+										Label:    "Jumpsuits",
+										Value:    "jumpsuits",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}},
+								},
+							},
+							Position: 0,
+						},
+					},
+					Promotions: nil,
+					Actions:    nil,
+				},
+				Hits: []domain.BasicProduct{},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:   "get livesearch results from json file with Asc Price sort",
+			fields: fields{liveSearchJSON: filepath.Join("testdata", "livesearch.json")},
+			args: args{
+				attribute: "not-livesearch",
+				filters: []searchDomain.Filter{
+					searchDomain.NewSortFilter("priceAsc", ""),
+					searchDomain.NewQueryFilter("camera"),
+				},
+			},
+			want: &domain.SearchResult{
+				Result: searchDomain.Result{
+					SearchMeta: searchDomain.SearchMeta{
+						Query:          "",
+						OriginalQuery:  "",
+						Page:           1,
+						NumPages:       10,
+						NumResults:     0,
+						SelectedFacets: []searchDomain.Facet{},
+						SortOptions: []searchDomain.SortOption{
+							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: false, Asc: "camera"},
+							{Field: "size", Label: "size", SelectedDesc: false, SelectedAsc: false, Desc: "size"},
+							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: false, Asc: "no-direction"},
+							{Field: "price", Label: "price", SelectedDesc: false, SelectedAsc: true, Asc: "priceAsc", Desc: "priceDesc"},
+						},
+					},
+					Hits:       []searchDomain.Document{},
+					Suggestion: []searchDomain.Suggestion{},
+					Facets: searchDomain.FacetCollection{
+						"brandCode": searchDomain.Facet{
+							Type:  searchDomain.ListFacet,
+							Name:  "brandCode",
+							Label: "Brand",
+							Items: []*searchDomain.FacetItem{{
+								Label:    "Apple",
+								Value:    "apple",
+								Active:   false,
+								Selected: false,
+								Count:    2,
+							}},
+							Position: 0,
+						},
+
+						"retailerCode": searchDomain.Facet{
+							Type:  searchDomain.ListFacet,
+							Name:  "retailerCode",
+							Label: "Retailer",
+							Items: []*searchDomain.FacetItem{{
+								Label:    "Test Retailer",
+								Value:    "retailer",
+								Active:   false,
+								Selected: false,
+								Count:    2,
+							}},
+							Position: 0,
+						},
+
+						"categoryCodes": searchDomain.Facet{
+							Type:  searchDomain.TreeFacet,
+							Name:  "categoryCodes",
+							Label: "Category",
+							Items: []*searchDomain.FacetItem{
+								{
+									Label:    "Electronics",
+									Value:    "electronics",
+									Active:   false,
+									Selected: false,
+									Count:    0,
+									Items: []*searchDomain.FacetItem{{
+										Label:    "Flat Screens & TV",
+										Value:    "flat-screen_tvs",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}, {
+										Label:    "Headphones",
+										Value:    "headphones",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+										Items: []*searchDomain.FacetItem{{
+											Label:    "Accessories",
+											Value:    "headphone_accessories",
+											Active:   false,
+											Selected: false,
+											Count:    0,
+										}},
+									}, {
+										Label:    "Tablets",
+										Value:    "tablets",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}},
+								},
+								{
+									Label:    "Clothes & Fashion",
+									Value:    "clothing",
+									Active:   false,
+									Selected: false,
+									Count:    0,
+									Items: []*searchDomain.FacetItem{{
+										Label:    "Jumpsuits",
+										Value:    "jumpsuits",
+										Active:   false,
+										Selected: false,
+										Count:    0,
+									}},
+								},
+							},
+							Position: 0,
+						},
+					},
+					Promotions: nil,
+					Actions:    nil,
+				},
+				Hits: []domain.BasicProduct{},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:   "get livesearch results from json file with Desc Price sort",
+			fields: fields{liveSearchJSON: filepath.Join("testdata", "livesearch.json")},
+			args: args{
+				attribute: "not-livesearch",
+				filters: []searchDomain.Filter{
+					searchDomain.NewSortFilter("priceDesc", ""),
+					searchDomain.NewQueryFilter("camera"),
+				},
+			},
+			want: &domain.SearchResult{
+				Result: searchDomain.Result{
+					SearchMeta: searchDomain.SearchMeta{
+						Query:          "",
+						OriginalQuery:  "",
+						Page:           1,
+						NumPages:       10,
+						NumResults:     0,
+						SelectedFacets: []searchDomain.Facet{},
+						SortOptions: []searchDomain.SortOption{
+							{Field: "camera", Label: "camera", SelectedDesc: false, SelectedAsc: false, Asc: "camera"},
+							{Field: "size", Label: "size", SelectedDesc: false, SelectedAsc: false, Desc: "size"},
+							{Field: "no-direction", Label: "no-direction", SelectedDesc: false, SelectedAsc: false, Asc: "no-direction"},
+							{Field: "price", Label: "price", SelectedDesc: true, SelectedAsc: false, Asc: "priceAsc", Desc: "priceDesc"},
 						},
 					},
 					Hits:       []searchDomain.Document{},
@@ -258,10 +511,34 @@ func TestSearchService_SearchBy(t *testing.T) {
 			s := new(fake.SearchService).Inject(
 				new(fake.ProductService),
 				&struct {
-					LiveSearchJSON         string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
-					CategoryFacetItemsJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+					LiveSearchJSON         string       `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
+					CategoryFacetItemsJSON string       `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
+					SortConfig             config.Slice `inject:"config:commerce.product.fakeservice.sorting"`
 				}{
 					LiveSearchJSON: tt.fields.liveSearchJSON,
+					SortConfig: config.Slice{
+						testSortConfig{
+							Key:   "camera",
+							Label: "camera",
+							Asc:   "camera",
+						},
+						testSortConfig{
+							Key:   "size",
+							Label: "size",
+							Desc:  "size",
+						},
+						testSortConfig{
+							Key:   "no-direction",
+							Label: "no-direction",
+							Asc:   "no-direction",
+						},
+						testSortConfig{
+							Key:   "price",
+							Label: "price",
+							Asc:   "priceAsc",
+							Desc:  "priceDesc",
+						},
+					},
 				},
 			)
 			got, err := s.SearchBy(context.Background(), tt.args.attribute, nil, tt.args.filters...)
