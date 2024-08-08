@@ -220,6 +220,11 @@ func mapSortOptions(sortConfigs []sortConfig, filters []searchDomain.Filter) []s
 		}
 	}
 
+	// if no filters come, we should decide on default, so let it be first in config
+	if len(lookup) == 0 && len(result) > 0 {
+		result[0].SelectedDesc = true
+	}
+
 	return result
 }
 
