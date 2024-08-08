@@ -204,7 +204,6 @@ func mapSortOptions(sortConfigs []sortConfig, filters []searchDomain.Filter) []s
 	for _, filter := range filters {
 		if sortFiler, ok := filter.(*searchDomain.SortFilter); ok {
 			lookup[sortFiler.Field()] = true // direction always true for that filter name
-			break
 		}
 	}
 
