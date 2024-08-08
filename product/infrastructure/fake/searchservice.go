@@ -204,6 +204,7 @@ func mapSortOptions(sortConfigs []sortConfig, filters []searchDomain.Filter) []s
 	for _, filter := range filters {
 		if sortFiler, ok := filter.(*searchDomain.SortFilter); ok {
 			lookup[sortFiler.Field()] = true // direction always true for that filter name
+			break
 		}
 	}
 
@@ -218,6 +219,11 @@ func mapSortOptions(sortConfigs []sortConfig, filters []searchDomain.Filter) []s
 			SelectedAsc:  lookup[sortConfig.Asc],
 			SelectedDesc: lookup[sortConfig.Desc],
 		}
+	}
+
+	// if no filters come, we should decide on default, so let it be first in config
+	if len(lookup) == 0 && len(result) > 0 {
+		result[0].SelectedDesc = true
 	}
 
 	return result
