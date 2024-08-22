@@ -1,6 +1,6 @@
 package application
 
-//go:generate go run github.com/vektra/mockery/v2@v2.44.1 --name Receiver --case snake --structname CartReceiver
+//go:generate go run github.com/vektra/mockery/v2@v2.45.0 --name Receiver --case snake --structname CartReceiver
 
 import (
 	"context"
