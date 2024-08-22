@@ -3,9 +3,8 @@ package graphqlproductdto
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
-
 	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
@@ -191,21 +190,21 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 			},
 		}
 
-		assert.DeepEqual(t, want.Attributes, got.Attributes)
+		assert.Equal(t, want.Attributes, got.Attributes)
 
-		assert.DeepEqual(t, got.Variants[0].Attributes, redSMarchingSelection)
+		assert.Equal(t, got.Variants[0].Attributes, redSMarchingSelection)
 		assert.Equal(t, got.Variants[0].Variant.MarketplaceCode, redS.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[1].Attributes, redMMarchingSelection)
+		assert.Equal(t, got.Variants[1].Attributes, redMMarchingSelection)
 		assert.Equal(t, got.Variants[1].Variant.MarketplaceCode, redM.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[2].Attributes, redLMatchingSelection)
+		assert.Equal(t, got.Variants[2].Attributes, redLMatchingSelection)
 		assert.Equal(t, got.Variants[2].Variant.MarketplaceCode, redL.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[3].Attributes, blueSMatchingSelection)
+		assert.Equal(t, got.Variants[3].Attributes, blueSMatchingSelection)
 		assert.Equal(t, got.Variants[3].Variant.MarketplaceCode, blueS.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[4].Attributes, blueMMatchingSelection)
+		assert.Equal(t, got.Variants[4].Attributes, blueMMatchingSelection)
 		assert.Equal(t, got.Variants[4].Variant.MarketplaceCode, blueM.MarketPlaceCode)
 	})
 }
