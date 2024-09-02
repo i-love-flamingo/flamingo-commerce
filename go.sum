@@ -45,6 +45,8 @@ flamingo.me/dingo v0.2.10 h1:FAOsDtKHA+0KmAIdJYzsFNMMOCOMdVX4uAL8JPo6Z8M=
 flamingo.me/dingo v0.2.10/go.mod h1:5motgtzS2t26y20nndTLH7tslkBMg4GivTTn+ICQkl8=
 flamingo.me/flamingo/v3 v3.9.0 h1:Sk2u3iTnTJulbjg/LXO30m4eanDZrtpi3JoCApaDBtY=
 flamingo.me/flamingo/v3 v3.9.0/go.mod h1:Pd+myGr0JLjq95mgWpBPSsh9noDAg9YdXcVwfq6k4gk=
+flamingo.me/flamingo/v3 v3.10.0 h1:RkdM1y+CUYG8DIZ7ctQLASllE/rwL6/5VMjD+eJ2MDg=
+flamingo.me/flamingo/v3 v3.10.0/go.mod h1:FwFyZmdw7tozPKVvOVEsQ9FpWderusEYxmOd/W29j2w=
 flamingo.me/form v1.1.2 h1:o7ToYehtOuklO16vrqT2Qao40BqbB3A9vZmeoszGzLQ=
 flamingo.me/form v1.1.2/go.mod h1:mySaZb3vV/EwI4tWfN+ygywkTLLYuBM6U5LN9t8AN1w=
 flamingo.me/graphql v1.11.3 h1:trV4OSwWy/1xF4JzU7jBiTisI45waNq3v5l4uSdGf6w=
@@ -503,6 +505,8 @@ github.com/rbcervilla/redisstore/v9 v9.0.0/go.mod h1:q/acLpoKkTZzIsBYt0R4THDnf8W
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/redis/go-redis/v9 v9.5.2 h1:L0L3fcSNReTRGyZ6AqAEN0K56wYeYAwapBIhkvh0f3E=
 github.com/redis/go-redis/v9 v9.5.2/go.mod h1:hdY0cQFCN4fnSYT6TkisLufl/4W5UIXyv0b/CLO2V2M=
+github.com/redis/go-redis/v9 v9.6.1 h1:HHDteefn6ZkTtY5fGUE8tj8uy85AHk6zP7CpzIAM0y4=
+github.com/redis/go-redis/v9 v9.6.1/go.mod h1:0C0c6ycQsdpVNQpxb1njEQIqkx5UcsM8FJCQLgE9+RA=
 github.com/redis/rueidis v1.0.19 h1:s65oWtotzlIFN8eMPhyYwxlwLR1lUdhza2KtWprKYSo=
 github.com/redis/rueidis v1.0.19/go.mod h1:8B+r5wdnjwK3lTFml5VtxjzGOQAC+5UmujoD12pDrEo=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
@@ -726,6 +730,8 @@ golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c/go.mod h1:KelEdhl1UZF7XfJ
 golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b/go.mod h1:DAh4E804XQdzx2j+YRIaUnCqCV2RuMz24cGBJ5QYIrc=
 golang.org/x/oauth2 v0.21.0 h1:tsimM75w1tF/uws5rbeHzIWxEqElMehnc+iW793zsZs=
 golang.org/x/oauth2 v0.21.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
+golang.org/x/oauth2 v0.22.0 h1:BzDx2FehcG7jJwgWLELCdmLuxk2i+x9UDpSiss2u0ZA=
+golang.org/x/oauth2 v0.22.0/go.mod h1:XYTD2NtWslqkgxebSiOHnXEap4TF09sJSc7H1sXbhtI=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=

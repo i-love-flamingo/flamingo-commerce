@@ -6,7 +6,7 @@ toolchain go1.23.0
 
 require (
 	flamingo.me/dingo v0.2.10
-	flamingo.me/flamingo/v3 v3.9.0
+	flamingo.me/flamingo/v3 v3.10.0
 	flamingo.me/form v1.1.2
 	flamingo.me/graphql v1.11.3
 	flamingo.me/pugtemplate v1.3.1
@@ -133,7 +133,7 @@ require (
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/prometheus/statsd_exporter v0.22.7 // indirect
 	github.com/rbcervilla/redisstore/v9 v9.0.0 // indirect
-	github.com/redis/go-redis/v9 v9.5.2 // indirect
+	github.com/redis/go-redis/v9 v9.6.1 // indirect
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/shirou/gopsutil/v3 v3.23.12 // indirect
@@ -165,7 +165,7 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
 	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/oauth2 v0.21.0 // indirect
+	golang.org/x/oauth2 v0.22.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
