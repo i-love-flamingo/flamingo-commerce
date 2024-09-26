@@ -1,6 +1,9 @@
 # Changelog
 
 ## v3.12.0 [upcoming]
+**product**
+* Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
+
 **checkout**
 * add config `commerce.checkout.orderService.skipCartValidation` to disable cart validation that happens right before placing an order in the OrderService
 

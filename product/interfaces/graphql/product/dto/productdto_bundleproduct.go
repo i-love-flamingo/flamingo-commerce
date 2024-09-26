@@ -126,6 +126,11 @@ func (sp BundleProduct) Badges() ProductBadges {
 	}
 }
 
+// BundleConfiguration of the product
+func (sp BundleProduct) BundleConfiguration() productDomain.BundleConfiguration {
+	return sp.bundleConfig
+}
+
 func mapWithActiveChoices(domainChoices []productDomain.Choice, activeChoices map[productDomain.Identifier]productDomain.ActiveChoice) []Choice {
 	choices := mapChoices(domainChoices)
 
