@@ -1,7 +1,7 @@
 package domain
 
-//go:generate go run github.com/vektra/mockery/v2@v2.45.0 --name Customer --case snake
-//go:generate go run github.com/vektra/mockery/v2@v2.45.0 --name CustomerIdentityService --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.46.1 --name Customer --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.46.1 --name CustomerIdentityService --case snake
 
 import (
 	"context"
