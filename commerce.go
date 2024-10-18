@@ -6,7 +6,7 @@ package commerce
 */
 
 //go:generate rm -rf docs/openapi
-//go:generate go run github.com/swaggo/swag/cmd/swag@v1.16.3 init -p pascalcase --generalInfo=commerce.go --dir=./ --output=docs/openapi
+//go:generate go run github.com/swaggo/swag/cmd/swag@v1.16.4 init -p pascalcase --generalInfo=commerce.go --dir=./ --output=docs/openapi
 
 // Swagger Documentation used for generator swag (https://github.com/swaggo/swag#declarative-comments-format)
 // @title Flamingo Commerce API Spec
