@@ -2,7 +2,7 @@ module flamingo.me/flamingo-commerce/v3
 
 go 1.22
 
-toolchain go1.23.2
+toolchain go1.23.4
 
 require (
 	flamingo.me/dingo v0.2.10
