@@ -25,7 +25,7 @@ require (
 	github.com/stvp/tempredis v0.0.0-20231107154819-8a695b693b9c
 	github.com/swaggo/swag v1.16.4
 	github.com/testcontainers/testcontainers-go v0.34.0
-	github.com/vektah/gqlparser/v2 v2.5.16
+	github.com/vektah/gqlparser/v2 v2.5.20
 	go.opencensus.io v0.24.0
 	go.uber.org/goleak v1.3.0
 	golang.org/x/mod v0.20.0
@@ -44,7 +44,7 @@ require (
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/TylerBrock/colorjson v0.0.0-20200706003622-8a50f05110d2 // indirect
-	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/agnivade/levenshtein v1.2.0 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
