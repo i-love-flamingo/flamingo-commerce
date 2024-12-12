@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.23.4
 
 require (
-	flamingo.me/dingo v0.2.10
+	flamingo.me/dingo v0.3.0
 	flamingo.me/flamingo/v3 v3.11.0
 	flamingo.me/form v1.1.2
 	flamingo.me/graphql v1.11.3
@@ -21,7 +21,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/leekchan/accounting v0.3.1
 	github.com/spf13/cobra v1.8.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/stvp/tempredis v0.0.0-20231107154819-8a695b693b9c
 	github.com/swaggo/swag v1.16.3
 	github.com/testcontainers/testcontainers-go v0.34.0
