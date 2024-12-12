@@ -23,7 +23,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.10.0
 	github.com/stvp/tempredis v0.0.0-20231107154819-8a695b693b9c
-	github.com/swaggo/swag v1.16.3
+	github.com/swaggo/swag v1.16.4
 	github.com/testcontainers/testcontainers-go v0.34.0
 	github.com/vektah/gqlparser/v2 v2.5.16
 	go.opencensus.io v0.24.0
