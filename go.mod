@@ -1,6 +1,6 @@
 module flamingo.me/flamingo-commerce/v3
 
-go 1.22
+go 1.22.0
 
 toolchain go1.23.4
 
@@ -28,7 +28,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.20
 	go.opencensus.io v0.24.0
 	go.uber.org/goleak v1.3.0
-	golang.org/x/mod v0.20.0
+	golang.org/x/mod v0.22.0
 	golang.org/x/text v0.21.0
 )
 
