@@ -5737,850 +5737,1898 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["campaignCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("campaignCode"))
-		arg0, err = ec.unmarshalOString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_AppliedDiscounts_byCampaignCode_argsCampaignCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["campaignCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_argsCampaignCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["campaignCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("campaignCode"))
+	if tmp, ok := rawArgs["campaignCode"]; ok {
+		return ec.unmarshalOString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["filterType"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filterType"))
-		arg0, err = ec.unmarshalOString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_AppliedDiscounts_byType_argsFilterType(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["filterType"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_argsFilterType(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["filterType"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("filterType"))
+	if tmp, ok := rawArgs["filterType"]; ok {
+		return ec.unmarshalOString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["ref"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Cart_getByExternalReference_argsRef(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["ref"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_argsRef(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["ref"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
+	if tmp, ok := rawArgs["ref"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Cart_getByItemID_argsItemID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["itemID"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_argsItemID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["itemID"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
+	if tmp, ok := rawArgs["itemID"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Cart_getDeliveryByCode_argsDeliveryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_argsDeliveryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Cart_getDeliveryByItemID_argsItemID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["itemID"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_argsItemID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["itemID"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
+	if tmp, ok := rawArgs["itemID"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["typeCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Cart_getTotalItemsByType_argsTypeCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["typeCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_argsTypeCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["typeCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCode"))
+	if tmp, ok := rawArgs["typeCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketPlaceCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Cart_getTotalQty_argsMarketPlaceCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["marketPlaceCode"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["variantCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantCode"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Commerce_Cart_Cart_getTotalQty_argsVariantCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["variantCode"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_argsMarketPlaceCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["marketPlaceCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("marketPlaceCode"))
+	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_argsVariantCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["variantCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("variantCode"))
+	if tmp, ok := rawArgs["variantCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Cart_hasDeliveryForCode_argsDeliveryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_argsDeliveryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_CustomAttributes_get_argsKey(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["key"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_argsKey(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["key"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
+	if tmp, ok := rawArgs["key"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_argsDeliveryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_argsDeliveryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Item_getAdditionalData_argsKey(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["key"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_argsKey(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["key"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
+	if tmp, ok := rawArgs["key"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Item_hasAdditionalDataKey_argsKey(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["key"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_argsKey(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["key"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
+	if tmp, ok := rawArgs["key"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["methods"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("methods"))
-		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_argsMethods(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["methods"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_argsMethods(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["methods"]
+	if !ok {
+		var zeroVal []string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("methods"))
+	if tmp, ok := rawArgs["methods"]; ok {
+		return ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+	}
+
+	var zeroVal []string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["methods"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("methods"))
-		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_argsMethods(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["methods"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_argsMethods(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["methods"]
+	if !ok {
+		var zeroVal []string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("methods"))
+	if tmp, ok := rawArgs["methods"]; ok {
+		return ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+	}
+
+	var zeroVal []string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["taxType"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taxType"))
-		arg0, err = ec.unmarshalOString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Cart_Taxes_getByType_argsTaxType(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["taxType"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_argsTaxType(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["taxType"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("taxType"))
+	if tmp, ok := rawArgs["taxType"]; ok {
+		return ec.unmarshalOString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Category_Attributes_get_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["code"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Category_Attributes_get_argsCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["code"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Category_Attributes_get_argsCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["code"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+	if tmp, ok := rawArgs["code"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Category_Attributes_has_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["code"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Category_Attributes_has_argsCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["code"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Category_Attributes_has_argsCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["code"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+	if tmp, ok := rawArgs["code"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Customer_Result_getAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Customer_Result_getAddress_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["id"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Customer_Result_getAddress_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["id"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierForced_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 domain.ChargeQualifier
-	if tmp, ok := rawArgs["qualifier"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualifier"))
-		arg0, err = ec.unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Price_Charges_getByChargeQualifierForced_argsQualifier(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["qualifier"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierForced_argsQualifier(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (domain.ChargeQualifier, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["qualifier"]
+	if !ok {
+		var zeroVal domain.ChargeQualifier
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("qualifier"))
+	if tmp, ok := rawArgs["qualifier"]; ok {
+		return ec.unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx, tmp)
+	}
+
+	var zeroVal domain.ChargeQualifier
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["ctype"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ctype"))
-		arg0, err = ec.unmarshalOString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Price_Charges_getByTypeForced_argsCtype(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["ctype"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_argsCtype(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["ctype"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("ctype"))
+	if tmp, ok := rawArgs["ctype"]; ok {
+		return ec.unmarshalOString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 domain.ChargeQualifier
-	if tmp, ok := rawArgs["qualifier"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualifier"))
-		arg0, err = ec.unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Price_Charges_hasChargeQualifier_argsQualifier(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["qualifier"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_argsQualifier(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (domain.ChargeQualifier, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["qualifier"]
+	if !ok {
+		var zeroVal domain.ChargeQualifier
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("qualifier"))
+	if tmp, ok := rawArgs["qualifier"]; ok {
+		return ec.unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx, tmp)
+	}
+
+	var zeroVal domain.ChargeQualifier
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Price_Charges_hasType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["ctype"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ctype"))
-		arg0, err = ec.unmarshalOString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Price_Charges_hasType_argsCtype(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["ctype"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Price_Charges_hasType_argsCtype(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["ctype"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("ctype"))
+	if tmp, ok := rawArgs["ctype"]; ok {
+		return ec.unmarshalOString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Product_Attributes_getAttribute_argsKey(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["key"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_argsKey(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["key"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
+	if tmp, ok := rawArgs["key"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []string
-	if tmp, ok := rawArgs["keys"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keys"))
-		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Product_Attributes_getAttributesByKey_argsKeys(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["keys"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey_argsKeys(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["keys"]
+	if !ok {
+		var zeroVal []string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("keys"))
+	if tmp, ok := rawArgs["keys"]; ok {
+		return ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+	}
+
+	var zeroVal []string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Product_Attributes_hasAttribute_argsKey(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["key"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_argsKey(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["key"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
+	if tmp, ok := rawArgs["key"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Commerce_Product_Media_getMedia_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["usage"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("usage"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Commerce_Product_Media_getMedia_argsUsage(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["usage"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Commerce_Product_Media_getMedia_argsUsage(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["usage"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("usage"))
+	if tmp, ok := rawArgs["usage"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 dto.AddToCart
-	if tmp, ok := rawArgs["addToCartInput"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addToCartInput"))
-		arg0, err = ec.unmarshalNCommerce_Cart_AddToCartInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAddToCart(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_AddToCart_argsAddToCartInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["addToCartInput"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_argsAddToCartInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (dto.AddToCart, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["addToCartInput"]
+	if !ok {
+		var zeroVal dto.AddToCart
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("addToCartInput"))
+	if tmp, ok := rawArgs["addToCartInput"]; ok {
+		return ec.unmarshalNCommerce_Cart_AddToCartInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAddToCart(ctx, tmp)
+	}
+
+	var zeroVal dto.AddToCart
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["code"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_argsCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["code"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_argsCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["code"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
+	if tmp, ok := rawArgs["code"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_DeleteCartDelivery_argsDeliveryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_argsDeliveryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_DeleteItem_argsItemID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["itemID"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Mutation_Commerce_Cart_DeleteItem_argsDeliveryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryCode"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_argsItemID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["itemID"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
+	if tmp, ok := rawArgs["itemID"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_argsDeliveryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["couponCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("couponCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_RemoveCouponCode_argsCouponCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["couponCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_argsCouponCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["couponCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("couponCode"))
+	if tmp, ok := rawArgs["couponCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["giftCardCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("giftCardCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_RemoveGiftCard_argsGiftCardCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["giftCardCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_argsGiftCardCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["giftCardCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("giftCardCode"))
+	if tmp, ok := rawArgs["giftCardCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*dto.KeyValue
-	if tmp, ok := rawArgs["additionalData"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("additionalData"))
-		arg0, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateAdditionalData_argsAdditionalData(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["additionalData"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_argsAdditionalData(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]*dto.KeyValue, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["additionalData"]
+	if !ok {
+		var zeroVal []*dto.KeyValue
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("additionalData"))
+	if tmp, ok := rawArgs["additionalData"]; ok {
+		return ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, tmp)
+	}
+
+	var zeroVal []*dto.KeyValue
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *forms.AddressForm
-	if tmp, ok := rawArgs["addressForm"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressForm"))
-		arg0, err = ec.unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateBillingAddress_argsAddressForm(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["addressForm"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_argsAddressForm(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*forms.AddressForm, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["addressForm"]
+	if !ok {
+		var zeroVal *forms.AddressForm
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("addressForm"))
+	if tmp, ok := rawArgs["addressForm"]; ok {
+		return ec.unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, tmp)
+	}
+
+	var zeroVal *forms.AddressForm
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*dto.DeliveryAdditionalData
-	if tmp, ok := rawArgs["data"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
-		arg0, err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_argsData(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["data"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_argsData(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]*dto.DeliveryAdditionalData, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["data"]
+	if !ok {
+		var zeroVal []*dto.DeliveryAdditionalData
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+	if tmp, ok := rawArgs["data"]; ok {
+		return ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
+	}
+
+	var zeroVal []*dto.DeliveryAdditionalData
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*forms.DeliveryForm
-	if tmp, ok := rawArgs["deliveryAdresses"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryAdresses"))
-		arg0, err = ec.unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryFormᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_argsDeliveryAdresses(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryAdresses"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_argsDeliveryAdresses(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]*forms.DeliveryForm, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryAdresses"]
+	if !ok {
+		var zeroVal []*forms.DeliveryForm
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryAdresses"))
+	if tmp, ok := rawArgs["deliveryAdresses"]; ok {
+		return ec.unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryFormᚄ(ctx, tmp)
+	}
+
+	var zeroVal []*forms.DeliveryForm
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 []*dto.DeliveryShippingOption
-	if tmp, ok := rawArgs["shippingOptions"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("shippingOptions"))
-		arg0, err = ec.unmarshalOCommerce_Cart_DeliveryShippingOptionInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_argsShippingOptions(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["shippingOptions"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_argsShippingOptions(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]*dto.DeliveryShippingOption, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["shippingOptions"]
+	if !ok {
+		var zeroVal []*dto.DeliveryShippingOption
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("shippingOptions"))
+	if tmp, ok := rawArgs["shippingOptions"]; ok {
+		return ec.unmarshalOCommerce_Cart_DeliveryShippingOptionInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx, tmp)
+	}
+
+	var zeroVal []*dto.DeliveryShippingOption
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateItemBundleConfig_argsItemID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["itemID"] = arg0
-	var arg1 []*dto.ChoiceConfiguration
-	if tmp, ok := rawArgs["bundleConfig"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfig"))
-		arg1, err = ec.unmarshalNCommerce_Cart_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Mutation_Commerce_Cart_UpdateItemBundleConfig_argsBundleConfig(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["bundleConfig"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_argsItemID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["itemID"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
+	if tmp, ok := rawArgs["itemID"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_argsBundleConfig(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]*dto.ChoiceConfiguration, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["bundleConfig"]
+	if !ok {
+		var zeroVal []*dto.ChoiceConfiguration
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfig"))
+	if tmp, ok := rawArgs["bundleConfig"]; ok {
+		return ec.unmarshalNCommerce_Cart_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx, tmp)
+	}
+
+	var zeroVal []*dto.ChoiceConfiguration
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateItemQty_argsItemID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["itemID"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Mutation_Commerce_Cart_UpdateItemQty_argsDeliveryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryCode"] = arg1
-	var arg2 int
-	if tmp, ok := rawArgs["qty"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
-		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg2, err := ec.field_Mutation_Commerce_Cart_UpdateItemQty_argsQty(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["qty"] = arg2
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsItemID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["itemID"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
+	if tmp, ok := rawArgs["itemID"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsDeliveryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsQty(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (int, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["qty"]
+	if !ok {
+		var zeroVal int
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
+	if tmp, ok := rawArgs["qty"]; ok {
+		return ec.unmarshalNInt2int(ctx, tmp)
+	}
+
+	var zeroVal int
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["gateway"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gateway"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateSelectedPayment_argsGateway(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["gateway"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["method"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Mutation_Commerce_Cart_UpdateSelectedPayment_argsMethod(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["method"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_argsGateway(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["gateway"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("gateway"))
+	if tmp, ok := rawArgs["gateway"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_argsMethod(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["method"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
+	if tmp, ok := rawArgs["method"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["returnUrl"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("returnUrl"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Mutation_Commerce_Checkout_StartPlaceOrder_argsReturnURL(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["returnUrl"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_argsReturnURL(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["returnUrl"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("returnUrl"))
+	if tmp, ok := rawArgs["returnUrl"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["marketplaceCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_Commerce_Cart_QtyRestriction_argsMarketplaceCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["marketplaceCode"] = arg0
-	var arg1 *string
-	if tmp, ok := rawArgs["variantCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantCode"))
-		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_Commerce_Cart_QtyRestriction_argsVariantCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["variantCode"] = arg1
-	var arg2 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-		arg2, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg2, err := ec.field_Query_Commerce_Cart_QtyRestriction_argsDeliveryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["deliveryCode"] = arg2
 	return args, nil
+}
+func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsMarketplaceCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["marketplaceCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
+	if tmp, ok := rawArgs["marketplaceCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsVariantCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["variantCode"]
+	if !ok {
+		var zeroVal *string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("variantCode"))
+	if tmp, ok := rawArgs["variantCode"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsDeliveryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["deliveryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_Commerce_CategoryTree_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["activeCategoryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("activeCategoryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_Commerce_CategoryTree_argsActiveCategoryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["activeCategoryCode"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_Commerce_CategoryTree_argsActiveCategoryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["activeCategoryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("activeCategoryCode"))
+	if tmp, ok := rawArgs["activeCategoryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["categoryCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_Commerce_Category_argsCategoryCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["categoryCode"] = arg0
-	var arg1 *searchdto.CommerceSearchRequest
-	if tmp, ok := rawArgs["categorySearchRequest"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categorySearchRequest"))
-		arg1, err = ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_Commerce_Category_argsCategorySearchRequest(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["categorySearchRequest"] = arg1
 	return args, nil
+}
+func (ec *executionContext) field_Query_Commerce_Category_argsCategoryCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["categoryCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryCode"))
+	if tmp, ok := rawArgs["categoryCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_Commerce_Category_argsCategorySearchRequest(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*searchdto.CommerceSearchRequest, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["categorySearchRequest"]
+	if !ok {
+		var zeroVal *searchdto.CommerceSearchRequest
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("categorySearchRequest"))
+	if tmp, ok := rawArgs["categorySearchRequest"]; ok {
+		return ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
+	}
+
+	var zeroVal *searchdto.CommerceSearchRequest
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_Commerce_Product_Search_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 searchdto.CommerceSearchRequest
-	if tmp, ok := rawArgs["searchRequest"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("searchRequest"))
-		arg0, err = ec.unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_Commerce_Product_Search_argsSearchRequest(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["searchRequest"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query_Commerce_Product_Search_argsSearchRequest(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (searchdto.CommerceSearchRequest, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["searchRequest"]
+	if !ok {
+		var zeroVal searchdto.CommerceSearchRequest
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("searchRequest"))
+	if tmp, ok := rawArgs["searchRequest"]; ok {
+		return ec.unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
+	}
+
+	var zeroVal searchdto.CommerceSearchRequest
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query_Commerce_Product_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketPlaceCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query_Commerce_Product_argsMarketPlaceCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["marketPlaceCode"] = arg0
-	var arg1 *string
-	if tmp, ok := rawArgs["variantMarketPlaceCode"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketPlaceCode"))
-		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg1, err := ec.field_Query_Commerce_Product_argsVariantMarketPlaceCode(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["variantMarketPlaceCode"] = arg1
-	var arg2 []*graphqlproductdto.ChoiceConfiguration
-	if tmp, ok := rawArgs["bundleConfiguration"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfiguration"))
-		arg2, err = ec.unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfigurationᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg2, err := ec.field_Query_Commerce_Product_argsBundleConfiguration(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["bundleConfiguration"] = arg2
 	return args, nil
+}
+func (ec *executionContext) field_Query_Commerce_Product_argsMarketPlaceCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["marketPlaceCode"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("marketPlaceCode"))
+	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_Commerce_Product_argsVariantMarketPlaceCode(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (*string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["variantMarketPlaceCode"]
+	if !ok {
+		var zeroVal *string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketPlaceCode"))
+	if tmp, ok := rawArgs["variantMarketPlaceCode"]; ok {
+		return ec.unmarshalOString2ᚖstring(ctx, tmp)
+	}
+
+	var zeroVal *string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_Commerce_Product_argsBundleConfiguration(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) ([]*graphqlproductdto.ChoiceConfiguration, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["bundleConfiguration"]
+	if !ok {
+		var zeroVal []*graphqlproductdto.ChoiceConfiguration
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfiguration"))
+	if tmp, ok := rawArgs["bundleConfiguration"]; ok {
+		return ec.unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfigurationᚄ(ctx, tmp)
+	}
+
+	var zeroVal []*graphqlproductdto.ChoiceConfiguration
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field_Query___type_argsName(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["name"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field_Query___type_argsName(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["name"]
+	if !ok {
+		var zeroVal string
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+	if tmp, ok := rawArgs["name"]; ok {
+		return ec.unmarshalNString2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 bool
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field___Type_enumValues_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field___Type_enumValues_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (bool, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["includeDeprecated"]
+	if !ok {
+		var zeroVal bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2bool(ctx, tmp)
+	}
+
+	var zeroVal bool
+	return zeroVal, nil
 }
 
 func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 bool
-	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
-		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
+	arg0, err := ec.field___Type_fields_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
 	}
 	args["includeDeprecated"] = arg0
 	return args, nil
+}
+func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (bool, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["includeDeprecated"]
+	if !ok {
+		var zeroVal bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2bool(ctx, tmp)
+	}
+
+	var zeroVal bool
+	return zeroVal, nil
 }
 
 // endregion ***************************** args.gotpl *****************************
