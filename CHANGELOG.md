@@ -1,6 +1,12 @@
 # Changelog
 
 ## v3.12.0 [upcoming]
+
+**price**
+* On formatting prices, before falling back to `core.locale.accounting.default` configuration, try to get the config from `LocaleInfo` from github.com/leekchan/accounting.
+* Introduce options for `FormatPrice` to override settings occasionally, e.g. to display the currency symbol after the ISO4217 enforcement from v3.10.0
+* Remove currency library github.com/Rhymond/go-money in favour of `LocaleInfo` from github.com/leekchan/accounting. All currency codes still should comply to ISO4217.
+
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
 

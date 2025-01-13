@@ -8,7 +8,7 @@ import (
 	"math/big"
 	"strconv"
 
-	"github.com/Rhymond/go-money"
+	"github.com/leekchan/accounting"
 )
 
 type (
@@ -366,17 +366,14 @@ func (p Price) precisionF(precision int) *big.Float {
 
 // precisionF - 10 * n - n is the amount of decimal numbers after comma
 func (p Price) payableRoundingPrecision() (string, int) {
-	currency := money.GetCurrency(p.currency)
-	if currency == nil {
+	currency, ok := accounting.LocaleInfo[p.currency]
+	if !ok {
 		return RoundingModeFloor, 1
 	}
 
-	precision := 1
-	for i := 1; i <= currency.Fraction; i++ {
-		precision *= 10
-	}
+	precision := math.Pow10(currency.FractionLength)
 
-	return RoundingModeHalfUp, precision
+	return RoundingModeHalfUp, int(precision)
 }
 
 // SplitInPayables returns "count" payable prices (each rounded) that in sum matches the given price

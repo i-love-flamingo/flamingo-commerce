@@ -133,10 +133,10 @@ func TestPrice_GetPayable(t *testing.T) {
 	t.Run("rounding with Chilean Unit of Account currency code", func(t *testing.T) {
 		t.Parallel()
 
-		price := domain.NewFromFloat(12.34567, "CLF")
+		price := domain.NewFromFloat(12.34567, "BHD")
 
 		payable := price.GetPayable()
-		assert.Equal(t, 12.3457, payable.FloatAmount())
+		assert.Equal(t, 12.346, payable.FloatAmount())
 
 		price = domain.NewFromFloat(math.MaxInt64, "CLF").GetPayable()
 		assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())

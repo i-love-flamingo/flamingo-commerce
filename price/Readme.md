@@ -122,3 +122,5 @@ Can be used in places where you need to give the price value a certain extra sem
 
 Just use the template function commercePriceFormat like this: `commercePriceFormat(priceObject)` 
 The template functions used the configurations of the Flamingo "locale" package. For more details on the configuration options please read there.
+
+When there is nothing configured, it tries to load the configuration from `leekchan/accounting`'s `LocalInfo` before falling back to the `default` section of the local package.
