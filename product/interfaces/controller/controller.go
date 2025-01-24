@@ -189,7 +189,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 
 	// catch error
 	if err != nil {
-		if errors.As(err, &domain.ProductNotFound{}) {
+		if errors.Is(err, domain.ErrProductNotFound) {
 			return vc.Responder.NotFound(err)
 		}
 
