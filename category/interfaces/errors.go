@@ -6,5 +6,5 @@ import (
 
 var (
 	ErrCategoryNotFound = errors.New("category_not_found")
-	ErrGeneralCategory  = errors.New("category_general_error")
+	ErrCategoryGeneral  = errors.New("category_general_error")
 )

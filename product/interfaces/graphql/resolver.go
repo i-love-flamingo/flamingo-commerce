@@ -42,7 +42,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context,
 			return nil, interfaces.ErrProductNotFound
 		}
 
-		return nil, interfaces.ErrGeneralProduct
+		return nil, interfaces.ErrProductGeneral
 	}
 
 	domainBundleConfiguration := mapToDomain(bundleConfiguration)
@@ -67,7 +67,7 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 	})
 
 	if err != nil {
-		return nil, interfaces.ErrGeneralProduct
+		return nil, interfaces.ErrProductGeneral
 	}
 
 	return WrapSearchResult(result), nil

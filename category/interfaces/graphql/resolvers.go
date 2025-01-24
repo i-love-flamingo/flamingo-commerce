@@ -47,7 +47,7 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 			return nil, interfaces.ErrCategoryNotFound
 		}
 
-		return nil, interfaces.ErrGeneralCategory
+		return nil, interfaces.ErrCategoryGeneral
 	}
 
 	var filters []searchDomain.Filter
@@ -70,7 +70,7 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 	result, err := r.searchService.Find(ctx, searchRequest)
 
 	if err != nil {
-		return nil, interfaces.ErrGeneralCategory
+		return nil, interfaces.ErrCategoryGeneral
 	}
 
 	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: graphql.WrapSearchResult(result)}, nil
