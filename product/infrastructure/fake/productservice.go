@@ -2,6 +2,7 @@ package fake
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/big"
 	"math/rand"
@@ -88,7 +89,7 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 	default:
 		jsonProduct, err := ps.getProductFromJSON(marketplaceCode)
 		if err != nil {
-			if _, isProductNotFoundError := err.(domain.ProductNotFound); !isProductNotFoundError {
+			if !errors.Is(err, domain.ErrProductNotFound) {
 				return nil, err
 			}
 		} else {
@@ -97,9 +98,10 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 	}
 
 	marketPlaceCodes := ps.GetMarketPlaceCodes()
-	return nil, domain.ProductNotFound{
+
+	return nil, errors.Join(domain.ProductNotFound{
 		MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only following codes should be used" + strings.Join(marketPlaceCodes, ", "),
-	}
+	}, domain.ErrProductNotFound)
 }
 
 // FakeSimple generates a simple fake product
@@ -432,7 +434,7 @@ func (ps *ProductService) getProductFromJSON(code string) (domain.BasicProduct, 
 	file, ok := ps.testDataFiles[code]
 
 	if !ok {
-		return nil, &domain.ProductNotFound{MarketplaceCode: code}
+		return nil, errors.Join(&domain.ProductNotFound{MarketplaceCode: code}, domain.ErrProductNotFound)
 	}
 
 	jsonBytes, err := os.ReadFile(file)

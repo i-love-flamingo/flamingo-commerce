@@ -72,7 +72,7 @@ func (mps *MockProductService) Get(_ context.Context, marketplacecode string) (d
 		return nil, errors.New("fail")
 	}
 	if marketplacecode == "not_found" {
-		return nil, domain.ProductNotFound{MarketplaceCode: "not_found"}
+		return nil, errors.Join(domain.ErrProductNotFound, domain.ProductNotFound{MarketplaceCode: "not_found"})
 	}
 	if marketplacecode == "simple" {
 		return domain.SimpleProduct{

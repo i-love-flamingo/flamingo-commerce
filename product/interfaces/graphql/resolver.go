@@ -2,10 +2,12 @@ package graphql
 
 import (
 	"context"
+	"errors"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/product/interfaces"
 	productDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
@@ -36,7 +38,11 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context,
 	product, err := r.productService.Get(ctx, marketplaceCode)
 
 	if err != nil {
-		return nil, err
+		if errors.Is(err, domain.ErrProductNotFound) {
+			return nil, interfaces.ErrProductNotFound
+		}
+
+		return nil, interfaces.ErrProductGeneral
 	}
 
 	domainBundleConfiguration := mapToDomain(bundleConfiguration)
@@ -61,7 +67,7 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, interfaces.ErrProductGeneral
 	}
 
 	return WrapSearchResult(result), nil
