@@ -53,7 +53,7 @@ func (c *APIController) Inject(responder *web.Responder,
 func (c *APIController) Get(ctx context.Context, r *web.Request) web.Result {
 	product, err := c.productService.Get(ctx, r.Params["marketplacecode"])
 	if err != nil {
-		if errors.As(err, &domain.ProductNotFound{}) {
+		if errors.Is(err, domain.ErrProductNotFound) || errors.As(err, &domain.ProductNotFound{}) {
 			return c.responder.Data(APIResult{
 				Success: false,
 				Error:   &resultError{Code: "404", Message: err.Error()},

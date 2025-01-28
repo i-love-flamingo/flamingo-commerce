@@ -9,6 +9,10 @@ import (
 
 //go:generate go run github.com/vektra/mockery/v2@v2.46.1 --name ProductService --case snake
 
+var (
+	ErrProductNotFound = fmt.Errorf("product not found")
+)
+
 type (
 	// ProductService interface
 	ProductService interface {
@@ -23,6 +27,7 @@ type (
 	}
 
 	// SearchService is a typed search for products
+	// when search operation does not found anything preferably return empty result over an error
 	SearchService interface {
 		// Search returns Products based on given Filters
 		Search(ctx context.Context, filter ...searchDomain.Filter) (*SearchResult, error)
@@ -32,6 +37,7 @@ type (
 	}
 
 	// ProductNotFound is an error
+	// Deprecated: please use var ErrProductNotFound
 	ProductNotFound struct {
 		MarketplaceCode string
 	}

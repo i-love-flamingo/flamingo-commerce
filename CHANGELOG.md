@@ -3,6 +3,8 @@
 ## v3.12.0 [upcoming]
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
+* Deprecated struct error ProductNotFound in favour of var ErrProductNotFound
+* Introduced product not found error and general error to product graphql resolver
 
 **checkout**
 * add config `commerce.checkout.orderService.skipCartValidation` to disable cart validation that happens right before placing an order in the OrderService
@@ -10,6 +12,9 @@
 **search**
 * **Breaking:** fixed fake service to interpret sort options and gives away empty promotion
 * removed deprecation notice from fields `Asc` and `Desc` in `SortOption` struct
+
+**category**
+* Introduced general error to category graphql resolver
 
 ## v3.11.0
 

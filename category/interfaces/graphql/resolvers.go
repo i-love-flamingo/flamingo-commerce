@@ -2,8 +2,10 @@ package graphql
 
 import (
 	"context"
+	"errors"
 
 	"flamingo.me/flamingo-commerce/v3/category/domain"
+	"flamingo.me/flamingo-commerce/v3/category/interfaces"
 	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/categorydto"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
@@ -41,7 +43,11 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 	category, err := r.categoryService.Get(ctx, categoryCode)
 
 	if err != nil {
-		return nil, err
+		if errors.Is(err, domain.ErrNotFound) {
+			return nil, interfaces.ErrCategoryNotFound
+		}
+
+		return nil, interfaces.ErrCategoryGeneral
 	}
 
 	var filters []searchDomain.Filter
@@ -64,7 +70,7 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 	result, err := r.searchService.Find(ctx, searchRequest)
 
 	if err != nil {
-		return nil, err
+		return nil, interfaces.ErrCategoryGeneral
 	}
 
 	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: graphql.WrapSearchResult(result)}, nil
