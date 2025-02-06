@@ -70,11 +70,7 @@ func startUpLocalRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
 
 func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 	ctx := context.Background()
-	req := testcontainers.ContainerRequest{
-		Image:        "redis:latest",
-		ExposedPorts: []string{"6379/tcp"},
-		WaitingFor:   wait.ForLog("Ready to accept connections"),
-	}
+	req := getContainerRequest()
 	redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
@@ -253,4 +249,14 @@ func TestRedis_Delete(t *testing.T) {
 		store := getRedisStore("tcp", address)
 		runTestCases(t, store, conn)
 	})
+}
+
+func getContainerRequest() testcontainers.ContainerRequest {
+	return testcontainers.ContainerRequest{
+		Image:        "valkey/valkey:7",
+		ExposedPorts: []string{"6379/tcp"},
+		WaitingFor: wait.ForAll(
+			wait.ForLog("Ready to accept connections"),
+			wait.ForListeningPort("6379/tcp")),
+	}
 }

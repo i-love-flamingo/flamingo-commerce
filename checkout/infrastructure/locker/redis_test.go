@@ -40,11 +40,7 @@ func getRedisLocker(network, address string) *locker.Redis {
 
 func TestRedis_TryLockDocker(t *testing.T) {
 	ctx := context.Background()
-	req := testcontainers.ContainerRequest{
-		Image:        "redis:latest",
-		ExposedPorts: []string{"6379/tcp"},
-		WaitingFor:   wait.ForLog("Ready to accept connections"),
-	}
+	req := getContainerRequest()
 	redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
@@ -127,11 +123,7 @@ func TestRedis_StatusDocker(t *testing.T) {
 
 	t.Run("redis is there", func(t *testing.T) {
 		ctx := context.Background()
-		req := testcontainers.ContainerRequest{
-			Image:        "redis:latest",
-			ExposedPorts: []string{"6379/tcp"},
-			WaitingFor:   wait.ForLog("Ready to accept connections"),
-		}
+		req := getContainerRequest()
 		redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 			ContainerRequest: req,
 			Started:          true,
@@ -152,4 +144,14 @@ func TestRedis_StatusDocker(t *testing.T) {
 
 		assert.True(t, alive)
 	})
+}
+
+func getContainerRequest() testcontainers.ContainerRequest {
+	return testcontainers.ContainerRequest{
+		Image:        "valkey/valkey:7",
+		ExposedPorts: []string{"6379/tcp"},
+		WaitingFor: wait.ForAll(
+			wait.ForLog("Ready to accept connections"),
+			wait.ForListeningPort("6379/tcp")),
+	}
 }
