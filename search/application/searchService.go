@@ -10,10 +10,11 @@ import (
 	"fmt"
 	"net/url"
 
-	"flamingo.me/flamingo-commerce/v3/search/domain"
-	"flamingo.me/flamingo-commerce/v3/search/utils"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/search/domain"
+	"flamingo.me/flamingo-commerce/v3/search/utils"
 )
 
 type (
@@ -43,6 +44,7 @@ type (
 		Facets         domain.FacetCollection
 		Suggestions    []domain.Suggestion
 		PaginationInfo utils.PaginationInfo
+		Actions        []domain.Action
 	}
 )
 
@@ -55,9 +57,7 @@ func (s *SearchService) Inject(
 		DefaultPageSize float64              `inject:"config:commerce.pagination.defaultPageSize,optional"`
 	}) *SearchService {
 	s.paginationInfoFactory = paginationInfoFactory
-	s.logger = logger.
-		WithField(flamingo.LogKeyModule, "search").
-		WithField(flamingo.LogKeyCategory, "application.ProductSearchService")
+	s.logger = logger
 	if optionals != nil {
 		s.searchService = optionals.SearchService
 		s.defaultPageSize = optionals.DefaultPageSize
@@ -98,7 +98,10 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
 			err = fmt.Errorf("the Searchservice seems to ignore pageSize filter, %w", err)
-			s.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "FindBy").Warn(err)
+			s.logger.
+				WithField(flamingo.LogKeyModule, "search").
+				WithField(flamingo.LogKeyCategory, "application.ProductSearchService").
+				WithContext(ctx).WithField(flamingo.LogKeySubCategory, "FindBy").Warn(err)
 		}
 	}
 
@@ -152,7 +155,10 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 		for k, r := range result {
 			if err := r.SearchMeta.ValidatePageSize(pageSize); err != nil {
 				err = fmt.Errorf("the Searchservice seems to ignore pageSize filter for document type %q, %w", k, err)
-				s.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "Find").Warn(err)
+				s.logger.
+					WithField(flamingo.LogKeyModule, "search").
+					WithField(flamingo.LogKeyCategory, "application.ProductSearchService").
+					WithContext(ctx).WithField(flamingo.LogKeySubCategory, "Find").Warn(err)
 			}
 		}
 	}
@@ -173,6 +179,7 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 			Suggestions:    r.Suggestion,
 			Hits:           r.Hits,
 			PaginationInfo: paginationInfo,
+			Actions:        r.Actions,
 		}
 	}
 
