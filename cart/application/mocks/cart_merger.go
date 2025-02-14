@@ -57,7 +57,7 @@ func (_c *CartMerger_Merge_Call) Return() *CartMerger_Merge_Call {
 }
 
 func (_c *CartMerger_Merge_Call) RunAndReturn(run func(context.Context, *web.Session, cart.Cart, cart.Cart)) *CartMerger_Merge_Call {
-	_c.Call.Return(run)
+	_c.Run(run)
 	return _c
 }
 
