@@ -13,7 +13,7 @@ import (
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
-//go:generate go run github.com/vektra/mockery/v2@v2.46.1 --name CartMerger --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.52.2 --name CartMerger --case snake
 
 type (
 	// EventReceiver handles events from other packages
