@@ -473,12 +473,12 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 			if loyaltyAmountToSpent.Cmp(wishedPriceRounded.Amount()) <= 0 {
 				loyaltyAmountToSpent = *wishedPriceRounded.Amount()
 			}
-			// evaluate max
-			max := p.ActiveLoyaltyPrice.getMax(qty)
-			if max != nil {
-				// more then max - return max
-				if max.Cmp(wishedPrice.Amount()) == -1 {
-					loyaltyAmountToSpent = *max
+			// evaluate maxPrice
+			maxPrice := p.ActiveLoyaltyPrice.getMax(qty)
+			if maxPrice != nil {
+				// more then maxPrice - return maxPrice
+				if maxPrice.Cmp(wishedPrice.Amount()) == -1 {
+					loyaltyAmountToSpent = *maxPrice
 				}
 			}
 		}

@@ -62,8 +62,6 @@ func TestBuildFilters(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			got := BuildFilters(tt.args.request, tt.args.defaultPageSize)
 			assert.Equal(t, tt.want, got)
@@ -72,6 +70,8 @@ func TestBuildFilters(t *testing.T) {
 }
 
 func TestSearchRequest_AddAdditionalFilter(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		request SearchRequest
@@ -102,8 +102,6 @@ func TestSearchRequest_AddAdditionalFilter(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -114,6 +112,8 @@ func TestSearchRequest_AddAdditionalFilter(t *testing.T) {
 }
 
 func TestSearchRequest_SetAdditionalFilter(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name    string
 		request SearchRequest
@@ -156,8 +156,6 @@ func TestSearchRequest_SetAdditionalFilter(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

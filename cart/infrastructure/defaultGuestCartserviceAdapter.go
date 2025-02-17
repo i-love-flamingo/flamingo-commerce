@@ -7,8 +7,9 @@ import (
 
 	"go.opencensus.io/trace"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (
@@ -60,7 +61,7 @@ func (gcs *DefaultGuestCartService) GetModifyBehaviour(ctx context.Context) (car
 // RestoreCart restores a previously used guest cart
 // Deprecated: (deprecated in the interface)
 func (gcs *DefaultGuestCartService) RestoreCart(ctx context.Context, cart cart.Cart) (*cart.Cart, error) {
-	ctx, span := trace.StartSpan(ctx, "cart/DefaultGuestCartService/RestoreCart")
+	_, span := trace.StartSpan(ctx, "cart/DefaultGuestCartService/RestoreCart")
 	defer span.End()
 
 	// RestoreCart restores a previously used cart
