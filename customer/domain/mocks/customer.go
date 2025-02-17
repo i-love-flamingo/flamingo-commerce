@@ -20,7 +20,7 @@ func (_m *Customer) EXPECT() *Customer_Expecter {
 	return &Customer_Expecter{mock: &_m.Mock}
 }
 
-// GetAddresses provides a mock function with given fields:
+// GetAddresses provides a mock function with no fields
 func (_m *Customer) GetAddresses() []domain.Address {
 	ret := _m.Called()
 
@@ -67,7 +67,7 @@ func (_c *Customer_GetAddresses_Call) RunAndReturn(run func() []domain.Address) 
 	return _c
 }
 
-// GetDefaultBillingAddress provides a mock function with given fields:
+// GetDefaultBillingAddress provides a mock function with no fields
 func (_m *Customer) GetDefaultBillingAddress() *domain.Address {
 	ret := _m.Called()
 
@@ -114,7 +114,7 @@ func (_c *Customer_GetDefaultBillingAddress_Call) RunAndReturn(run func() *domai
 	return _c
 }
 
-// GetDefaultShippingAddress provides a mock function with given fields:
+// GetDefaultShippingAddress provides a mock function with no fields
 func (_m *Customer) GetDefaultShippingAddress() *domain.Address {
 	ret := _m.Called()
 
@@ -161,7 +161,7 @@ func (_c *Customer_GetDefaultShippingAddress_Call) RunAndReturn(run func() *doma
 	return _c
 }
 
-// GetID provides a mock function with given fields:
+// GetID provides a mock function with no fields
 func (_m *Customer) GetID() string {
 	ret := _m.Called()
 
@@ -206,7 +206,7 @@ func (_c *Customer_GetID_Call) RunAndReturn(run func() string) *Customer_GetID_C
 	return _c
 }
 
-// GetPersonalData provides a mock function with given fields:
+// GetPersonalData provides a mock function with no fields
 func (_m *Customer) GetPersonalData() domain.PersonData {
 	ret := _m.Called()
 

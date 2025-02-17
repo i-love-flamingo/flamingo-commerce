@@ -1131,7 +1131,7 @@ func (e *executableSchema) Schema() *ast.Schema {
 	return parsedSchema
 }
 
-func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]interface{}) (int, bool) {
+func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]any) (int, bool) {
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
@@ -5597,8 +5597,8 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 }
 
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
-	rc := graphql.GetOperationContext(ctx)
-	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
+	opCtx := graphql.GetOperationContext(ctx)
+	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCommerce_Cart_AddToCartInput,
 		ec.unmarshalInputCommerce_Cart_AddressFormInput,
@@ -5614,7 +5614,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	)
 	first := true
 
-	switch rc.Operation.Operation {
+	switch opCtx.Operation.Operation {
 	case ast.Query:
 		return func(ctx context.Context) *graphql.Response {
 			var response graphql.Response
@@ -5622,7 +5622,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			if first {
 				first = false
 				ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
-				data = ec._Query(ctx, rc.Operation.SelectionSet)
+				data = ec._Query(ctx, opCtx.Operation.SelectionSet)
 			} else {
 				if atomic.LoadInt32(&ec.pendingDeferred) > 0 {
 					result := <-ec.deferredResults
@@ -5652,7 +5652,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			}
 			first = false
 			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
-			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
+			data := ec._Mutation(ctx, opCtx.Operation.SelectionSet)
 			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
 
@@ -5734,9 +5734,9 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_AppliedDiscounts_byCampaignCode_argsCampaignCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5746,13 +5746,9 @@ func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_
 }
 func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_argsCampaignCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["campaignCode"]
-	if !ok {
+	if _, ok := rawArgs["campaignCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5766,9 +5762,9 @@ func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_AppliedDiscounts_byType_argsFilterType(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5778,13 +5774,9 @@ func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_args(ctx
 }
 func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_argsFilterType(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["filterType"]
-	if !ok {
+	if _, ok := rawArgs["filterType"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5798,9 +5790,9 @@ func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_argsFilt
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Cart_getByExternalReference_argsRef(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5810,13 +5802,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_args
 }
 func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_argsRef(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["ref"]
-	if !ok {
+	if _, ok := rawArgs["ref"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5830,9 +5818,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_args
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Cart_getByItemID_argsItemID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5842,13 +5830,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_args(ctx contex
 }
 func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_argsItemID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["itemID"]
-	if !ok {
+	if _, ok := rawArgs["itemID"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5862,9 +5846,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_argsItemID(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Cart_getDeliveryByCode_argsDeliveryCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5874,13 +5858,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx 
 }
 func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_argsDeliveryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryCode"]
-	if !ok {
+	if _, ok := rawArgs["deliveryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5894,9 +5874,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_argsDeliv
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Cart_getDeliveryByItemID_argsItemID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5906,13 +5886,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_args(ct
 }
 func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_argsItemID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["itemID"]
-	if !ok {
+	if _, ok := rawArgs["itemID"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5926,9 +5902,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_argsIte
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Cart_getTotalItemsByType_argsTypeCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5938,13 +5914,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_args(ct
 }
 func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_argsTypeCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["typeCode"]
-	if !ok {
+	if _, ok := rawArgs["typeCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5958,9 +5930,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_argsTyp
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Cart_getTotalQty_argsMarketPlaceCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -5975,13 +5947,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_args(ctx contex
 }
 func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_argsMarketPlaceCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["marketPlaceCode"]
-	if !ok {
+	if _, ok := rawArgs["marketPlaceCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -5997,13 +5965,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_argsMarketPlace
 
 func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_argsVariantCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["variantCode"]
-	if !ok {
+	if _, ok := rawArgs["variantCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6017,9 +5981,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_argsVariantCode
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Cart_hasDeliveryForCode_argsDeliveryCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6029,13 +5993,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx
 }
 func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_argsDeliveryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryCode"]
-	if !ok {
+	if _, ok := rawArgs["deliveryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6049,9 +6009,9 @@ func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_argsDeli
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_CustomAttributes_get_argsKey(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6061,13 +6021,9 @@ func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_args(ctx co
 }
 func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_argsKey(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["key"]
-	if !ok {
+	if _, ok := rawArgs["key"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6081,9 +6037,9 @@ func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_argsKey(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_argsDeliveryCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6093,13 +6049,9 @@ func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDelive
 }
 func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_argsDeliveryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryCode"]
-	if !ok {
+	if _, ok := rawArgs["deliveryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6113,9 +6065,9 @@ func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDelive
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Item_getAdditionalData_argsKey(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6125,13 +6077,9 @@ func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_args(ctx 
 }
 func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_argsKey(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["key"]
-	if !ok {
+	if _, ok := rawArgs["key"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6145,9 +6093,9 @@ func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_argsKey(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Item_hasAdditionalDataKey_argsKey(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6157,13 +6105,9 @@ func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_args(c
 }
 func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_argsKey(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["key"]
-	if !ok {
+	if _, ok := rawArgs["key"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6177,9 +6121,9 @@ func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_argsKe
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_argsMethods(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6189,13 +6133,9 @@ func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartS
 }
 func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitPriceAmountByMethods_argsMethods(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["methods"]
-	if !ok {
+	if _, ok := rawArgs["methods"]; !ok {
 		var zeroVal []string
 		return zeroVal, nil
 	}
@@ -6209,9 +6149,9 @@ func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartS
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_argsMethods(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6221,13 +6161,9 @@ func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartS
 }
 func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_argsMethods(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["methods"]
-	if !ok {
+	if _, ok := rawArgs["methods"]; !ok {
 		var zeroVal []string
 		return zeroVal, nil
 	}
@@ -6241,9 +6177,9 @@ func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartS
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Cart_Taxes_getByType_argsTaxType(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6253,13 +6189,9 @@ func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_args(ctx context
 }
 func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_argsTaxType(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["taxType"]
-	if !ok {
+	if _, ok := rawArgs["taxType"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6273,9 +6205,9 @@ func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_argsTaxType(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Category_Attributes_get_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Category_Attributes_get_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Category_Attributes_get_argsCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6285,13 +6217,9 @@ func (ec *executionContext) field_Commerce_Category_Attributes_get_args(ctx cont
 }
 func (ec *executionContext) field_Commerce_Category_Attributes_get_argsCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["code"]
-	if !ok {
+	if _, ok := rawArgs["code"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6305,9 +6233,9 @@ func (ec *executionContext) field_Commerce_Category_Attributes_get_argsCode(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Category_Attributes_has_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Category_Attributes_has_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Category_Attributes_has_argsCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6317,13 +6245,9 @@ func (ec *executionContext) field_Commerce_Category_Attributes_has_args(ctx cont
 }
 func (ec *executionContext) field_Commerce_Category_Attributes_has_argsCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["code"]
-	if !ok {
+	if _, ok := rawArgs["code"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6337,9 +6261,9 @@ func (ec *executionContext) field_Commerce_Category_Attributes_has_argsCode(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Customer_Result_getAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Customer_Result_getAddress_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Customer_Result_getAddress_argsID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6349,13 +6273,9 @@ func (ec *executionContext) field_Commerce_Customer_Result_getAddress_args(ctx c
 }
 func (ec *executionContext) field_Commerce_Customer_Result_getAddress_argsID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["id"]
-	if !ok {
+	if _, ok := rawArgs["id"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6369,9 +6289,9 @@ func (ec *executionContext) field_Commerce_Customer_Result_getAddress_argsID(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierForced_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierForced_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Price_Charges_getByChargeQualifierForced_argsQualifier(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6381,13 +6301,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierFor
 }
 func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierForced_argsQualifier(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (domain.ChargeQualifier, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["qualifier"]
-	if !ok {
+	if _, ok := rawArgs["qualifier"]; !ok {
 		var zeroVal domain.ChargeQualifier
 		return zeroVal, nil
 	}
@@ -6401,9 +6317,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierFor
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Price_Charges_getByTypeForced_argsCtype(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6413,13 +6329,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_args(ct
 }
 func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_argsCtype(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["ctype"]
-	if !ok {
+	if _, ok := rawArgs["ctype"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6433,9 +6345,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_argsCty
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Price_Charges_hasChargeQualifier_argsQualifier(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6445,13 +6357,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_args
 }
 func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_argsQualifier(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (domain.ChargeQualifier, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["qualifier"]
-	if !ok {
+	if _, ok := rawArgs["qualifier"]; !ok {
 		var zeroVal domain.ChargeQualifier
 		return zeroVal, nil
 	}
@@ -6465,9 +6373,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_args
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Price_Charges_hasType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Price_Charges_hasType_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Price_Charges_hasType_argsCtype(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6477,13 +6385,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_hasType_args(ctx contex
 }
 func (ec *executionContext) field_Commerce_Price_Charges_hasType_argsCtype(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["ctype"]
-	if !ok {
+	if _, ok := rawArgs["ctype"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6497,9 +6401,9 @@ func (ec *executionContext) field_Commerce_Price_Charges_hasType_argsCtype(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Product_Attributes_getAttribute_argsKey(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6509,13 +6413,9 @@ func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_args(
 }
 func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_argsKey(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["key"]
-	if !ok {
+	if _, ok := rawArgs["key"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6529,9 +6429,9 @@ func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_argsK
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Product_Attributes_getAttributesByKey_argsKeys(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6541,13 +6441,9 @@ func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey
 }
 func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey_argsKeys(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["keys"]
-	if !ok {
+	if _, ok := rawArgs["keys"]; !ok {
 		var zeroVal []string
 		return zeroVal, nil
 	}
@@ -6561,9 +6457,9 @@ func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Product_Attributes_hasAttribute_argsKey(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6573,13 +6469,9 @@ func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_args(
 }
 func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_argsKey(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["key"]
-	if !ok {
+	if _, ok := rawArgs["key"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6593,9 +6485,9 @@ func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_argsK
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Commerce_Product_Media_getMedia_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Product_Media_getMedia_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Commerce_Product_Media_getMedia_argsUsage(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6605,13 +6497,9 @@ func (ec *executionContext) field_Commerce_Product_Media_getMedia_args(ctx conte
 }
 func (ec *executionContext) field_Commerce_Product_Media_getMedia_argsUsage(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["usage"]
-	if !ok {
+	if _, ok := rawArgs["usage"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6625,9 +6513,9 @@ func (ec *executionContext) field_Commerce_Product_Media_getMedia_argsUsage(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_AddToCart_argsAddToCartInput(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6637,13 +6525,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx cont
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_argsAddToCartInput(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (dto.AddToCart, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["addToCartInput"]
-	if !ok {
+	if _, ok := rawArgs["addToCartInput"]; !ok {
 		var zeroVal dto.AddToCart
 		return zeroVal, nil
 	}
@@ -6657,9 +6541,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_argsAddToCart
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_argsCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6669,13 +6553,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCa
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_argsCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["code"]
-	if !ok {
+	if _, ok := rawArgs["code"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6689,9 +6569,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCa
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_DeleteCartDelivery_argsDeliveryCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6701,13 +6581,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_args
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_argsDeliveryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryCode"]
-	if !ok {
+	if _, ok := rawArgs["deliveryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6721,9 +6597,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_args
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_DeleteItem_argsItemID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6738,13 +6614,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_args(ctx con
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_argsItemID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["itemID"]
-	if !ok {
+	if _, ok := rawArgs["itemID"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6760,13 +6632,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_argsItemID(
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_argsDeliveryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryCode"]
-	if !ok {
+	if _, ok := rawArgs["deliveryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6780,9 +6648,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_argsDelivery
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_RemoveCouponCode_argsCouponCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6792,13 +6660,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_args(c
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_argsCouponCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["couponCode"]
-	if !ok {
+	if _, ok := rawArgs["couponCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6812,9 +6676,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_argsCo
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_RemoveGiftCard_argsGiftCardCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6824,13 +6688,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_argsGiftCardCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["giftCardCode"]
-	if !ok {
+	if _, ok := rawArgs["giftCardCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -6844,9 +6704,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_argsGift
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateAdditionalData_argsAdditionalData(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6856,13 +6716,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_ar
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_argsAdditionalData(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]*dto.KeyValue, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["additionalData"]
-	if !ok {
+	if _, ok := rawArgs["additionalData"]; !ok {
 		var zeroVal []*dto.KeyValue
 		return zeroVal, nil
 	}
@@ -6876,9 +6732,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_ar
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateBillingAddress_argsAddressForm(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6888,13 +6744,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_ar
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_argsAddressForm(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (*forms.AddressForm, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["addressForm"]
-	if !ok {
+	if _, ok := rawArgs["addressForm"]; !ok {
 		var zeroVal *forms.AddressForm
 		return zeroVal, nil
 	}
@@ -6908,9 +6760,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_ar
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_argsData(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6920,13 +6772,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditio
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_argsData(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]*dto.DeliveryAdditionalData, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["data"]
-	if !ok {
+	if _, ok := rawArgs["data"]; !ok {
 		var zeroVal []*dto.DeliveryAdditionalData
 		return zeroVal, nil
 	}
@@ -6940,9 +6788,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditio
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_argsDeliveryAdresses(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6952,13 +6800,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_argsDeliveryAdresses(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]*forms.DeliveryForm, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryAdresses"]
-	if !ok {
+	if _, ok := rawArgs["deliveryAdresses"]; !ok {
 		var zeroVal []*forms.DeliveryForm
 		return zeroVal, nil
 	}
@@ -6972,9 +6816,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_argsShippingOptions(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -6984,13 +6828,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingO
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_argsShippingOptions(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]*dto.DeliveryShippingOption, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["shippingOptions"]
-	if !ok {
+	if _, ok := rawArgs["shippingOptions"]; !ok {
 		var zeroVal []*dto.DeliveryShippingOption
 		return zeroVal, nil
 	}
@@ -7004,9 +6844,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingO
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateItemBundleConfig_argsItemID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7021,13 +6861,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_argsItemID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["itemID"]
-	if !ok {
+	if _, ok := rawArgs["itemID"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7043,13 +6879,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_argsBundleConfig(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]*dto.ChoiceConfiguration, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["bundleConfig"]
-	if !ok {
+	if _, ok := rawArgs["bundleConfig"]; !ok {
 		var zeroVal []*dto.ChoiceConfiguration
 		return zeroVal, nil
 	}
@@ -7063,9 +6895,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemBundleConfig_
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateItemQty_argsItemID(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7085,13 +6917,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx 
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsItemID(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["itemID"]
-	if !ok {
+	if _, ok := rawArgs["itemID"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7107,13 +6935,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsItemI
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsDeliveryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryCode"]
-	if !ok {
+	if _, ok := rawArgs["deliveryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7129,13 +6953,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsDeliv
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsQty(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (int, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["qty"]
-	if !ok {
+	if _, ok := rawArgs["qty"]; !ok {
 		var zeroVal int
 		return zeroVal, nil
 	}
@@ -7149,9 +6969,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_argsQty(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Cart_UpdateSelectedPayment_argsGateway(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7166,13 +6986,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_a
 }
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_argsGateway(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["gateway"]
-	if !ok {
+	if _, ok := rawArgs["gateway"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7188,13 +7004,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_a
 
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_argsMethod(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["method"]
-	if !ok {
+	if _, ok := rawArgs["method"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7208,9 +7020,9 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_a
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Mutation_Commerce_Checkout_StartPlaceOrder_argsReturnURL(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7220,13 +7032,9 @@ func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_arg
 }
 func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_argsReturnURL(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["returnUrl"]
-	if !ok {
+	if _, ok := rawArgs["returnUrl"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7240,9 +7048,9 @@ func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_arg
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_Commerce_Cart_QtyRestriction_argsMarketplaceCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7262,13 +7070,9 @@ func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx co
 }
 func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsMarketplaceCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["marketplaceCode"]
-	if !ok {
+	if _, ok := rawArgs["marketplaceCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7284,13 +7088,9 @@ func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsMarketp
 
 func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsVariantCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (*string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["variantCode"]
-	if !ok {
+	if _, ok := rawArgs["variantCode"]; !ok {
 		var zeroVal *string
 		return zeroVal, nil
 	}
@@ -7306,13 +7106,9 @@ func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsVariant
 
 func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsDeliveryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["deliveryCode"]
-	if !ok {
+	if _, ok := rawArgs["deliveryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7326,9 +7122,9 @@ func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_argsDeliver
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_Commerce_CategoryTree_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_Commerce_CategoryTree_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_Commerce_CategoryTree_argsActiveCategoryCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7338,13 +7134,9 @@ func (ec *executionContext) field_Query_Commerce_CategoryTree_args(ctx context.C
 }
 func (ec *executionContext) field_Query_Commerce_CategoryTree_argsActiveCategoryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["activeCategoryCode"]
-	if !ok {
+	if _, ok := rawArgs["activeCategoryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7358,9 +7150,9 @@ func (ec *executionContext) field_Query_Commerce_CategoryTree_argsActiveCategory
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_Commerce_Category_argsCategoryCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7375,13 +7167,9 @@ func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Conte
 }
 func (ec *executionContext) field_Query_Commerce_Category_argsCategoryCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["categoryCode"]
-	if !ok {
+	if _, ok := rawArgs["categoryCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7397,13 +7185,9 @@ func (ec *executionContext) field_Query_Commerce_Category_argsCategoryCode(
 
 func (ec *executionContext) field_Query_Commerce_Category_argsCategorySearchRequest(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (*searchdto.CommerceSearchRequest, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["categorySearchRequest"]
-	if !ok {
+	if _, ok := rawArgs["categorySearchRequest"]; !ok {
 		var zeroVal *searchdto.CommerceSearchRequest
 		return zeroVal, nil
 	}
@@ -7417,9 +7201,9 @@ func (ec *executionContext) field_Query_Commerce_Category_argsCategorySearchRequ
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_Commerce_Product_Search_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_Commerce_Product_Search_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_Commerce_Product_Search_argsSearchRequest(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7429,13 +7213,9 @@ func (ec *executionContext) field_Query_Commerce_Product_Search_args(ctx context
 }
 func (ec *executionContext) field_Query_Commerce_Product_Search_argsSearchRequest(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (searchdto.CommerceSearchRequest, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["searchRequest"]
-	if !ok {
+	if _, ok := rawArgs["searchRequest"]; !ok {
 		var zeroVal searchdto.CommerceSearchRequest
 		return zeroVal, nil
 	}
@@ -7449,9 +7229,9 @@ func (ec *executionContext) field_Query_Commerce_Product_Search_argsSearchReques
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query_Commerce_Product_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_Commerce_Product_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query_Commerce_Product_argsMarketPlaceCode(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7471,13 +7251,9 @@ func (ec *executionContext) field_Query_Commerce_Product_args(ctx context.Contex
 }
 func (ec *executionContext) field_Query_Commerce_Product_argsMarketPlaceCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["marketPlaceCode"]
-	if !ok {
+	if _, ok := rawArgs["marketPlaceCode"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7493,13 +7269,9 @@ func (ec *executionContext) field_Query_Commerce_Product_argsMarketPlaceCode(
 
 func (ec *executionContext) field_Query_Commerce_Product_argsVariantMarketPlaceCode(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (*string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["variantMarketPlaceCode"]
-	if !ok {
+	if _, ok := rawArgs["variantMarketPlaceCode"]; !ok {
 		var zeroVal *string
 		return zeroVal, nil
 	}
@@ -7515,13 +7287,9 @@ func (ec *executionContext) field_Query_Commerce_Product_argsVariantMarketPlaceC
 
 func (ec *executionContext) field_Query_Commerce_Product_argsBundleConfiguration(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) ([]*graphqlproductdto.ChoiceConfiguration, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["bundleConfiguration"]
-	if !ok {
+	if _, ok := rawArgs["bundleConfiguration"]; !ok {
 		var zeroVal []*graphqlproductdto.ChoiceConfiguration
 		return zeroVal, nil
 	}
@@ -7535,9 +7303,9 @@ func (ec *executionContext) field_Query_Commerce_Product_argsBundleConfiguration
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field_Query___type_argsName(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7547,13 +7315,9 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 }
 func (ec *executionContext) field_Query___type_argsName(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (string, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["name"]
-	if !ok {
+	if _, ok := rawArgs["name"]; !ok {
 		var zeroVal string
 		return zeroVal, nil
 	}
@@ -7567,9 +7331,65 @@ func (ec *executionContext) field_Query___type_argsName(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field___Directive_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
+	arg0, err := ec.field___Directive_args_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["includeDeprecated"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field___Directive_args_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*bool, error) {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
+		var zeroVal *bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+	}
+
+	var zeroVal *bool
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field___Field_args_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field___Field_args_argsIncludeDeprecated(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["includeDeprecated"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field___Field_args_argsIncludeDeprecated(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (*bool, error) {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
+		var zeroVal *bool
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
+	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		return ec.unmarshalOBoolean2ᚖbool(ctx, tmp)
+	}
+
+	var zeroVal *bool
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
 	arg0, err := ec.field___Type_enumValues_argsIncludeDeprecated(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7579,13 +7399,9 @@ func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, ra
 }
 func (ec *executionContext) field___Type_enumValues_argsIncludeDeprecated(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (bool, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["includeDeprecated"]
-	if !ok {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
 		var zeroVal bool
 		return zeroVal, nil
 	}
@@ -7599,9 +7415,9 @@ func (ec *executionContext) field___Type_enumValues_argsIncludeDeprecated(
 	return zeroVal, nil
 }
 
-func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
-	args := map[string]interface{}{}
+	args := map[string]any{}
 	arg0, err := ec.field___Type_fields_argsIncludeDeprecated(ctx, rawArgs)
 	if err != nil {
 		return nil, err
@@ -7611,13 +7427,9 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 }
 func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
 	ctx context.Context,
-	rawArgs map[string]interface{},
+	rawArgs map[string]any,
 ) (bool, error) {
-	// We won't call the directive if the argument is null.
-	// Set call_argument_directives_with_null to true to call directives
-	// even if the argument is null.
-	_, ok := rawArgs["includeDeprecated"]
-	if !ok {
+	if _, ok := rawArgs["includeDeprecated"]; !ok {
 		var zeroVal bool
 		return zeroVal, nil
 	}
@@ -7651,7 +7463,7 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData_customAttributes(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Cart_AdditionalData().CustomAttributes(rctx, obj)
 	})
@@ -7699,7 +7511,7 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData_reservedOrderID(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ReservedOrderID, nil
 	})
@@ -7743,7 +7555,7 @@ func (ec *executionContext) _Commerce_Cart_Address_vat(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Vat, nil
 	})
@@ -7787,7 +7599,7 @@ func (ec *executionContext) _Commerce_Cart_Address_firstname(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Firstname, nil
 	})
@@ -7831,7 +7643,7 @@ func (ec *executionContext) _Commerce_Cart_Address_lastname(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Lastname, nil
 	})
@@ -7875,7 +7687,7 @@ func (ec *executionContext) _Commerce_Cart_Address_middleName(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MiddleName, nil
 	})
@@ -7919,7 +7731,7 @@ func (ec *executionContext) _Commerce_Cart_Address_title(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title, nil
 	})
@@ -7963,7 +7775,7 @@ func (ec *executionContext) _Commerce_Cart_Address_salutation(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Salutation, nil
 	})
@@ -8007,7 +7819,7 @@ func (ec *executionContext) _Commerce_Cart_Address_street(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Street, nil
 	})
@@ -8051,7 +7863,7 @@ func (ec *executionContext) _Commerce_Cart_Address_streetNr(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.StreetNr, nil
 	})
@@ -8095,7 +7907,7 @@ func (ec *executionContext) _Commerce_Cart_Address_additionalAddressLines(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AdditionalAddressLines, nil
 	})
@@ -8136,7 +7948,7 @@ func (ec *executionContext) _Commerce_Cart_Address_company(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Company, nil
 	})
@@ -8180,7 +7992,7 @@ func (ec *executionContext) _Commerce_Cart_Address_city(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.City, nil
 	})
@@ -8224,7 +8036,7 @@ func (ec *executionContext) _Commerce_Cart_Address_postCode(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PostCode, nil
 	})
@@ -8268,7 +8080,7 @@ func (ec *executionContext) _Commerce_Cart_Address_state(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.State, nil
 	})
@@ -8312,7 +8124,7 @@ func (ec *executionContext) _Commerce_Cart_Address_regionCode(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RegionCode, nil
 	})
@@ -8356,7 +8168,7 @@ func (ec *executionContext) _Commerce_Cart_Address_country(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Country, nil
 	})
@@ -8400,7 +8212,7 @@ func (ec *executionContext) _Commerce_Cart_Address_countryCode(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CountryCode, nil
 	})
@@ -8444,7 +8256,7 @@ func (ec *executionContext) _Commerce_Cart_Address_telephone(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Telephone, nil
 	})
@@ -8488,7 +8300,7 @@ func (ec *executionContext) _Commerce_Cart_Address_email(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Email, nil
 	})
@@ -8532,7 +8344,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_vat(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Vat, nil
 	})
@@ -8576,7 +8388,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_firstname(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Firstname, nil
 	})
@@ -8620,7 +8432,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_lastname(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Lastname, nil
 	})
@@ -8664,7 +8476,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_middleName(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MiddleName, nil
 	})
@@ -8708,7 +8520,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_title(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title, nil
 	})
@@ -8752,7 +8564,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_salutation(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Salutation, nil
 	})
@@ -8796,7 +8608,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_street(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Street, nil
 	})
@@ -8840,7 +8652,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_streetNr(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.StreetNr, nil
 	})
@@ -8884,7 +8696,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine1(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AddressLine1, nil
 	})
@@ -8928,7 +8740,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine2(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AddressLine2, nil
 	})
@@ -8972,7 +8784,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_company(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Company, nil
 	})
@@ -9016,7 +8828,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_city(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.City, nil
 	})
@@ -9060,7 +8872,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_postCode(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PostCode, nil
 	})
@@ -9104,7 +8916,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_state(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.State, nil
 	})
@@ -9148,7 +8960,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_regionCode(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RegionCode, nil
 	})
@@ -9192,7 +9004,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_country(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Country, nil
 	})
@@ -9236,7 +9048,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_countryCode(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CountryCode, nil
 	})
@@ -9280,7 +9092,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_phoneNumber(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PhoneNumber, nil
 	})
@@ -9324,7 +9136,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_email(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Email, nil
 	})
@@ -9368,7 +9180,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_campaignCode(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CampaignCode, nil
 	})
@@ -9412,7 +9224,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_couponCode(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CouponCode, nil
 	})
@@ -9456,7 +9268,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_label(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -9500,7 +9312,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_applied(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Applied, nil
 	})
@@ -9550,7 +9362,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_type(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -9594,7 +9406,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_isItemRelated(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsItemRelated, nil
 	})
@@ -9638,7 +9450,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_sortOrder(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SortOrder, nil
 	})
@@ -9682,7 +9494,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_items(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Items(), nil
 	})
@@ -9739,7 +9551,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_byCampaignCode(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ByCampaignCode(fc.Args["campaignCode"].(string)), nil
 	})
@@ -9802,7 +9614,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_byType(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ByType(fc.Args["filterType"].(string)), nil
 	})
@@ -9865,7 +9677,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_code(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -9909,7 +9721,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_applied(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Applied, nil
 	})
@@ -9959,7 +9771,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_remaining(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Remaining, nil
 	})
@@ -10009,7 +9821,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_hasRemaining(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasRemaining(), nil
 	})
@@ -10053,7 +9865,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_formData(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.FormData, nil
 	})
@@ -10134,7 +9946,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_validationInfo(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ValidationInfo, nil
 	})
@@ -10181,7 +9993,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_processed(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Processed, nil
 	})
@@ -10222,7 +10034,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_id(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ID, nil
 	})
@@ -10266,7 +10078,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_entityID(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.EntityID, nil
 	})
@@ -10310,7 +10122,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_billingAddress(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.BillingAddress, nil
 	})
@@ -10389,7 +10201,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_purchaser(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Purchaser, nil
 	})
@@ -10438,7 +10250,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_deliveries(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Deliveries, nil
 	})
@@ -10507,7 +10319,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_additionalData(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AdditionalData, nil
 	})
@@ -10557,7 +10369,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_paymentSelection(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PaymentSelection, nil
 	})
@@ -10598,7 +10410,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.BelongsToAuthenticatedUser, nil
 	})
@@ -10642,7 +10454,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_authenticatedUserID(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AuthenticatedUserID, nil
 	})
@@ -10686,7 +10498,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_appliedCouponCodes(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AppliedCouponCodes, nil
 	})
@@ -10731,7 +10543,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_defaultCurrency(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultCurrency, nil
 	})
@@ -10775,7 +10587,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_totalitems(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Totalitems, nil
 	})
@@ -10826,7 +10638,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_itemCount(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ItemCount(), nil
 	})
@@ -10870,7 +10682,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_productCount(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ProductCount(), nil
 	})
@@ -10914,7 +10726,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_isPaymentSelected(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsPaymentSelected(), nil
 	})
@@ -10958,7 +10770,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_grandTotal(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GrandTotal, nil
 	})
@@ -11008,7 +10820,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumTotalTaxAmount(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SumTotalTaxAmount(), nil
 	})
@@ -11058,7 +10870,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNet(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalNet, nil
 	})
@@ -11108,7 +10920,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_appliedGiftCards(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AppliedGiftCards, nil
 	})
@@ -11159,7 +10971,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryByCode(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Cart_Cart().GetDeliveryByCode(rctx, obj, fc.Args["deliveryCode"].(string))
 	})
@@ -11239,7 +11051,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryCodes(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetDeliveryCodes(), nil
 	})
@@ -11280,7 +11092,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getMainShippingEMail(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetMainShippingEMail(), nil
 	})
@@ -11324,7 +11136,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_isEmpty(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsEmpty(), nil
 	})
@@ -11368,7 +11180,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasDeliveryForCode(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasDeliveryForCode(fc.Args["deliveryCode"].(string)), nil
 	})
@@ -11423,7 +11235,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryByItemID(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetDeliveryByItemID(fc.Args["itemID"].(string))
 	})
@@ -11506,7 +11318,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getByItemID(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetByItemID(fc.Args["itemID"].(string))
 	})
@@ -11595,7 +11407,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getTotalQty(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetTotalQty(fc.Args["marketPlaceCode"].(string), fc.Args["variantCode"].(string)), nil
 	})
@@ -11647,7 +11459,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getByExternalReference(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetByExternalReference(fc.Args["ref"].(string))
 	})
@@ -11736,7 +11548,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getVoucherSavings(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetVoucherSavings(), nil
 	})
@@ -11786,7 +11598,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getCartTeaser(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetCartTeaser(), nil
 	})
@@ -11838,7 +11650,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingNet(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShippingNet, nil
 	})
@@ -11888,7 +11700,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingNetWithDiscounts(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShippingNetWithDiscounts, nil
 	})
@@ -11938,7 +11750,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingGross(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShippingGross, nil
 	})
@@ -11988,7 +11800,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_shippingGrossWithDiscounts(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShippingGrossWithDiscounts, nil
 	})
@@ -12038,7 +11850,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasShippingCosts(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasShippingCosts(), nil
 	})
@@ -12082,7 +11894,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_allShippingTitles(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AllShippingTitles(), nil
 	})
@@ -12123,7 +11935,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGross(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalGross, nil
 	})
@@ -12173,7 +11985,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalGrossWithDiscounts, nil
 	})
@@ -12223,7 +12035,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalNetWithDiscounts, nil
 	})
@@ -12273,7 +12085,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_totalDiscountAmount(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalDiscountAmount, nil
 	})
@@ -12323,7 +12135,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_nonItemRelatedDiscountAmount(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.NonItemRelatedDiscountAmount, nil
 	})
@@ -12373,7 +12185,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_itemRelatedDiscountAmount(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ItemRelatedDiscountAmount, nil
 	})
@@ -12423,7 +12235,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedCouponCode(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasAppliedCouponCode(), nil
 	})
@@ -12467,7 +12279,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getPaymentReference(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetPaymentReference(), nil
 	})
@@ -12511,7 +12323,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getTotalItemsByType(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetTotalItemsByType(fc.Args["typeCode"].(string)), nil
 	})
@@ -12573,7 +12385,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_grandTotalCharges(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GrandTotalCharges(), nil
 	})
@@ -12629,7 +12441,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedGiftCards(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasAppliedGiftCards(), nil
 	})
@@ -12673,7 +12485,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasRemainingGiftCards(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasRemainingGiftCards(), nil
 	})
@@ -12717,7 +12529,7 @@ func (ec *executionContext) _Commerce_Cart_CouponCode_code(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -12761,7 +12573,7 @@ func (ec *executionContext) _Commerce_Cart_CustomAttributes_get(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Get(fc.Args["key"].(string)), nil
 	})
@@ -12819,7 +12631,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_cart(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Cart(), nil
 	})
@@ -12961,7 +12773,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_decoratedDeliveries(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DecoratedDeliveries(), nil
 	})
@@ -13008,7 +12820,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_getDecoratedDeliveryByC
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetDecoratedDeliveryByCode(fc.Args["deliveryCode"].(string)), nil
 	})
@@ -13066,7 +12878,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_getAllPaymentRequiredIt
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetAllPaymentRequiredItems(), nil
 	})
@@ -13118,7 +12930,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_cartSummary(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CartSummary(), nil
 	})
@@ -13182,7 +12994,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_delivery(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Delivery, nil
 	})
@@ -13254,7 +13066,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_decoratedItems(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DecoratedItems, nil
 	})
@@ -13301,7 +13113,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem_item(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Item, nil
 	})
@@ -13376,7 +13188,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem_product(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Product, nil
 	})
@@ -13417,7 +13229,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_gateway(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Gateway(), nil
 	})
@@ -13461,7 +13273,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_totalValue(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalValue(), nil
 	})
@@ -13511,7 +13323,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_cartSplit(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Cart_DefaultPaymentSelection().CartSplit(rctx, obj)
 	})
@@ -13558,7 +13370,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_deliveryInfo(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeliveryInfo, nil
 	})
@@ -13615,7 +13427,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_cartitems(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Cartitems, nil
 	})
@@ -13690,7 +13502,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_shippingItem(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShippingItem, nil
 	})
@@ -13747,7 +13559,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGross(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalGross, nil
 	})
@@ -13794,7 +13606,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_grandTotal(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GrandTotal, nil
 	})
@@ -13841,7 +13653,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumTotalTaxAmount(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SumTotalTaxAmount(), nil
 	})
@@ -13888,7 +13700,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNet(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalNet, nil
 	})
@@ -13935,7 +13747,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_totalDiscountAmount(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalDiscountAmount, nil
 	})
@@ -13982,7 +13794,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_nonItemRelatedDiscountAmount
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.NonItemRelatedDiscountAmount, nil
 	})
@@ -14029,7 +13841,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_itemRelatedDiscountAmount(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ItemRelatedDiscountAmount, nil
 	})
@@ -14076,7 +13888,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGrossWithDiscounts(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalGrossWithDiscounts, nil
 	})
@@ -14123,7 +13935,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTotalNetWithDiscounts, nil
 	})
@@ -14173,7 +13985,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_hasItems(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasItems(), nil
 	})
@@ -14217,7 +14029,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeliveryCode, nil
 	})
@@ -14261,7 +14073,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_formData(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.FormData, nil
 	})
@@ -14342,7 +14154,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_useBillingAddress
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UseBillingAddress, nil
 	})
@@ -14386,7 +14198,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_method(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Method, nil
 	})
@@ -14427,7 +14239,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_carrier(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Carrier, nil
 	})
@@ -14468,7 +14280,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_desiredTime(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DesiredTime, nil
 	})
@@ -14509,7 +14321,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_validationInfo(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ValidationInfo, nil
 	})
@@ -14556,7 +14368,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_processed(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Processed, nil
 	})
@@ -14597,7 +14409,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_code(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -14641,7 +14453,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_workflow(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Workflow, nil
 	})
@@ -14685,7 +14497,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_method(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Method, nil
 	})
@@ -14729,7 +14541,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_carrier(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Carrier, nil
 	})
@@ -14773,7 +14585,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_deliveryLocation(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeliveryLocation, nil
 	})
@@ -14824,7 +14636,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_desiredTime(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DesiredTime, nil
 	})
@@ -14865,7 +14677,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_additionalData(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Cart_DeliveryInfo().AdditionalData(rctx, obj)
 	})
@@ -14913,7 +14725,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_type(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -14957,7 +14769,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_address(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Address, nil
 	})
@@ -15036,7 +14848,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_useBillingAddress(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UseBillingAddress, nil
 	})
@@ -15080,7 +14892,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_code(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -15124,7 +14936,7 @@ func (ec *executionContext) _Commerce_Cart_ExistingCustomerData_id(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ID, nil
 	})
@@ -15168,7 +14980,7 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_messageKey(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MessageKey, nil
 	})
@@ -15212,7 +15024,7 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_defaultLabel(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultLabel, nil
 	})
@@ -15256,7 +15068,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_messageKey(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MessageKey, nil
 	})
@@ -15300,7 +15112,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_defaultLabel(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultLabel, nil
 	})
@@ -15344,7 +15156,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_fieldName(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.FieldName, nil
 	})
@@ -15388,7 +15200,7 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_fieldErrors(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.FieldErrors, nil
 	})
@@ -15437,7 +15249,7 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_generalErrors(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GeneralErrors, nil
 	})
@@ -15484,7 +15296,7 @@ func (ec *executionContext) _Commerce_Cart_Item_id(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ID, nil
 	})
@@ -15528,7 +15340,7 @@ func (ec *executionContext) _Commerce_Cart_Item_externalReference(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ExternalReference, nil
 	})
@@ -15572,7 +15384,7 @@ func (ec *executionContext) _Commerce_Cart_Item_marketplaceCode(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketplaceCode, nil
 	})
@@ -15616,7 +15428,7 @@ func (ec *executionContext) _Commerce_Cart_Item_variantMarketPlaceCode(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VariantMarketPlaceCode, nil
 	})
@@ -15660,7 +15472,7 @@ func (ec *executionContext) _Commerce_Cart_Item_productName(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ProductName, nil
 	})
@@ -15704,7 +15516,7 @@ func (ec *executionContext) _Commerce_Cart_Item_sourceID(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SourceID, nil
 	})
@@ -15748,7 +15560,7 @@ func (ec *executionContext) _Commerce_Cart_Item_qty(ctx context.Context, field g
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Qty, nil
 	})
@@ -15792,7 +15604,7 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataKeys(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AdditionalDataKeys(), nil
 	})
@@ -15833,7 +15645,7 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataValues(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AdditionalDataValues(), nil
 	})
@@ -15874,7 +15686,7 @@ func (ec *executionContext) _Commerce_Cart_Item_getAdditionalData(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetAdditionalData(fc.Args["key"].(string)), nil
 	})
@@ -15926,7 +15738,7 @@ func (ec *executionContext) _Commerce_Cart_Item_hasAdditionalDataKey(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasAdditionalDataKey(fc.Args["key"].(string)), nil
 	})
@@ -15978,7 +15790,7 @@ func (ec *executionContext) _Commerce_Cart_Item_singlePriceGross(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SinglePriceGross, nil
 	})
@@ -16028,7 +15840,7 @@ func (ec *executionContext) _Commerce_Cart_Item_singlePriceNet(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SinglePriceNet, nil
 	})
@@ -16078,7 +15890,7 @@ func (ec *executionContext) _Commerce_Cart_Item_rowPriceGross(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RowPriceGross, nil
 	})
@@ -16128,7 +15940,7 @@ func (ec *executionContext) _Commerce_Cart_Item_rowPriceNet(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RowPriceNet, nil
 	})
@@ -16178,7 +15990,7 @@ func (ec *executionContext) _Commerce_Cart_Item_appliedDiscounts(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Cart_Item().AppliedDiscounts(rctx, obj)
 	})
@@ -16230,7 +16042,7 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_itemID(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ItemID, nil
 	})
@@ -16274,7 +16086,7 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ErrorMessageKey, nil
 	})
@@ -16318,7 +16130,7 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_key(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Key, nil
 	})
@@ -16362,7 +16174,7 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_value(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value, nil
 	})
@@ -16406,7 +16218,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split_qualifier(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Qualifier, nil
 	})
@@ -16458,7 +16270,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split_charge(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Charge, nil
 	})
@@ -16512,7 +16324,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_type(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ChargeType, nil
 	})
@@ -16556,7 +16368,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_metho
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Method, nil
 	})
@@ -16600,7 +16412,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_refer
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ChargeReference, nil
 	})
@@ -16644,7 +16456,7 @@ func (ec *executionContext) _Commerce_Cart_Person_address(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Address, nil
 	})
@@ -16723,7 +16535,7 @@ func (ec *executionContext) _Commerce_Cart_Person_personalDetails(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PersonalDetails, nil
 	})
@@ -16777,7 +16589,7 @@ func (ec *executionContext) _Commerce_Cart_Person_existingCustomerData(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ExistingCustomerData, nil
 	})
@@ -16822,7 +16634,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_dateOfBirth(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DateOfBirth, nil
 	})
@@ -16866,7 +16678,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportCountry(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PassportCountry, nil
 	})
@@ -16910,7 +16722,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportNumber(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PassportNumber, nil
 	})
@@ -16954,7 +16766,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_nationality(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Nationality, nil
 	})
@@ -16998,7 +16810,7 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_orderNumber(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.OrderNumber, nil
 	})
@@ -17042,7 +16854,7 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_deliveryCode(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeliveryCode, nil
 	})
@@ -17086,7 +16898,7 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem_amount(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Amount, nil
 	})
@@ -17136,7 +16948,7 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem_itemID(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ItemID, nil
 	})
@@ -17180,7 +16992,7 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_cartItems(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CartItems(), nil
 	})
@@ -17227,7 +17039,7 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_shippingItems(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShippingItems(), nil
 	})
@@ -17274,7 +17086,7 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_totalItems(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalItems(), nil
 	})
@@ -17321,7 +17133,7 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem_amount(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Amount, nil
 	})
@@ -17371,7 +17183,7 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem_deliveryInfoCode(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeliveryInfoCode, nil
 	})
@@ -17415,7 +17227,7 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_amount(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Amount, nil
 	})
@@ -17465,7 +17277,7 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_code(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -17509,7 +17321,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_isRestricted(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsRestricted, nil
 	})
@@ -17553,7 +17365,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MaxAllowed, nil
 	})
@@ -17597,7 +17409,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_remainingDiffere
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RemainingDifference, nil
 	})
@@ -17641,7 +17453,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_restrictorName(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RestrictorName, nil
 	})
@@ -17685,7 +17497,7 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_validationInfo(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ValidationInfo, nil
 	})
@@ -17732,7 +17544,7 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_processed(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Processed, nil
 	})
@@ -17773,7 +17585,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_title(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title, nil
 	})
@@ -17817,7 +17629,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceNet(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PriceNet, nil
 	})
@@ -17867,7 +17679,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_taxAmount(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TaxAmount, nil
 	})
@@ -17917,7 +17729,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceGross(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PriceGross, nil
 	})
@@ -17967,7 +17779,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_appliedDiscounts(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Cart_ShippingItem().AppliedDiscounts(rctx, obj)
 	})
@@ -18019,7 +17831,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_totalWithDiscountInclTax
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalWithDiscountInclTax(), nil
 	})
@@ -18069,7 +17881,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_tax(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Tax(), nil
 	})
@@ -18121,7 +17933,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_discounts(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Discounts(), nil
 	})
@@ -18173,7 +17985,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_totalDiscountAmount(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalDiscountAmount(), nil
 	})
@@ -18220,7 +18032,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_totalGiftCardAmount(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalGiftCardAmount(), nil
 	})
@@ -18267,7 +18079,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_grandTotalWithGiftCards(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GrandTotalWithGiftCards(), nil
 	})
@@ -18314,7 +18126,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumTotalDiscountWithGiftCards
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SumTotalDiscountWithGiftCardsAmount(), nil
 	})
@@ -18361,7 +18173,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_hasAppliedDiscounts(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasAppliedDiscounts(), nil
 	})
@@ -18405,7 +18217,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumTaxes(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SumTaxes(), nil
 	})
@@ -18452,7 +18264,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumPaymentSelectionCartSplitV
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SumPaymentSelectionCartSplitValueAmountByMethods(fc.Args["methods"].([]string)), nil
 	})
@@ -18510,7 +18322,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumPaymentSelectionCartSplitP
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SumPaymentSelectionCartSplitPriceAmountByMethods(fc.Args["methods"].([]string)), nil
 	})
@@ -18568,7 +18380,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_amount(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Amount, nil
 	})
@@ -18618,7 +18430,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_type(ctx context.Context, field g
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -18662,7 +18474,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_rate(ctx context.Context, field g
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Rate, nil
 	})
@@ -18703,7 +18515,7 @@ func (ec *executionContext) _Commerce_Cart_Taxes_items(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Items, nil
 	})
@@ -18755,7 +18567,7 @@ func (ec *executionContext) _Commerce_Cart_Taxes_getByType(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetByType(fc.Args["taxType"].(string)), nil
 	})
@@ -18818,7 +18630,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_productCount(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ProductCount, nil
 	})
@@ -18859,7 +18671,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_ItemCount(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ItemCount, nil
 	})
@@ -18900,7 +18712,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_DeliveryCodes(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeliveryCodes, nil
 	})
@@ -18941,7 +18753,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_code(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -18985,7 +18797,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_title(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title, nil
 	})
@@ -19029,7 +18841,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_price(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Price, nil
 	})
@@ -19079,7 +18891,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_type(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -19123,7 +18935,7 @@ func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Processed, nil
 	})
@@ -19164,7 +18976,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_hasCommonError(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasCommonError, nil
 	})
@@ -19208,7 +19020,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_commonErrorMessageKe
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CommonErrorMessageKey, nil
 	})
@@ -19252,7 +19064,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_itemResults(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ItemResults, nil
 	})
@@ -19299,7 +19111,7 @@ func (ec *executionContext) _Commerce_CategoryData_code(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code(), nil
 	})
@@ -19343,7 +19155,7 @@ func (ec *executionContext) _Commerce_CategoryData_name(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name(), nil
 	})
@@ -19387,7 +19199,7 @@ func (ec *executionContext) _Commerce_CategoryData_path(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Path(), nil
 	})
@@ -19431,7 +19243,7 @@ func (ec *executionContext) _Commerce_CategoryData_active(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Active(), nil
 	})
@@ -19475,7 +19287,7 @@ func (ec *executionContext) _Commerce_CategoryData_promoted(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Promoted(), nil
 	})
@@ -19519,7 +19331,7 @@ func (ec *executionContext) _Commerce_CategoryData_attributes(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes(), nil
 	})
@@ -19571,7 +19383,7 @@ func (ec *executionContext) _Commerce_CategoryTree_code(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code(), nil
 	})
@@ -19615,7 +19427,7 @@ func (ec *executionContext) _Commerce_CategoryTree_name(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name(), nil
 	})
@@ -19659,7 +19471,7 @@ func (ec *executionContext) _Commerce_CategoryTree_path(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Path(), nil
 	})
@@ -19703,7 +19515,7 @@ func (ec *executionContext) _Commerce_CategoryTree_active(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Active(), nil
 	})
@@ -19747,7 +19559,7 @@ func (ec *executionContext) _Commerce_CategoryTree_subTrees(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubTrees(), nil
 	})
@@ -19788,7 +19600,7 @@ func (ec *executionContext) _Commerce_CategoryTree_hasChilds(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasChilds(), nil
 	})
@@ -19832,7 +19644,7 @@ func (ec *executionContext) _Commerce_CategoryTree_documentCount(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DocumentCount(), nil
 	})
@@ -19876,7 +19688,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_code(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -19920,7 +19732,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_label(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -19964,7 +19776,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_values(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Values, nil
 	})
@@ -20011,7 +19823,7 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_value(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value(), nil
 	})
@@ -20055,7 +19867,7 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_label(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -20099,7 +19911,7 @@ func (ec *executionContext) _Commerce_Category_Attributes_get(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Get(fc.Args["code"].(string)), nil
 	})
@@ -20159,7 +19971,7 @@ func (ec *executionContext) _Commerce_Category_Attributes_has(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Has(fc.Args["code"].(string)), nil
 	})
@@ -20211,7 +20023,7 @@ func (ec *executionContext) _Commerce_Category_Attributes_all(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.All(), nil
 	})
@@ -20260,7 +20072,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult_category(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Category, nil
 	})
@@ -20304,7 +20116,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult_productSearchResult(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ProductSearchResult, nil
 	})
@@ -20364,7 +20176,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_cart(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Cart, nil
 	})
@@ -20417,7 +20229,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_orderInfos(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.OrderInfos, nil
 	})
@@ -20466,7 +20278,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_state(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.State, nil
 	})
@@ -20510,7 +20322,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UUID, nil
 	})
@@ -20554,7 +20366,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Gateway, nil
 	})
@@ -20598,7 +20410,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_paymentProv
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PaymentProvider, nil
 	})
@@ -20642,7 +20454,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_method(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Method, nil
 	})
@@ -20686,7 +20498,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_amount(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Amount, nil
 	})
@@ -20736,7 +20548,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title, nil
 	})
@@ -20780,7 +20592,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_ke
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Key, nil
 	})
@@ -20824,7 +20636,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_va
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value, nil
 	})
@@ -20865,7 +20677,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MethodData, nil
 	})
@@ -20909,7 +20721,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Details, nil
 	})
@@ -20953,7 +20765,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Options, nil
 	})
@@ -20997,7 +20809,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MerchantValidationURL, nil
 	})
@@ -21038,7 +20850,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CompleteURL, nil
 	})
@@ -21082,7 +20894,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -21126,7 +20938,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_reas
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reason, nil
 	})
@@ -21170,7 +20982,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reason(), nil
 	})
@@ -21211,7 +21023,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reason(), nil
 	})
@@ -21252,7 +21064,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ValidationResult, nil
 	})
@@ -21304,7 +21116,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reason(), nil
 	})
@@ -21345,7 +21157,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reason(), nil
 	})
@@ -21386,7 +21198,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reason(), nil
 	})
@@ -21427,7 +21239,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -21471,7 +21283,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.URL, nil
 	})
@@ -21515,7 +21327,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Parameters, nil
 	})
@@ -21562,7 +21374,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_na
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -21606,7 +21418,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_UR
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.URL, nil
 	})
@@ -21650,7 +21462,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_na
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -21694,7 +21506,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HT
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HTML, nil
 	})
@@ -21738,7 +21550,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -21782,7 +21594,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.URL, nil
 	})
@@ -21826,7 +21638,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -21870,7 +21682,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PaymentMethod, nil
 	})
@@ -21914,7 +21726,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PaymentRequestAPI, nil
 	})
@@ -21970,7 +21782,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_nam
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -22014,7 +21826,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -22058,7 +21870,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.URL, nil
 	})
@@ -22102,7 +21914,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Data, nil
 	})
@@ -22146,7 +21958,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -22190,7 +22002,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -22234,7 +22046,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PaymentInfos, nil
 	})
@@ -22287,7 +22099,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_placedOrderInfos
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PlacedOrderInfos, nil
 	})
@@ -22334,7 +22146,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Email, nil
 	})
@@ -22378,7 +22190,7 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UUID, nil
 	})
@@ -22422,7 +22234,7 @@ func (ec *executionContext) _Commerce_Customer_Address_id(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ID, nil
 	})
@@ -22466,7 +22278,7 @@ func (ec *executionContext) _Commerce_Customer_Address_additionalAddressLines(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AdditionalAddressLines, nil
 	})
@@ -22507,7 +22319,7 @@ func (ec *executionContext) _Commerce_Customer_Address_city(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.City, nil
 	})
@@ -22551,7 +22363,7 @@ func (ec *executionContext) _Commerce_Customer_Address_company(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Company, nil
 	})
@@ -22595,7 +22407,7 @@ func (ec *executionContext) _Commerce_Customer_Address_countryCode(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CountryCode, nil
 	})
@@ -22639,7 +22451,7 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultBilling(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultBilling, nil
 	})
@@ -22683,7 +22495,7 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultShipping(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultShipping, nil
 	})
@@ -22727,7 +22539,7 @@ func (ec *executionContext) _Commerce_Customer_Address_firstName(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Firstname, nil
 	})
@@ -22771,7 +22583,7 @@ func (ec *executionContext) _Commerce_Customer_Address_lastName(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Lastname, nil
 	})
@@ -22815,7 +22627,7 @@ func (ec *executionContext) _Commerce_Customer_Address_postCode(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PostCode, nil
 	})
@@ -22859,7 +22671,7 @@ func (ec *executionContext) _Commerce_Customer_Address_prefix(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Prefix, nil
 	})
@@ -22903,7 +22715,7 @@ func (ec *executionContext) _Commerce_Customer_Address_regionCode(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.RegionCode, nil
 	})
@@ -22947,7 +22759,7 @@ func (ec *executionContext) _Commerce_Customer_Address_street(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Street, nil
 	})
@@ -22991,7 +22803,7 @@ func (ec *executionContext) _Commerce_Customer_Address_streetNumber(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.StreetNr, nil
 	})
@@ -23035,7 +22847,7 @@ func (ec *executionContext) _Commerce_Customer_Address_state(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.State, nil
 	})
@@ -23079,7 +22891,7 @@ func (ec *executionContext) _Commerce_Customer_Address_telephone(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Telephone, nil
 	})
@@ -23123,7 +22935,7 @@ func (ec *executionContext) _Commerce_Customer_Address_email(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Email, nil
 	})
@@ -23167,7 +22979,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_gender(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Gender, nil
 	})
@@ -23211,7 +23023,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_firstName(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.FirstName, nil
 	})
@@ -23255,7 +23067,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_lastName(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.LastName, nil
 	})
@@ -23299,7 +23111,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_middleName(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MiddleName, nil
 	})
@@ -23343,7 +23155,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_mainEmail(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MainEmail, nil
 	})
@@ -23387,7 +23199,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_prefix(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Prefix, nil
 	})
@@ -23431,7 +23243,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Birthday, nil
 	})
@@ -23472,7 +23284,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Nationality, nil
 	})
@@ -23516,7 +23328,7 @@ func (ec *executionContext) _Commerce_Customer_Result_id(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ID, nil
 	})
@@ -23560,7 +23372,7 @@ func (ec *executionContext) _Commerce_Customer_Result_personalData(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PersonalData, nil
 	})
@@ -23622,7 +23434,7 @@ func (ec *executionContext) _Commerce_Customer_Result_getAddress(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetAddress(fc.Args["id"].(string))
 	})
@@ -23710,7 +23522,7 @@ func (ec *executionContext) _Commerce_Customer_Result_addresses(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Addresses, nil
 	})
@@ -23787,7 +23599,7 @@ func (ec *executionContext) _Commerce_Customer_Result_defaultShippingAddress(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultShippingAddress, nil
 	})
@@ -23864,7 +23676,7 @@ func (ec *executionContext) _Commerce_Customer_Result_defaultBillingAddress(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultBillingAddress, nil
 	})
@@ -23941,7 +23753,7 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_isLoggedIn(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsLoggedIn, nil
 	})
@@ -23985,7 +23797,7 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_userID(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UserID, nil
 	})
@@ -24029,7 +23841,7 @@ func (ec *executionContext) _Commerce_Price_amount(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.FloatAmount(), nil
 	})
@@ -24070,7 +23882,7 @@ func (ec *executionContext) _Commerce_Price_currency(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Currency(), nil
 	})
@@ -24114,7 +23926,7 @@ func (ec *executionContext) _Commerce_Price_Charge_price(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Price, nil
 	})
@@ -24164,7 +23976,7 @@ func (ec *executionContext) _Commerce_Price_Charge_value(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value, nil
 	})
@@ -24214,7 +24026,7 @@ func (ec *executionContext) _Commerce_Price_Charge_type(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -24258,7 +24070,7 @@ func (ec *executionContext) _Commerce_Price_Charge_reference(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reference, nil
 	})
@@ -24302,7 +24114,7 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_type(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -24346,7 +24158,7 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_reference(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reference, nil
 	})
@@ -24390,7 +24202,7 @@ func (ec *executionContext) _Commerce_Price_Charges_items(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Items(), nil
 	})
@@ -24441,7 +24253,7 @@ func (ec *executionContext) _Commerce_Price_Charges_hasType(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasType(fc.Args["ctype"].(string)), nil
 	})
@@ -24493,7 +24305,7 @@ func (ec *executionContext) _Commerce_Price_Charges_hasChargeQualifier(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasChargeQualifier(fc.Args["qualifier"].(domain.ChargeQualifier)), nil
 	})
@@ -24545,7 +24357,7 @@ func (ec *executionContext) _Commerce_Price_Charges_getByChargeQualifierForced(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetByChargeQualifierForced(fc.Args["qualifier"].(domain.ChargeQualifier)), nil
 	})
@@ -24607,7 +24419,7 @@ func (ec *executionContext) _Commerce_Price_Charges_getByTypeForced(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetByTypeForced(fc.Args["ctype"].(string)), nil
 	})
@@ -24669,7 +24481,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_type(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type(), nil
 	})
@@ -24713,7 +24525,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCo
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketPlaceCode(), nil
 	})
@@ -24757,7 +24569,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_identifier(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Identifier(), nil
 	})
@@ -24801,7 +24613,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Media(), nil
 	})
@@ -24851,7 +24663,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Price(), nil
 	})
@@ -24919,7 +24731,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_availablePric
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AvailablePrices(), nil
 	})
@@ -24984,7 +24796,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title(), nil
 	})
@@ -25028,7 +24840,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_categories(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Categories(), nil
 	})
@@ -25078,7 +24890,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -25122,7 +24934,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_shortDescript
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShortDescription(), nil
 	})
@@ -25166,7 +24978,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Meta(), nil
 	})
@@ -25214,7 +25026,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_loyalty(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Loyalty(), nil
 	})
@@ -25266,7 +25078,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_attributes(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes(), nil
 	})
@@ -25322,7 +25134,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variantMarket
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VariantMarketPlaceCode(), nil
 	})
@@ -25366,7 +25178,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variationSele
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VariationSelections(), nil
 	})
@@ -25415,7 +25227,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariati
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ActiveVariationSelections(), nil
 	})
@@ -25466,7 +25278,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_badges(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Badges(), nil
 	})
@@ -25516,7 +25328,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_code(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -25560,7 +25372,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_label(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -25604,7 +25416,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_value(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value, nil
 	})
@@ -25648,7 +25460,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_unitCode(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UnitCode, nil
 	})
@@ -25692,7 +25504,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_code(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -25736,7 +25548,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_codeLabel(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CodeLabel, nil
 	})
@@ -25780,7 +25592,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_label(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -25824,7 +25636,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_value(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value(), nil
 	})
@@ -25868,7 +25680,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_unitCode(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UnitCode, nil
 	})
@@ -25912,7 +25724,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_values(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Values(), nil
 	})
@@ -25953,7 +25765,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_labels(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Labels(), nil
 	})
@@ -25994,7 +25806,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_attributeKeys(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AttributeKeys(), nil
 	})
@@ -26035,7 +25847,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_attributes(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes(), nil
 	})
@@ -26092,7 +25904,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_hasAttribute(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasAttribute(fc.Args["key"].(string)), nil
 	})
@@ -26144,7 +25956,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_getAttribute(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attribute(fc.Args["key"].(string)), nil
 	})
@@ -26212,7 +26024,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_getAttributesByKey(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AttributesByKey(fc.Args["keys"].([]string)), nil
 	})
@@ -26280,7 +26092,7 @@ func (ec *executionContext) _Commerce_Product_Badge_code(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -26324,7 +26136,7 @@ func (ec *executionContext) _Commerce_Product_Badge_label(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -26368,7 +26180,7 @@ func (ec *executionContext) _Commerce_Product_Badges_all(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.All, nil
 	})
@@ -26415,7 +26227,7 @@ func (ec *executionContext) _Commerce_Product_Badges_first(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.First(), nil
 	})
@@ -26462,7 +26274,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_type(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type(), nil
 	})
@@ -26506,7 +26318,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_marketPlaceCode(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketPlaceCode(), nil
 	})
@@ -26550,7 +26362,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_identifier(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Identifier(), nil
 	})
@@ -26594,7 +26406,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_media(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Media(), nil
 	})
@@ -26644,7 +26456,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_price(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Price(), nil
 	})
@@ -26712,7 +26524,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_availablePrices(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AvailablePrices(), nil
 	})
@@ -26777,7 +26589,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_title(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title(), nil
 	})
@@ -26821,7 +26633,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_categories(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Categories(), nil
 	})
@@ -26871,7 +26683,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_description(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -26915,7 +26727,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_shortDescription(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShortDescription(), nil
 	})
@@ -26959,7 +26771,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_meta(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Meta(), nil
 	})
@@ -27007,7 +26819,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_loyalty(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Loyalty(), nil
 	})
@@ -27059,7 +26871,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_attributes(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes(), nil
 	})
@@ -27115,7 +26927,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_badges(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Badges(), nil
 	})
@@ -27165,7 +26977,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_choices(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Choices, nil
 	})
@@ -27220,7 +27032,7 @@ func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Main, nil
 	})
@@ -27274,7 +27086,7 @@ func (ec *executionContext) _Commerce_Product_Categories_all(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.All, nil
 	})
@@ -27325,7 +27137,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_code(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -27369,7 +27181,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_path(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Path, nil
 	})
@@ -27413,7 +27225,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_name(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -27457,7 +27269,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_parent(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Parent, nil
 	})
@@ -27508,7 +27320,7 @@ func (ec *executionContext) _Commerce_Product_Choice_identifier(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Identifier, nil
 	})
@@ -27552,7 +27364,7 @@ func (ec *executionContext) _Commerce_Product_Choice_required(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Required, nil
 	})
@@ -27596,7 +27408,7 @@ func (ec *executionContext) _Commerce_Product_Choice_label(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -27640,7 +27452,7 @@ func (ec *executionContext) _Commerce_Product_Choice_options(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Options, nil
 	})
@@ -27687,7 +27499,7 @@ func (ec *executionContext) _Commerce_Product_Choice_active(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Active, nil
 	})
@@ -27728,7 +27540,7 @@ func (ec *executionContext) _Commerce_Product_Choice_activeOption(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ActiveOption, nil
 	})
@@ -27775,7 +27587,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_type(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type(), nil
 	})
@@ -27819,7 +27631,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCod
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketPlaceCode(), nil
 	})
@@ -27863,7 +27675,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_identifier(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Identifier(), nil
 	})
@@ -27907,7 +27719,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_media(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Media(), nil
 	})
@@ -27957,7 +27769,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Price(), nil
 	})
@@ -28025,7 +27837,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_availablePrice
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AvailablePrices(), nil
 	})
@@ -28090,7 +27902,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title(), nil
 	})
@@ -28134,7 +27946,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_categories(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Categories(), nil
 	})
@@ -28184,7 +27996,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -28228,7 +28040,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_shortDescripti
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShortDescription(), nil
 	})
@@ -28272,7 +28084,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_meta(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Meta(), nil
 	})
@@ -28320,7 +28132,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_loyalty(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Loyalty(), nil
 	})
@@ -28372,7 +28184,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_attributes(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes(), nil
 	})
@@ -28428,7 +28240,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variantSelecti
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.VariantSelection(), nil
 	})
@@ -28478,7 +28290,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_badges(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Badges(), nil
 	})
@@ -28528,7 +28340,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Price, nil
 	})
@@ -28587,7 +28399,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_availablePrices(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AvailablePrices, nil
 	})
@@ -28646,7 +28458,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_earning(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Earning, nil
 	})
@@ -28693,7 +28505,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_type(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -28737,7 +28549,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_default(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Default, nil
 	})
@@ -28787,7 +28599,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_type(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -28831,7 +28643,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_default(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Default, nil
 	})
@@ -28881,7 +28693,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsDiscounted, nil
 	})
@@ -28925,7 +28737,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discounted(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Discounted, nil
 	})
@@ -28975,7 +28787,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discountText(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DiscountText, nil
 	})
@@ -29019,7 +28831,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_minPointsToSpent
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MinPointsToSpent, nil
 	})
@@ -29063,7 +28875,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MaxPointsToSpent, nil
 	})
@@ -29107,7 +28919,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_context(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Context, nil
 	})
@@ -29161,7 +28973,7 @@ func (ec *executionContext) _Commerce_Product_Media_all(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.All, nil
 	})
@@ -29214,7 +29026,7 @@ func (ec *executionContext) _Commerce_Product_Media_getMedia(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.GetMedia(fc.Args["usage"].(string)), nil
 	})
@@ -29281,7 +29093,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_type(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -29325,7 +29137,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_mimeType(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MimeType, nil
 	})
@@ -29369,7 +29181,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_usage(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Usage, nil
 	})
@@ -29413,7 +29225,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_title(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title, nil
 	})
@@ -29457,7 +29269,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_reference(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reference, nil
 	})
@@ -29501,7 +29313,7 @@ func (ec *executionContext) _Commerce_Product_Meta_keywords(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Keywords, nil
 	})
@@ -29542,7 +29354,7 @@ func (ec *executionContext) _Commerce_Product_Option_product(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Product, nil
 	})
@@ -29586,7 +29398,7 @@ func (ec *executionContext) _Commerce_Product_Option_qty(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Qty, nil
 	})
@@ -29630,7 +29442,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_customerGroup(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CustomerGroup, nil
 	})
@@ -29674,7 +29486,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_deliveryCode(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeliveryCode, nil
 	})
@@ -29718,7 +29530,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_channelCode(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ChannelCode, nil
 	})
@@ -29762,7 +29574,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_locale(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Locale, nil
 	})
@@ -29806,7 +29618,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_default(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Default, nil
 	})
@@ -29856,7 +29668,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discounted(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Discounted, nil
 	})
@@ -29906,7 +29718,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discountText(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DiscountText, nil
 	})
@@ -29950,7 +29762,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBase(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Product_PriceInfo().ActiveBase(rctx, obj)
 	})
@@ -30000,7 +29812,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseAmount(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ActiveBaseAmount, nil
 	})
@@ -30044,7 +29856,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseUnit(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ActiveBaseUnit, nil
 	})
@@ -30088,7 +29900,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_isDiscounted(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsDiscounted, nil
 	})
@@ -30132,7 +29944,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_campaignRules(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.CampaignRules, nil
 	})
@@ -30173,7 +29985,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_denyMoreDiscounts(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DenyMoreDiscounts, nil
 	})
@@ -30217,7 +30029,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_context(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Context, nil
 	})
@@ -30271,7 +30083,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_taxClass(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TaxClass, nil
 	})
@@ -30315,7 +30127,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_products(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Products(), nil
 	})
@@ -30356,7 +30168,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_facets(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Facets(), nil
 	})
@@ -30400,7 +30212,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_suggestions(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Suggestions(), nil
 	})
@@ -30447,7 +30259,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_searchMeta(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SearchMeta(), nil
 	})
@@ -30505,7 +30317,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_hasSelectedFacet(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasSelectedFacet(), nil
 	})
@@ -30549,7 +30361,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_promotion(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Promotion(), nil
 	})
@@ -30600,7 +30412,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_actions(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Actions(), nil
 	})
@@ -30647,7 +30459,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type(), nil
 	})
@@ -30691,7 +30503,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketPlaceCode(), nil
 	})
@@ -30735,7 +30547,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_identifier(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Identifier(), nil
 	})
@@ -30779,7 +30591,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_media(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Media(), nil
 	})
@@ -30829,7 +30641,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Price(), nil
 	})
@@ -30897,7 +30709,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_availablePrices(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AvailablePrices(), nil
 	})
@@ -30962,7 +30774,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title(), nil
 	})
@@ -31006,7 +30818,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_categories(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Categories(), nil
 	})
@@ -31056,7 +30868,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -31100,7 +30912,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_shortDescription(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ShortDescription(), nil
 	})
@@ -31144,7 +30956,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_meta(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Meta(), nil
 	})
@@ -31192,7 +31004,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_loyalty(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Loyalty(), nil
 	})
@@ -31244,7 +31056,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_attributes(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes(), nil
 	})
@@ -31300,7 +31112,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_badges(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Badges(), nil
 	})
@@ -31350,7 +31162,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_variants(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Variants, nil
 	})
@@ -31400,7 +31212,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_attributes(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes, nil
 	})
@@ -31452,7 +31264,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_label(c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -31496,7 +31308,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_code(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -31540,7 +31352,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_options
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Options, nil
 	})
@@ -31592,7 +31404,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -31636,7 +31448,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UnitCode, nil
 	})
@@ -31677,7 +31489,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.OtherAttributesRestrictions, nil
 	})
@@ -31727,7 +31539,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_attributes(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Attributes, nil
 	})
@@ -31774,7 +31586,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_variant(ctx
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Variant, nil
 	})
@@ -31822,7 +31634,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Key, nil
 	})
@@ -31866,7 +31678,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value, nil
 	})
@@ -31910,7 +31722,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant_mar
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketplaceCode, nil
 	})
@@ -31954,7 +31766,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -31998,7 +31810,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.AvailableOptions, nil
 	})
@@ -32042,7 +31854,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Code, nil
 	})
@@ -32086,7 +31898,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -32130,7 +31942,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_options(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Options, nil
 	})
@@ -32181,7 +31993,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -32225,7 +32037,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_unitCode
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.UnitCode, nil
 	})
@@ -32269,7 +32081,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.State, nil
 	})
@@ -32313,7 +32125,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variant(
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Variant, nil
 	})
@@ -32361,7 +32173,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant_m
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketPlaceCode(), nil
 	})
@@ -32405,7 +32217,7 @@ func (ec *executionContext) _Commerce_Search_Action_type(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -32449,7 +32261,7 @@ func (ec *executionContext) _Commerce_Search_Action_content(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Content, nil
 	})
@@ -32493,7 +32305,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name(), nil
 	})
@@ -32537,7 +32349,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label(), nil
 	})
@@ -32581,7 +32393,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Position(), nil
 	})
@@ -32625,7 +32437,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_items(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Items(), nil
 	})
@@ -32679,7 +32491,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_hasSelectedItem(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasSelectedItem(), nil
 	})
@@ -32723,7 +32535,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label(), nil
 	})
@@ -32767,7 +32579,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value(), nil
 	})
@@ -32811,7 +32623,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Selected(), nil
 	})
@@ -32855,7 +32667,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_count(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Count(), nil
 	})
@@ -32899,7 +32711,7 @@ func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, fie
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Query, nil
 	})
@@ -32943,7 +32755,7 @@ func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.OriginalQuery, nil
 	})
@@ -32987,7 +32799,7 @@ func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Page, nil
 	})
@@ -33031,7 +32843,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.NumPages, nil
 	})
@@ -33075,7 +32887,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.NumResults, nil
 	})
@@ -33119,7 +32931,7 @@ func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Commerce_Search_Meta().SortOptions(rctx, obj)
 	})
@@ -33168,7 +32980,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_title(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title(), nil
 	})
@@ -33212,7 +33024,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_content(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Content(), nil
 	})
@@ -33256,7 +33068,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_url(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.URL(), nil
 	})
@@ -33300,7 +33112,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_media(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Media(), nil
 	})
@@ -33353,7 +33165,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_type(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -33397,7 +33209,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_mimeType(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MimeType, nil
 	})
@@ -33441,7 +33253,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_usage(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Usage, nil
 	})
@@ -33485,7 +33297,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_title(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Title, nil
 	})
@@ -33529,7 +33341,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_reference(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Reference, nil
 	})
@@ -33573,7 +33385,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name(), nil
 	})
@@ -33617,7 +33429,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label(), nil
 	})
@@ -33661,7 +33473,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Position(), nil
 	})
@@ -33705,7 +33517,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_items(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Items(), nil
 	})
@@ -33767,7 +33579,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_hasSelectedItem(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasSelectedItem(), nil
 	})
@@ -33811,7 +33623,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label(), nil
 	})
@@ -33855,7 +33667,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value(), nil
 	})
@@ -33899,7 +33711,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Selected(), nil
 	})
@@ -33943,7 +33755,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Count(), nil
 	})
@@ -33987,7 +33799,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Min(), nil
 	})
@@ -34031,7 +33843,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Max(), nil
 	})
@@ -34075,7 +33887,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SelectedMin(), nil
 	})
@@ -34119,7 +33931,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SelectedMax(), nil
 	})
@@ -34163,7 +33975,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
 	})
@@ -34207,7 +34019,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Field, nil
 	})
@@ -34251,7 +34063,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_selected(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Selected, nil
 	})
@@ -34295,7 +34107,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Text, nil
 	})
@@ -34339,7 +34151,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Highlight, nil
 	})
@@ -34383,7 +34195,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name(), nil
 	})
@@ -34427,7 +34239,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label(), nil
 	})
@@ -34471,7 +34283,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Position(), nil
 	})
@@ -34515,7 +34327,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_items(ctx context.Context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Items(), nil
 	})
@@ -34573,7 +34385,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_hasSelectedItem(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.HasSelectedItem(), nil
 	})
@@ -34617,7 +34429,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label(), nil
 	})
@@ -34661,7 +34473,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Value(), nil
 	})
@@ -34705,7 +34517,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Selected(), nil
 	})
@@ -34749,7 +34561,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Count(), nil
 	})
@@ -34793,7 +34605,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Active(), nil
 	})
@@ -34837,7 +34649,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_items(ctx context.Con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Items(), nil
 	})
@@ -34892,7 +34704,7 @@ func (ec *executionContext) _Mutation_flamingo(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().Flamingo(rctx)
 	})
@@ -34933,7 +34745,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_AddToCart(ctx context.Contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartAddToCart(rctx, fc.Args["addToCartInput"].(dto.AddToCart))
 	})
@@ -35000,7 +34812,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_DeleteCartDelivery(ctx conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartDeleteCartDelivery(rctx, fc.Args["deliveryCode"].(string))
 	})
@@ -35067,7 +34879,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_DeleteItem(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartDeleteItem(rctx, fc.Args["itemID"].(string), fc.Args["deliveryCode"].(string))
 	})
@@ -35134,7 +34946,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateItemQty(ctx context.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateItemQty(rctx, fc.Args["itemID"].(string), fc.Args["deliveryCode"].(string), fc.Args["qty"].(int))
 	})
@@ -35201,7 +35013,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateItemBundleConfig(ctx c
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateItemBundleConfig(rctx, fc.Args["itemID"].(string), fc.Args["bundleConfig"].([]*dto.ChoiceConfiguration))
 	})
@@ -35268,7 +35080,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateBillingAddress(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateBillingAddress(rctx, fc.Args["addressForm"].(*forms.AddressForm))
 	})
@@ -35331,7 +35143,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateSelectedPayment(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateSelectedPayment(rctx, fc.Args["gateway"].(string), fc.Args["method"].(string))
 	})
@@ -35392,7 +35204,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard(ct
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartApplyCouponCodeOrGiftCard(rctx, fc.Args["code"].(string))
 	})
@@ -35456,7 +35268,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_RemoveGiftCard(ctx context.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartRemoveGiftCard(rctx, fc.Args["giftCardCode"].(string))
 	})
@@ -35520,7 +35332,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_RemoveCouponCode(ctx context
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartRemoveCouponCode(rctx, fc.Args["couponCode"].(string))
 	})
@@ -35584,7 +35396,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryAddresses(ctx 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateDeliveryAddresses(rctx, fc.Args["deliveryAdresses"].([]*forms.DeliveryForm))
 	})
@@ -35657,7 +35469,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryShippingOption
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateDeliveryShippingOptions(rctx, fc.Args["shippingOptions"].([]*dto.DeliveryShippingOption))
 	})
@@ -35716,7 +35528,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_Clean(ctx context.Context, f
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartClean(rctx)
 	})
@@ -35760,7 +35572,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalData(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateAdditionalData(rctx, fc.Args["additionalData"].([]*dto.KeyValue))
 	})
@@ -35827,7 +35639,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveriesAdditionalDa
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCartUpdateDeliveriesAdditionalData(rctx, fc.Args["data"].([]*dto.DeliveryAdditionalData))
 	})
@@ -35894,7 +35706,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_StartPlaceOrder(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCheckoutStartPlaceOrder(rctx, fc.Args["returnUrl"].(string))
 	})
@@ -35953,7 +35765,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx con
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCheckoutCancelPlaceOrder(rctx)
 	})
@@ -35997,7 +35809,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_ClearPlaceOrder(ctx cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCheckoutClearPlaceOrder(rctx)
 	})
@@ -36041,7 +35853,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCheckoutRefreshPlaceOrder(rctx)
 	})
@@ -36095,7 +35907,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrderBlockin
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCheckoutRefreshPlaceOrderBlocking(rctx)
 	})
@@ -36149,7 +35961,7 @@ func (ec *executionContext) _Query_flamingo(ctx context.Context, field graphql.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().Flamingo(rctx)
 	})
@@ -36190,7 +36002,7 @@ func (ec *executionContext) _Query_Commerce_Product(ctx context.Context, field g
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceProduct(rctx, fc.Args["marketPlaceCode"].(string), fc.Args["variantMarketPlaceCode"].(*string), fc.Args["bundleConfiguration"].([]*graphqlproductdto.ChoiceConfiguration))
 	})
@@ -36242,7 +36054,7 @@ func (ec *executionContext) _Query_Commerce_Product_Search(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceProductSearch(rctx, fc.Args["searchRequest"].(searchdto.CommerceSearchRequest))
 	})
@@ -36313,7 +36125,7 @@ func (ec *executionContext) _Query_Commerce_Customer_Status(ctx context.Context,
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCustomerStatus(rctx)
 	})
@@ -36360,7 +36172,7 @@ func (ec *executionContext) _Query_Commerce_Customer(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCustomer(rctx)
 	})
@@ -36415,7 +36227,7 @@ func (ec *executionContext) _Query_Commerce_Cart_DecoratedCart(ctx context.Conte
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCartDecoratedCart(rctx)
 	})
@@ -36471,7 +36283,7 @@ func (ec *executionContext) _Query_Commerce_Cart_Validator(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCartValidator(rctx)
 	})
@@ -36523,7 +36335,7 @@ func (ec *executionContext) _Query_Commerce_Cart_QtyRestriction(ctx context.Cont
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCartQtyRestriction(rctx, fc.Args["marketplaceCode"].(string), fc.Args["variantCode"].(*string), fc.Args["deliveryCode"].(string))
 	})
@@ -36588,7 +36400,7 @@ func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx contex
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCheckoutActivePlaceOrder(rctx)
 	})
@@ -36632,7 +36444,7 @@ func (ec *executionContext) _Query_Commerce_Checkout_CurrentContext(ctx context.
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCheckoutCurrentContext(rctx)
 	})
@@ -36686,7 +36498,7 @@ func (ec *executionContext) _Query_Commerce_CategoryTree(ctx context.Context, fi
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCategoryTree(rctx, fc.Args["activeCategoryCode"].(string))
 	})
@@ -36741,7 +36553,7 @@ func (ec *executionContext) _Query_Commerce_Category(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().CommerceCategory(rctx, fc.Args["categoryCode"].(string), fc.Args["categorySearchRequest"].(*searchdto.CommerceSearchRequest))
 	})
@@ -36799,7 +36611,7 @@ func (ec *executionContext) _Query___type(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.introspectType(fc.Args["name"].(string))
 	})
@@ -36843,6 +36655,8 @@ func (ec *executionContext) fieldContext_Query___type(ctx context.Context, field
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -36873,7 +36687,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.introspectSchema()
 	})
@@ -36928,7 +36742,7 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -36972,7 +36786,7 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -37013,7 +36827,7 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Locations, nil
 	})
@@ -37057,7 +36871,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Args, nil
 	})
@@ -37076,7 +36890,7 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Directive_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Directive_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
@@ -37092,9 +36906,24 @@ func (ec *executionContext) fieldContext___Directive_args(_ context.Context, fie
 				return ec.fieldContext___InputValue_type(ctx, field)
 			case "defaultValue":
 				return ec.fieldContext___InputValue_defaultValue(ctx, field)
+			case "isDeprecated":
+				return ec.fieldContext___InputValue_isDeprecated(ctx, field)
+			case "deprecationReason":
+				return ec.fieldContext___InputValue_deprecationReason(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __InputValue", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field___Directive_args_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -37111,7 +36940,7 @@ func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsRepeatable, nil
 	})
@@ -37155,7 +36984,7 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -37199,7 +37028,7 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -37240,7 +37069,7 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsDeprecated(), nil
 	})
@@ -37284,7 +37113,7 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeprecationReason(), nil
 	})
@@ -37325,7 +37154,7 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -37369,7 +37198,7 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -37410,7 +37239,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Args, nil
 	})
@@ -37429,7 +37258,7 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 	return ec.marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐInputValueᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext___Field_args(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Field_args(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
@@ -37445,9 +37274,24 @@ func (ec *executionContext) fieldContext___Field_args(_ context.Context, field g
 				return ec.fieldContext___InputValue_type(ctx, field)
 			case "defaultValue":
 				return ec.fieldContext___InputValue_defaultValue(ctx, field)
+			case "isDeprecated":
+				return ec.fieldContext___InputValue_isDeprecated(ctx, field)
+			case "deprecationReason":
+				return ec.fieldContext___InputValue_deprecationReason(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __InputValue", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field___Field_args_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -37464,7 +37308,7 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -37511,6 +37355,8 @@ func (ec *executionContext) fieldContext___Field_type(_ context.Context, field g
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -37530,7 +37376,7 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsDeprecated(), nil
 	})
@@ -37574,7 +37420,7 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DeprecationReason(), nil
 	})
@@ -37615,7 +37461,7 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
 	})
@@ -37659,7 +37505,7 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -37700,7 +37546,7 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Type, nil
 	})
@@ -37747,6 +37593,8 @@ func (ec *executionContext) fieldContext___InputValue_type(_ context.Context, fi
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -37766,7 +37614,7 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DefaultValue, nil
 	})
@@ -37795,6 +37643,91 @@ func (ec *executionContext) fieldContext___InputValue_defaultValue(_ context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) ___InputValue_isDeprecated(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext___InputValue_isDeprecated(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsDeprecated(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext___InputValue_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "__InputValue",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) ___InputValue_deprecationReason(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext___InputValue_deprecationReason(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeprecationReason(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext___InputValue_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "__InputValue",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) ___Schema_description(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext___Schema_description(ctx, field)
 	if err != nil {
@@ -37807,7 +37740,7 @@ func (ec *executionContext) ___Schema_description(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -37848,7 +37781,7 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Types(), nil
 	})
@@ -37895,6 +37828,8 @@ func (ec *executionContext) fieldContext___Schema_types(_ context.Context, field
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -37914,7 +37849,7 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.QueryType(), nil
 	})
@@ -37961,6 +37896,8 @@ func (ec *executionContext) fieldContext___Schema_queryType(_ context.Context, f
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -37980,7 +37917,7 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MutationType(), nil
 	})
@@ -38024,6 +37961,8 @@ func (ec *executionContext) fieldContext___Schema_mutationType(_ context.Context
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -38043,7 +37982,7 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SubscriptionType(), nil
 	})
@@ -38087,6 +38026,8 @@ func (ec *executionContext) fieldContext___Schema_subscriptionType(_ context.Con
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -38106,7 +38047,7 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Directives(), nil
 	})
@@ -38162,7 +38103,7 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Kind(), nil
 	})
@@ -38206,7 +38147,7 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name(), nil
 	})
@@ -38247,7 +38188,7 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
 	})
@@ -38288,7 +38229,7 @@ func (ec *executionContext) ___Type_fields(ctx context.Context, field graphql.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Fields(fc.Args["includeDeprecated"].(bool)), nil
 	})
@@ -38354,7 +38295,7 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Interfaces(), nil
 	})
@@ -38398,6 +38339,8 @@ func (ec *executionContext) fieldContext___Type_interfaces(_ context.Context, fi
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -38417,7 +38360,7 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.PossibleTypes(), nil
 	})
@@ -38461,6 +38404,8 @@ func (ec *executionContext) fieldContext___Type_possibleTypes(_ context.Context,
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -38480,7 +38425,7 @@ func (ec *executionContext) ___Type_enumValues(ctx context.Context, field graphq
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.EnumValues(fc.Args["includeDeprecated"].(bool)), nil
 	})
@@ -38542,7 +38487,7 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.InputFields(), nil
 	})
@@ -38574,6 +38519,10 @@ func (ec *executionContext) fieldContext___Type_inputFields(_ context.Context, f
 				return ec.fieldContext___InputValue_type(ctx, field)
 			case "defaultValue":
 				return ec.fieldContext___InputValue_defaultValue(ctx, field)
+			case "isDeprecated":
+				return ec.fieldContext___InputValue_isDeprecated(ctx, field)
+			case "deprecationReason":
+				return ec.fieldContext___InputValue_deprecationReason(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __InputValue", field.Name)
 		},
@@ -38593,7 +38542,7 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.OfType(), nil
 	})
@@ -38637,6 +38586,8 @@ func (ec *executionContext) fieldContext___Type_ofType(_ context.Context, field 
 				return ec.fieldContext___Type_ofType(ctx, field)
 			case "specifiedByURL":
 				return ec.fieldContext___Type_specifiedByURL(ctx, field)
+			case "isOneOf":
+				return ec.fieldContext___Type_isOneOf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Type", field.Name)
 		},
@@ -38656,7 +38607,7 @@ func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field gr
 			ret = graphql.Null
 		}
 	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SpecifiedByURL(), nil
 	})
@@ -38685,14 +38636,55 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) ___Type_isOneOf(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext___Type_isOneOf(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsOneOf(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "__Type",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx context.Context, obj interface{}) (dto.AddToCart, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx context.Context, obj any) (dto.AddToCart, error) {
 	var it dto.AddToCart
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -38744,10 +38736,10 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx context.Context, obj interface{}) (forms.AddressForm, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx context.Context, obj any) (forms.AddressForm, error) {
 	var it forms.AddressForm
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -38897,10 +38889,10 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput(ctx context.Context, obj interface{}) (dto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput(ctx context.Context, obj any) (dto.ChoiceConfiguration, error) {
 	var it dto.ChoiceConfiguration
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -38945,10 +38937,10 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx context.Context, obj interface{}) (dto.DeliveryAdditionalData, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx context.Context, obj any) (dto.DeliveryAdditionalData, error) {
 	var it dto.DeliveryAdditionalData
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -38979,10 +38971,10 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx context.Context, obj interface{}) (forms.DeliveryForm, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx context.Context, obj any) (forms.DeliveryForm, error) {
 	var it forms.DeliveryForm
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -39041,10 +39033,10 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx context.Context, obj interface{}) (dto.DeliveryShippingOption, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx context.Context, obj any) (dto.DeliveryShippingOption, error) {
 	var it dto.DeliveryShippingOption
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -39082,10 +39074,10 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx context.Context, obj interface{}) (dto.KeyValue, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx context.Context, obj any) (dto.KeyValue, error) {
 	var it dto.KeyValue
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -39116,10 +39108,10 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ctx context.Context, obj interface{}) (domain.ChargeQualifier, error) {
+func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ctx context.Context, obj any) (domain.ChargeQualifier, error) {
 	var it domain.ChargeQualifier
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -39150,10 +39142,10 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationInput(ctx context.Context, obj interface{}) (graphqlproductdto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationInput(ctx context.Context, obj any) (graphqlproductdto.ChoiceConfiguration, error) {
 	var it graphqlproductdto.ChoiceConfiguration
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -39198,10 +39190,10 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx context.Context, obj interface{}) (searchdto.CommerceSearchKeyValueFilter, error) {
+func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx context.Context, obj any) (searchdto.CommerceSearchKeyValueFilter, error) {
 	var it searchdto.CommerceSearchKeyValueFilter
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -39232,10 +39224,10 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Context, obj interface{}) (searchdto.CommerceSearchRequest, error) {
+func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Context, obj any) (searchdto.CommerceSearchRequest, error) {
 	var it searchdto.CommerceSearchRequest
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
 		asMap[k] = v
 	}
 
@@ -47066,6 +47058,13 @@ func (ec *executionContext) ___InputValue(ctx context.Context, sel ast.Selection
 			}
 		case "defaultValue":
 			out.Values[i] = ec.___InputValue_defaultValue(ctx, field, obj)
+		case "isDeprecated":
+			out.Values[i] = ec.___InputValue_isDeprecated(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deprecationReason":
+			out.Values[i] = ec.___InputValue_deprecationReason(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -47178,6 +47177,8 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = ec.___Type_ofType(ctx, field, obj)
 		case "specifiedByURL":
 			out.Values[i] = ec.___Type_specifiedByURL(ctx, field, obj)
+		case "isOneOf":
+			out.Values[i] = ec.___Type_isOneOf(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -47205,7 +47206,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
+func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -47220,7 +47221,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_AddToCartInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAddToCart(ctx context.Context, v interface{}) (dto.AddToCart, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_AddToCartInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAddToCart(ctx context.Context, v any) (dto.AddToCart, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_AddToCartInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -47269,13 +47270,13 @@ func (ec *executionContext) marshalNCommerce_Cart_Cart2flamingoᚗmeᚋflamingo�
 	return ec._Commerce_Cart_Cart(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) (dto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx context.Context, v any) (dto.ChoiceConfiguration, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_ChoiceConfigurationInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v interface{}) ([]*dto.ChoiceConfiguration, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v any) ([]*dto.ChoiceConfiguration, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -47291,7 +47292,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2ᚕ
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) (*dto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx context.Context, v any) (*dto.ChoiceConfiguration, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_ChoiceConfigurationInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -47350,8 +47351,8 @@ func (ec *executionContext) marshalNCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋfl
 	return ec._Commerce_Cart_Delivery(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryAdditionalData, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx context.Context, v any) ([]*dto.DeliveryAdditionalData, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -47367,7 +47368,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (*dto.DeliveryAdditionalData, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v any) (*dto.DeliveryAdditionalData, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -47410,12 +47411,12 @@ func (ec *executionContext) marshalNCommerce_Cart_DeliveryAddressForm2ᚕᚖflam
 	return ret
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAddressInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryForm(ctx context.Context, v interface{}) (*forms.DeliveryForm, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAddressInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryForm(ctx context.Context, v any) (*forms.DeliveryForm, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOptionInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v interface{}) (*dto.DeliveryShippingOption, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOptionInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v any) (*dto.DeliveryShippingOption, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -47446,13 +47447,13 @@ func (ec *executionContext) marshalNCommerce_Cart_ItemValidationError2flamingo�
 	return ec._Commerce_Cart_ItemValidationError(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (dto.KeyValue, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v any) (dto.KeyValue, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_KeyValueInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]dto.KeyValue, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v any) ([]dto.KeyValue, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -47468,8 +47469,8 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗ
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]*dto.KeyValue, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v any) ([]*dto.KeyValue, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -47485,7 +47486,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingo
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (*dto.KeyValue, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v any) (*dto.KeyValue, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_KeyValueInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -47758,7 +47759,7 @@ func (ec *executionContext) marshalNCommerce_Price_Charge2flamingoᚗmeᚋflamin
 	return ec._Commerce_Price_Charge(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx context.Context, v interface{}) (domain.ChargeQualifier, error) {
+func (ec *executionContext) unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx context.Context, v any) (domain.ChargeQualifier, error) {
 	res, err := ec.unmarshalInputCommerce_Price_ChargeQualifierInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -47815,7 +47816,7 @@ func (ec *executionContext) marshalNCommerce_Product_Choice2flamingoᚗmeᚋflam
 	return ec._Commerce_Product_Choice(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Product_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) (*graphqlproductdto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalNCommerce_Product_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx context.Context, v any) (*graphqlproductdto.ChoiceConfiguration, error) {
 	res, err := ec.unmarshalInputCommerce_Product_ChoiceConfigurationInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48084,7 +48085,7 @@ func (ec *executionContext) marshalNCommerce_Product_VariationSelection2flamingo
 	return ec._Commerce_Product_VariationSelection(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, v interface{}) (graphqlproductdto.VariationSelectionOptionState, error) {
+func (ec *executionContext) unmarshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, v any) (graphqlproductdto.VariationSelectionOptionState, error) {
 	tmp, err := graphql.UnmarshalString(v)
 	res := graphqlproductdto.VariationSelectionOptionState(tmp)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -48162,7 +48163,7 @@ func (ec *executionContext) marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋfla
 	return ret
 }
 
-func (ec *executionContext) unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v interface{}) (searchdto.CommerceSearchKeyValueFilter, error) {
+func (ec *executionContext) unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v any) (searchdto.CommerceSearchKeyValueFilter, error) {
 	res, err := ec.unmarshalInputCommerce_Search_KeyValueFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48279,7 +48280,7 @@ func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚖflamingo�
 	return ec._Commerce_Search_RangeFacetItem(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (searchdto.CommerceSearchRequest, error) {
+func (ec *executionContext) unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v any) (searchdto.CommerceSearchRequest, error) {
 	res, err := ec.unmarshalInputCommerce_Search_Request(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48362,7 +48363,7 @@ func (ec *executionContext) marshalNCommerce_Tree2flamingoᚗmeᚋflamingoᚑcom
 	return ec._Commerce_Tree(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNFloat2mathᚋbigᚐFloat(ctx context.Context, v interface{}) (big.Float, error) {
+func (ec *executionContext) unmarshalNFloat2mathᚋbigᚐFloat(ctx context.Context, v any) (big.Float, error) {
 	res, err := graphql2.UnmarshalFloat(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48377,7 +48378,7 @@ func (ec *executionContext) marshalNFloat2mathᚋbigᚐFloat(ctx context.Context
 	return res
 }
 
-func (ec *executionContext) unmarshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v interface{}) (*big.Float, error) {
+func (ec *executionContext) unmarshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v any) (*big.Float, error) {
 	res, err := graphql2.UnmarshalFloat(v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48398,7 +48399,7 @@ func (ec *executionContext) marshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Cont
 	return res
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48413,7 +48414,7 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v any) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48428,7 +48429,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48443,8 +48444,8 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -48523,7 +48524,7 @@ func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgq
 	return ret
 }
 
-func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48538,8 +48539,8 @@ func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Conte
 	return res
 }
 
-func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
-	var vSlice []interface{}
+func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -48713,7 +48714,7 @@ func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 	return ec.___Type(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48728,7 +48729,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
+func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -48738,7 +48739,7 @@ func (ec *executionContext) marshalOBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalOBoolean2ᚖbool(ctx context.Context, v interface{}) (*bool, error) {
+func (ec *executionContext) unmarshalOBoolean2ᚖbool(ctx context.Context, v any) (*bool, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -48765,12 +48766,12 @@ func (ec *executionContext) marshalOCommerce_Cart_AddressForm2flamingoᚗmeᚋfl
 	return ec._Commerce_Cart_AddressForm(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx context.Context, v interface{}) (forms.AddressForm, error) {
+func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx context.Context, v any) (forms.AddressForm, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_AddressFormInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx context.Context, v interface{}) (*forms.AddressForm, error) {
+func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx context.Context, v any) (*forms.AddressForm, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -48872,11 +48873,11 @@ func (ec *executionContext) marshalOCommerce_Cart_AppliedGiftCard2ᚕflamingoᚗ
 	return ret
 }
 
-func (ec *executionContext) unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v interface{}) ([]dto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v any) ([]dto.ChoiceConfiguration, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -49108,11 +49109,11 @@ func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressForm2ᚖflaming
 	return ec._Commerce_Cart_DeliveryAddressForm(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryFormᚄ(ctx context.Context, v interface{}) ([]*forms.DeliveryForm, error) {
+func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryFormᚄ(ctx context.Context, v any) ([]*forms.DeliveryForm, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -49136,11 +49137,11 @@ func (ec *executionContext) marshalOCommerce_Cart_DeliveryLocation2flamingoᚗme
 	return ec._Commerce_Cart_DeliveryLocation(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryShippingOptionInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryShippingOption, error) {
+func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryShippingOptionInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx context.Context, v any) ([]*dto.DeliveryShippingOption, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -50327,11 +50328,11 @@ func (ec *executionContext) marshalOCommerce_Product_Choice2ᚕflamingoᚗmeᚋf
 	return ret
 }
 
-func (ec *executionContext) unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v interface{}) ([]*graphqlproductdto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v any) ([]*graphqlproductdto.ChoiceConfiguration, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -50742,11 +50743,11 @@ func (ec *executionContext) marshalOCommerce_Search_Action2ᚕflamingoᚗmeᚋfl
 	return ret
 }
 
-func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilterᚄ(ctx context.Context, v interface{}) ([]searchdto.CommerceSearchKeyValueFilter, error) {
+func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilterᚄ(ctx context.Context, v any) ([]searchdto.CommerceSearchKeyValueFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -50776,7 +50777,7 @@ func (ec *executionContext) marshalOCommerce_Search_PromotionMedia2ᚖflamingo�
 	return ec._Commerce_Search_PromotionMedia(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (*searchdto.CommerceSearchRequest, error) {
+func (ec *executionContext) unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v any) (*searchdto.CommerceSearchRequest, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -50973,7 +50974,7 @@ func (ec *executionContext) marshalOCommerce_Tree2ᚕflamingoᚗmeᚋflamingoᚑ
 	return ret
 }
 
-func (ec *executionContext) unmarshalODate2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+func (ec *executionContext) unmarshalODate2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
 	res, err := graphql2.UnmarshalDate(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -50983,7 +50984,7 @@ func (ec *executionContext) marshalODate2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v any) (float64, error) {
 	res, err := graphql.UnmarshalFloat(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -50993,7 +50994,7 @@ func (ec *executionContext) marshalOFloat2float64(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v interface{}) (*big.Float, error) {
+func (ec *executionContext) unmarshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v any) (*big.Float, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -51009,7 +51010,7 @@ func (ec *executionContext) marshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Cont
 	return res
 }
 
-func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
+func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v any) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -51019,7 +51020,7 @@ func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
+func (ec *executionContext) unmarshalOString2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -51029,11 +51030,11 @@ func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v interface{}) ([]string, error) {
+func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v any) ([]string, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -51061,11 +51062,11 @@ func (ec *executionContext) marshalOString2ᚕstring(ctx context.Context, sel as
 	return ret
 }
 
-func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var vSlice []interface{}
+	var vSlice []any
 	if v != nil {
 		vSlice = graphql.CoerceList(v)
 	}
@@ -51099,7 +51100,7 @@ func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel
 	return ret
 }
 
-func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -51115,7 +51116,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) unmarshalOTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+func (ec *executionContext) unmarshalOTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
 	res, err := graphql.UnmarshalTime(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
