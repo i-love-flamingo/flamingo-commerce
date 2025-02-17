@@ -10,7 +10,6 @@ run:
 output:
   print-issued-lines: true
   print-linter-name: true
-  uniq-by-line: true
   sort-results: true
 
 linters:
@@ -20,13 +19,13 @@ linters:
     - bodyclose
     - containedctx
     - contextcheck
+    - copyloopvar
     - cyclop
     - durationcheck
     - errcheck
     - errname
     - errorlint
     - exhaustive
-    - exportloopref
     - forbidigo
     - forcetypeassert
     - gocognit
@@ -55,7 +54,6 @@ linters:
     - predeclared
     - revive
     - staticcheck
-    - tenv
     - testpackage
     - thelper
     - tparallel
@@ -64,6 +62,7 @@ linters:
     - unparam
     - unused
     - usestdlibvars
+    - usetesting
     - varnamelen
     - wrapcheck
     - wsl
@@ -71,6 +70,7 @@ linters:
 issues:
   new: true
   fix: false
+  uniq-by-line: true
   exclude-rules:
     - path: _test\.go
       linters:

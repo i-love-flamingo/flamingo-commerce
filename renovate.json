@@ -1,13 +1,17 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     ":semanticCommitTypeAll(chore)"
   ],
   "prHourlyLimit": 0,
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "description": "Update go run/go install dependencies",
-      "fileMatch": [".*\\.go$", "Makefile"],
+      "fileMatch": [
+        ".*\\.go$",
+        "Makefile"
+      ],
       "matchStrings": [
         "\\s*go (run|install) (?<depName>([^@]+)?).*@(?<currentValue>[^\\s]+)"
       ],

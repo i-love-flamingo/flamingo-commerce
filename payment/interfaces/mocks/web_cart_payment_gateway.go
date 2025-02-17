@@ -184,7 +184,7 @@ func (_c *WebCartPaymentGateway_FlowStatus_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
-// Methods provides a mock function with given fields:
+// Methods provides a mock function with no fields
 func (_m *WebCartPaymentGateway) Methods() []domain.Method {
 	ret := _m.Called()
 

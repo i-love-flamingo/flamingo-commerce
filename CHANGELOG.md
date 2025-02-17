@@ -1,6 +1,8 @@
 # Changelog
 
-## v3.12.0 [upcoming]
+## v3.12.1 [upcoming]
+
+## v3.12.0 
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
 * Deprecated struct error ProductNotFound in favour of var ErrProductNotFound

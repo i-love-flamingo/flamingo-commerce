@@ -736,7 +736,7 @@ func (_c *CartService_DeleteCartInCache_Call) Return() *CartService_DeleteCartIn
 }
 
 func (_c *CartService_DeleteCartInCache_Call) RunAndReturn(run func(context.Context, *web.Session, *cart.Cart)) *CartService_DeleteCartInCache_Call {
-	_c.Call.Return(run)
+	_c.Run(run)
 	return _c
 }
 
@@ -908,7 +908,7 @@ func (_c *CartService_ForceReserveOrderIDAndSave_Call) RunAndReturn(run func(con
 	return _c
 }
 
-// GetCartReceiverService provides a mock function with given fields:
+// GetCartReceiverService provides a mock function with no fields
 func (_m *CartService) GetCartReceiverService() *application.CartReceiverService {
 	ret := _m.Called()
 
@@ -955,7 +955,7 @@ func (_c *CartService_GetCartReceiverService_Call) RunAndReturn(run func() *appl
 	return _c
 }
 
-// GetDefaultDeliveryCode provides a mock function with given fields:
+// GetDefaultDeliveryCode provides a mock function with no fields
 func (_m *CartService) GetDefaultDeliveryCode() string {
 	ret := _m.Called()
 
