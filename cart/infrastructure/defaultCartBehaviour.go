@@ -747,7 +747,7 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *d
 
 // UpdateDeliveryInfoAdditionalData @todo implement when needed
 func (cob *DefaultCartBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *domaincart.Cart, deliveryCode string, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateDeliveryInfoAdditionalData")
+	_, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateDeliveryInfoAdditionalData")
 	defer span.End()
 
 	return cart, nil, nil

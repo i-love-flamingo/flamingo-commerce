@@ -1,8 +1,9 @@
 package application
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"flamingo.me/flamingo-commerce/v3/search/domain"
 )
@@ -63,14 +64,103 @@ func TestBuildFilters(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := BuildFilters(tt.args.request, tt.args.defaultPageSize)
-			for i, want := range tt.want {
-				if len(got) <= i {
-					t.Fatalf("too few entries in filter: want %d, got %d", len(tt.want), len(got))
-				}
-				if !reflect.DeepEqual(got[i], want) {
-					t.Errorf("BuildFilters() = %#v, want %#v", got[i], want)
-				}
-			}
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestSearchRequest_AddAdditionalFilter(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		request SearchRequest
+		filter  domain.Filter
+		want    []domain.Filter
+	}{
+		{
+			name:    "add to empty filters",
+			request: SearchRequest{},
+			filter:  domain.NewKeyValueFilter("key1", []string{"value1"}),
+			want: []domain.Filter{
+				domain.NewKeyValueFilter("key1", []string{"value1"}),
+			},
+		},
+		{
+			name: "add to existing filters",
+			request: SearchRequest{
+				AdditionalFilter: []domain.Filter{
+					domain.NewKeyValueFilter("existing", []string{"value"}),
+				},
+			},
+			filter: domain.NewKeyValueFilter("key2", []string{"value2"}),
+			want: []domain.Filter{
+				domain.NewKeyValueFilter("existing", []string{"value"}),
+				domain.NewKeyValueFilter("key2", []string{"value2"}),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.request.AddAdditionalFilter(tt.filter)
+			assert.Equal(t, tt.want, tt.request.AdditionalFilter)
+		})
+	}
+}
+
+func TestSearchRequest_SetAdditionalFilter(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		request SearchRequest
+		filter  domain.Filter
+		want    []domain.Filter
+	}{
+		{
+			name:    "set on empty filters",
+			request: SearchRequest{},
+			filter:  domain.NewKeyValueFilter("key1", []string{"value1"}),
+			want: []domain.Filter{
+				domain.NewKeyValueFilter("key1", []string{"value1"}),
+			},
+		},
+		{
+			name: "replace existing filter",
+			request: SearchRequest{
+				AdditionalFilter: []domain.Filter{
+					domain.NewKeyValueFilter("key1", []string{"old_value"}),
+				},
+			},
+			filter: domain.NewKeyValueFilter("key1", []string{"new_value"}),
+			want: []domain.Filter{
+				domain.NewKeyValueFilter("key1", []string{"new_value"}),
+			},
+		},
+		{
+			name: "add new filter while keeping existing different ones",
+			request: SearchRequest{
+				AdditionalFilter: []domain.Filter{
+					domain.NewKeyValueFilter("key1", []string{"value1"}),
+				},
+			},
+			filter: domain.NewKeyValueFilter("key2", []string{"value2"}),
+			want: []domain.Filter{
+				domain.NewKeyValueFilter("key1", []string{"value1"}),
+				domain.NewKeyValueFilter("key2", []string{"value2"}),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			tt.request.SetAdditionalFilter(tt.filter)
+			assert.Equal(t, tt.want, tt.request.AdditionalFilter)
 		})
 	}
 }
