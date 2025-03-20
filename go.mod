@@ -13,7 +13,7 @@ require (
 	github.com/99designs/gqlgen v0.17.66
 	github.com/Rhymond/go-money v1.0.14
 	github.com/gavv/httpexpect/v2 v2.16.0
-	github.com/go-playground/form/v4 v4.2.1
+	github.com/go-playground/form/v4 v4.2.2
 	github.com/go-redsync/redsync/v4 v4.13.0
 	github.com/go-test/deep v1.1.1
 	github.com/gomodule/redigo v1.9.2
