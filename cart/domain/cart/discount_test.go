@@ -392,8 +392,8 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 					Applied:      domain.NewFromFloat(-10.0, "$"),
 					SortOrder:    6,
 					CustomAttributes: map[string]interface{}{
-						"buyX": 3,
-						"getY": 1,
+						"attr1": 3,
+						"attr2": 1,
 					},
 				},
 			},
