@@ -29,8 +29,8 @@ jobs:
           rev=${{ env.REV }}
           if [[ $rev == '' ]]; then echo 'revision not found'; else echo used revision number: $rev; fi
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: 'v1.64'
+          version: 'v2.1'
           args: $(rev=${{ env.REV }}; if [[ $rev != '' ]]; then echo --new-from-rev=$rev; fi)
 
