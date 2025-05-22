@@ -91,7 +91,7 @@ func TestCart_MergeDiscounts(t *testing.T) {
 					CampaignCode: "code-7",
 					Label:        "title-7",
 					Type:         "type-7",
-					Applied:      domain.NewFromFloat(-10.0, "$"),
+					Applied:      domain.NewFromFloat(-40.0, "$"),
 					SortOrder:    6,
 					CustomAttributes: map[string]interface{}{
 						"attr1": 3,
@@ -181,7 +181,7 @@ func TestCart_MergeDiscounts(t *testing.T) {
 					CampaignCode: "code-7",
 					Label:        "title-7",
 					Type:         "type-7",
-					Applied:      domain.NewFromFloat(-10.0, "$"),
+					Applied:      domain.NewFromFloat(-20.0, "$"),
 					SortOrder:    6,
 					CustomAttributes: map[string]interface{}{
 						"attr1": 3,
