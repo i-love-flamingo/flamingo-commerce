@@ -9,13 +9,14 @@ import (
 type (
 	// AppliedDiscount value object - generic reference for a discount
 	AppliedDiscount struct {
-		CampaignCode  string       // unique code of the underlying campaign or rule e.g. "summer-campaign-2018"
-		CouponCode    string       // code of discount e.g. provided by user "summer2018"
-		Label         string       // readable name of discount "Super Summer Sale 2018"
-		Applied       domain.Price // how much of the discount has been subtracted from cart price, IMPORTANT: always negative
-		Type          string       // to distinguish between discounts
-		IsItemRelated bool         // flag indicating if the discount is applied due to item in cart
-		SortOrder     int          // indicates in which order discount have been applied, low value has been applied before high value
+		CampaignCode     string                 // unique code of the underlying campaign or rule e.g. "summer-campaign-2018"
+		CouponCode       string                 // code of discount e.g. provided by user "summer2018"
+		Label            string                 // readable name of discount "Super Summer Sale 2018"
+		Applied          domain.Price           // how much of the discount has been subtracted from cart price, IMPORTANT: always negative
+		Type             string                 // to distinguish between discounts
+		IsItemRelated    bool                   // flag indicating if the discount is applied due to item in cart
+		SortOrder        int                    // indicates in which order discount have been applied, low value has been applied before high value
+		CustomAttributes map[string]interface{} // stores additional discount attributes
 	}
 
 	// WithDiscount interface for a cart that is able to handle discounts
@@ -172,13 +173,14 @@ func mapDiscounts(result map[string]*AppliedDiscount, discountable WithDiscount)
 		}
 		// discount is new, add to collection
 		result[discount.CampaignCode] = &AppliedDiscount{
-			CampaignCode:  discount.CampaignCode,
-			CouponCode:    discount.CouponCode,
-			Label:         discount.Label,
-			Applied:       discount.Applied,
-			Type:          discount.Type,
-			IsItemRelated: discount.IsItemRelated,
-			SortOrder:     discount.SortOrder,
+			CampaignCode:     discount.CampaignCode,
+			CouponCode:       discount.CouponCode,
+			Label:            discount.Label,
+			Applied:          discount.Applied,
+			Type:             discount.Type,
+			IsItemRelated:    discount.IsItemRelated,
+			SortOrder:        discount.SortOrder,
+			CustomAttributes: discount.CustomAttributes,
 		}
 	}
 	return result, nil
