@@ -499,6 +499,17 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 					Applied:      domain.NewFromFloat(-10.0, "$"),
 					SortOrder:    5,
 				},
+				{
+					CampaignCode: "code-7",
+					Label:        "title-7",
+					Type:         "type-7",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    6,
+					CustomAttributes: map[string]interface{}{
+						"attr1": 3,
+						"attr2": 1,
+					},
+				},
 			},
 		},
 		{
