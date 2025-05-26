@@ -7,7 +7,7 @@ import (
 
 // BuildItemWithDiscounts helper for item building
 var BuildItemWithDiscounts = &cart.Item{ID: "id-1",
-	AppliedDiscounts: []cart.AppliedDiscount{
+	AppliedDiscounts: cart.AppliedDiscounts{
 		{
 			CampaignCode: "code-1",
 			Label:        "title-1",
@@ -46,7 +46,7 @@ var BuildItemWithDiscounts = &cart.Item{ID: "id-1",
 // BuildItemWithAlternativeDiscounts helper for item building with different discounts
 var BuildItemWithAlternativeDiscounts = &cart.Item{
 	ID: "id-2",
-	AppliedDiscounts: []cart.AppliedDiscount{
+	AppliedDiscounts: cart.AppliedDiscounts{
 		{
 			CampaignCode: "code-4",
 			Label:        "title-4",
@@ -74,15 +74,15 @@ var BuildItemWithAlternativeDiscounts = &cart.Item{
 // BuildItemWithDuplicateDiscounts helper for item building with duplicate discounts
 var BuildItemWithDuplicateDiscounts = &cart.Item{
 	ID: "id-1",
-	AppliedDiscounts: []cart.AppliedDiscount{
-		cart.AppliedDiscount{
+	AppliedDiscounts: cart.AppliedDiscounts{
+		{
 			CampaignCode: "code-1",
 			Label:        "title-1",
 			Type:         "type-1",
 			Applied:      domain.NewFromFloat(-10.0, "$"),
 			SortOrder:    0,
 		},
-		cart.AppliedDiscount{
+		{
 			CampaignCode: "code-1",
 			Label:        "title-1",
 			Type:         "type-1",
@@ -99,14 +99,14 @@ var BuildShippingItemWithDiscounts = &cart.ShippingItem{
 	TaxAmount:  domain.NewFromFloat(2.0, "$"),
 	PriceGross: domain.NewFromFloat(22.0, "$"),
 	AppliedDiscounts: cart.AppliedDiscounts{
-		cart.AppliedDiscount{
+		{
 			CampaignCode: "code-1",
 			Label:        "title-1",
 			Type:         "type-1",
 			Applied:      domain.NewFromFloat(-10.0, "$"),
 			SortOrder:    3,
 		},
-		cart.AppliedDiscount{
+		{
 			CampaignCode: "code-2",
 			Label:        "title-2",
 			Type:         "type-1",
@@ -123,14 +123,14 @@ var BuildShippingItemWithDuplicateDiscounts = &cart.ShippingItem{
 	TaxAmount:  domain.NewFromFloat(2.0, "$"),
 	PriceGross: domain.NewFromFloat(42.0, "$"),
 	AppliedDiscounts: cart.AppliedDiscounts{
-		cart.AppliedDiscount{
+		{
 			CampaignCode: "code-1",
 			Label:        "title-1",
 			Type:         "type-1",
 			Applied:      domain.NewFromFloat(-15.0, "$"),
 			SortOrder:    0,
 		},
-		cart.AppliedDiscount{
+		{
 			CampaignCode: "code-1",
 			Label:        "title-1",
 			Type:         "type-1",

@@ -212,14 +212,14 @@ func TestCart_MergeDiscounts(t *testing.T) {
 				}(),
 			},
 			want: cart.AppliedDiscounts{
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-10.0, "$"),
 					SortOrder:    2,
 				},
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
@@ -437,14 +437,14 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 			name:     "delivery with items but without discounts and shipping discounts",
 			delivery: testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts,
 			want: cart.AppliedDiscounts{
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-5.0, "$"),
 					SortOrder:    2,
 				},
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
@@ -523,7 +523,7 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 					Applied:      domain.NewFromFloat(-30.0, "$"),
 					SortOrder:    0,
 				},
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
@@ -654,7 +654,7 @@ func TestItem_HasDiscounts(t *testing.T) {
 		},
 		{
 			name: "multiple discounts on item",
-			item: &cart.Item{AppliedDiscounts: []cart.AppliedDiscount{cart.AppliedDiscount{
+			item: &cart.Item{AppliedDiscounts: cart.AppliedDiscounts{{
 				CampaignCode: "code-1",
 				Label:        "title-1",
 				Type:         "type-1",
@@ -693,14 +693,14 @@ func TestShippingItem_MergeDiscounts(t *testing.T) {
 			name:     "multiple discounts on shipping",
 			shipping: testutils.BuildShippingItemWithDiscounts,
 			want: cart.AppliedDiscounts{
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-5.0, "$"),
 					SortOrder:    2,
 				},
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
@@ -891,21 +891,21 @@ func TestAppliedDiscounts_Sum(t *testing.T) {
 		{
 			name: "sum of multiple discounts",
 			discounts: cart.AppliedDiscounts{
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-5.0, "$"),
 					SortOrder:    2,
 				},
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-10.0, "$"),
 					SortOrder:    3,
 				},
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-1",
 					Label:        "title-2",
 					Type:         "type-2",
@@ -918,14 +918,14 @@ func TestAppliedDiscounts_Sum(t *testing.T) {
 		{
 			name: "sum of multiple discounts with different currencies",
 			discounts: cart.AppliedDiscounts{
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-5.0, "$"),
 					SortOrder:    0,
 				},
-				cart.AppliedDiscount{
+				{
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
