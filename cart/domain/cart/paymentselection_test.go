@@ -8,10 +8,11 @@ import (
 	"reflect"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 func TestPrice_MarshalBinaryForGob(t *testing.T) {
@@ -26,7 +27,7 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 	enc := gob.NewEncoder(&network) // Will write to network.
 	dec := gob.NewDecoder(&network) // Will read from network.
 	builder := cart.PaymentSplitByItemBuilder{}
-	builder.AddCartItem("id", "method", domain.Charge{
+	builder.AddCartItem("id", "method", "gateway", domain.Charge{
 		Type:  "type",
 		Price: domain.NewFromInt(100, 1, "EUR"),
 		Value: domain.NewFromInt(100, 1, "EUR"),
@@ -190,38 +191,38 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 	builder := cart.PaymentSplitByItemBuilder{}
 
-	builder.AddCartItem("item-1", "cc", domain.Charge{
+	builder.AddCartItem("item-1", "cc", "gateway", domain.Charge{
 		Price: domain.NewFromInt(25, 1, "$"),
 		Value: domain.NewFromInt(25, 1, "$"),
 		Type:  domain.ChargeTypeMain,
 	})
 
-	builder.AddCartItem("item-1", "loyalty", domain.Charge{
+	builder.AddCartItem("item-1", "loyalty", "gateway", domain.Charge{
 		Price: domain.NewFromInt(500, 1, "Points"),
 		Value: domain.NewFromInt(5, 1, "$"),
 		Type:  "loyalty",
 	})
 
-	builder.AddCartItem("item-1", "giftcard", domain.Charge{
+	builder.AddCartItem("item-1", "giftcard", "gateway", domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
 		Type:  domain.ChargeTypeGiftCard,
 	})
 
-	builder.AddShippingItem("delivery-1", "loyalty", domain.Charge{
+	builder.AddShippingItem("delivery-1", "loyalty", "gateway", domain.Charge{
 		Price: domain.NewFromInt(20, 1, "Points"),
 		Value: domain.NewFromInt(5, 1, "$"),
 		Type:  "loyalty",
 	})
 
-	builder.AddShippingItem("delivery-1", "cc", domain.Charge{
+	builder.AddShippingItem("delivery-1", "cc", "gateway", domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
 		Type:  domain.ChargeTypeMain,
 	})
 
 	selection.ChargedItemsProp = builder.Build()
-	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod)
+	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod, "gateway")
 	_, found := filteredSelection.ItemSplit().CartItems["item-1"].ChargesByType().GetByType(domain.ChargeTypeGiftCard)
 
 	if found == true {
