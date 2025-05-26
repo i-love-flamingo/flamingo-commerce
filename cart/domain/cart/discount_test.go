@@ -58,9 +58,9 @@ func TestCart_MergeDiscounts(t *testing.T) {
 			cart: &cart.Cart{
 				Deliveries: func() []cart.Delivery {
 					result := make([]cart.Delivery, 0)
-					delivery := testutils.BuildDeliveryWithDiscounts(t)
+					delivery := testutils.BuildDeliveryWithDiscounts
 					result = append(result, *delivery)
-					delivery = testutils.BuildDeliveryWithDiscounts(t)
+					delivery = testutils.BuildDeliveryWithDiscounts
 					result = append(result, *delivery)
 					return result
 				}(),
@@ -105,9 +105,9 @@ func TestCart_MergeDiscounts(t *testing.T) {
 			cart: &cart.Cart{
 				Deliveries: func() []cart.Delivery {
 					result := make([]cart.Delivery, 0)
-					delivery := testutils.BuildDeliveryWithDuplicateDiscounts(t)
+					delivery := testutils.BuildDeliveryWithDuplicateDiscounts
 					result = append(result, *delivery)
-					delivery = testutils.BuildDeliveryWithDuplicateDiscounts(t)
+					delivery = testutils.BuildDeliveryWithDuplicateDiscounts
 					result = append(result, *delivery)
 					return result
 				}(),
@@ -127,9 +127,9 @@ func TestCart_MergeDiscounts(t *testing.T) {
 			cart: &cart.Cart{
 				Deliveries: func() []cart.Delivery {
 					result := make([]cart.Delivery, 0)
-					delivery := testutils.BuildDeliveryWithDiscounts(t)
+					delivery := testutils.BuildDeliveryWithDiscounts
 					result = append(result, *delivery)
-					delivery = testutils.BuildAlternativeDeliveryWithAlternativeDiscounts(t)
+					delivery = testutils.BuildAlternativeDeliveryWithAlternativeDiscounts
 					result = append(result, *delivery)
 					return result
 				}(),
@@ -199,13 +199,13 @@ func TestCart_MergeDiscounts(t *testing.T) {
 					delivery := cart.Delivery{
 						DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
 						Cartitems:    []cart.Item{{}, {}},
-						ShippingItem: *testutils.BuildShippingItemWithDiscounts(t),
+						ShippingItem: *testutils.BuildShippingItemWithDiscounts,
 					}
 					result = append(result, delivery)
 					delivery = cart.Delivery{
 						DeliveryInfo: cart.DeliveryInfo{Code: "code-2"},
 						Cartitems:    []cart.Item{{}, {}},
-						ShippingItem: *testutils.BuildShippingItemWithDiscounts(t),
+						ShippingItem: *testutils.BuildShippingItemWithDiscounts,
 					}
 					result = append(result, delivery)
 					return result
@@ -233,9 +233,9 @@ func TestCart_MergeDiscounts(t *testing.T) {
 			cart: &cart.Cart{
 				Deliveries: func() []cart.Delivery {
 					result := make([]cart.Delivery, 0)
-					delivery := testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t)
+					delivery := testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts
 					result = append(result, *delivery)
-					delivery = testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t)
+					delivery = testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts
 					result = append(result, *delivery)
 					return result
 				}(),
@@ -312,9 +312,9 @@ func TestCart_HasDiscounts(t *testing.T) {
 			cart: &cart.Cart{
 				Deliveries: func() []cart.Delivery {
 					result := make([]cart.Delivery, 0)
-					delivery := testutils.BuildDeliveryWithDiscounts(t)
+					delivery := testutils.BuildDeliveryWithDiscounts
 					result = append(result, *delivery)
-					delivery = testutils.BuildDeliveryWithDiscounts(t)
+					delivery = testutils.BuildDeliveryWithDiscounts
 					result = append(result, *delivery)
 					return result
 				}(),
@@ -326,9 +326,9 @@ func TestCart_HasDiscounts(t *testing.T) {
 			cart: &cart.Cart{
 				Deliveries: func() []cart.Delivery {
 					result := make([]cart.Delivery, 0)
-					delivery := testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t)
+					delivery := testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts
 					result = append(result, *delivery)
-					delivery = testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t)
+					delivery = testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts
 					result = append(result, *delivery)
 					return result
 				}(),
@@ -358,12 +358,12 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 		},
 		{
 			name:     "delivery with items but without discounts",
-			delivery: testutils.BuildDeliveryWithoutDiscounts(t),
+			delivery: testutils.BuildDeliveryWithoutDiscounts,
 			want:     cart.AppliedDiscounts{},
 		},
 		{
 			name:     "delivery with items with different discounts",
-			delivery: testutils.BuildDeliveryWithDifferentDiscounts(t),
+			delivery: testutils.BuildDeliveryWithDifferentDiscounts,
 			want: cart.AppliedDiscounts{
 				{
 					CampaignCode: "code-5",
@@ -422,7 +422,7 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 		},
 		{
 			name:     "delivery with item with duplicate discounts",
-			delivery: testutils.BuildDeliveryWithDuplicateDiscounts(t),
+			delivery: testutils.BuildDeliveryWithDuplicateDiscounts,
 			want: cart.AppliedDiscounts{
 				{
 					CampaignCode: "code-1",
@@ -435,7 +435,7 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 		},
 		{
 			name:     "delivery with items but without discounts and shipping discounts",
-			delivery: testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t),
+			delivery: testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts,
 			want: cart.AppliedDiscounts{
 				cart.AppliedDiscount{
 					CampaignCode: "code-2",
@@ -455,7 +455,7 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 		},
 		{
 			name:     "delivery with items with different discounts and shipping discounts",
-			delivery: testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t),
+			delivery: testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts,
 			want: cart.AppliedDiscounts{
 				{
 					CampaignCode: "code-5",
@@ -514,7 +514,7 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 		},
 		{
 			name:     "delivery with item with duplicate discounts and shipping discounts",
-			delivery: testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t),
+			delivery: testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts,
 			want: cart.AppliedDiscounts{
 				{
 					CampaignCode: "code-1",
@@ -556,17 +556,17 @@ func TestDelivery_HasDiscounts(t *testing.T) {
 		},
 		{
 			name:     "delivery with items but without discounts",
-			delivery: testutils.BuildDeliveryWithoutDiscounts(t),
+			delivery: testutils.BuildDeliveryWithoutDiscounts,
 			want:     false,
 		},
 		{
 			name:     "delivery with items with discounts",
-			delivery: testutils.BuildDeliveryWithDiscounts(t),
+			delivery: testutils.BuildDeliveryWithDiscounts,
 			want:     true,
 		},
 		{
 			name:     "delivery with items with duplicate discounts and shipping discounts",
-			delivery: testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t),
+			delivery: testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts,
 			want:     true,
 		},
 	}
@@ -594,7 +594,7 @@ func TestItem_MergeDiscounts(t *testing.T) {
 		},
 		{
 			name: "multiple different discounts on item",
-			item: testutils.BuildItemWithDiscounts(t),
+			item: testutils.BuildItemWithDiscounts,
 			want: cart.AppliedDiscounts{
 				{
 					CampaignCode: "code-2",
@@ -663,7 +663,7 @@ func TestItem_HasDiscounts(t *testing.T) {
 		},
 		{
 			name: "duplicate discounts on item",
-			item: testutils.BuildItemWithDuplicateDiscounts(t),
+			item: testutils.BuildItemWithDuplicateDiscounts,
 			want: true,
 		},
 	}
@@ -691,7 +691,7 @@ func TestShippingItem_MergeDiscounts(t *testing.T) {
 		},
 		{
 			name:     "multiple discounts on shipping",
-			shipping: testutils.BuildShippingItemWithDiscounts(t),
+			shipping: testutils.BuildShippingItemWithDiscounts,
 			want: cart.AppliedDiscounts{
 				cart.AppliedDiscount{
 					CampaignCode: "code-2",
@@ -733,12 +733,12 @@ func TestShippingItem_HasDiscounts(t *testing.T) {
 		},
 		{
 			name:     "multiple discounts on shipping",
-			shipping: testutils.BuildShippingItemWithDiscounts(t),
+			shipping: testutils.BuildShippingItemWithDiscounts,
 			want:     true,
 		},
 		{
 			name:     "duplicate discounts on shipping",
-			shipping: testutils.BuildShippingItemWithDuplicateDiscounts(t),
+			shipping: testutils.BuildShippingItemWithDuplicateDiscounts,
 			want:     true,
 		},
 	}
