@@ -1,192 +1,272 @@
+//nolint:mnd // this is a helper file with static data for unit tests
 package testutils
 
 import (
+	"testing"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 // BuildItemWithDiscounts helper for item building
-var BuildItemWithDiscounts = &cart.Item{ID: "id-1",
-	AppliedDiscounts: cart.AppliedDiscounts{
-		{
-			CampaignCode: "code-1",
-			Label:        "title-1",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-10.0, "$"),
-			SortOrder:    3,
-		},
-		{
-			CampaignCode: "code-2",
-			Label:        "title-2",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-15.0, "$"),
-			SortOrder:    2,
-		},
-		{
-			CampaignCode: "code-3",
-			Label:        "title-1",
-			Type:         "type-2",
-			Applied:      domain.NewFromFloat(-5.0, "$"),
-			SortOrder:    4,
-		},
-		{
-			CampaignCode: "code-7",
-			Label:        "title-7",
-			Type:         "type-7",
-			Applied:      domain.NewFromFloat(-10.0, "$"),
-			SortOrder:    6,
-			CustomAttributes: map[string]interface{}{
-				"attr1": 3,
-				"attr2": 1,
+func BuildItemWithDiscounts(t *testing.T) *cart.Item {
+	t.Helper()
+	item := cart.Item{ID: "id-1",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    3,
+			},
+			{
+				CampaignCode: "code-2",
+				Label:        "title-2",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    2,
+			},
+			{
+				CampaignCode: "code-3",
+				Label:        "title-1",
+				Type:         "type-2",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    4,
+			},
+			{
+				CampaignCode: "code-7",
+				Label:        "title-7",
+				Type:         "type-7",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    6,
+				CustomAttributes: map[string]interface{}{
+					"attr1": 3,
+					"attr2": 1,
+				},
 			},
 		},
-	},
+	}
+
+	// todo: add discount total
+
+	return &item
 }
 
 // BuildItemWithAlternativeDiscounts helper for item building with different discounts
-var BuildItemWithAlternativeDiscounts = &cart.Item{
-	ID: "id-2",
-	AppliedDiscounts: cart.AppliedDiscounts{
-		{
-			CampaignCode: "code-4",
-			Label:        "title-4",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-10.0, "$"),
-			SortOrder:    5,
+func BuildItemWithAlternativeDiscounts(t *testing.T) *cart.Item {
+	t.Helper()
+	item := cart.Item{
+		ID: "id-2",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			cart.AppliedDiscount{
+				CampaignCode: "code-4",
+				Label:        "title-4",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    5,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-5",
+				Label:        "title-5",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    0,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-6",
+				Label:        "title-6",
+				Type:         "type-2",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    1,
+			},
 		},
-		{
-			CampaignCode: "code-5",
-			Label:        "title-5",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-15.0, "$"),
-			SortOrder:    0,
-		},
-		{
-			CampaignCode: "code-6",
-			Label:        "title-6",
-			Type:         "type-2",
-			Applied:      domain.NewFromFloat(-5.0, "$"),
-			SortOrder:    1,
-		},
-	},
-} // todo: add discount total
+	} // todo: add discount total
+
+	return &item
+}
 
 // BuildItemWithDuplicateDiscounts helper for item building with duplicate discounts
-var BuildItemWithDuplicateDiscounts = &cart.Item{
-	ID: "id-1",
-	AppliedDiscounts: cart.AppliedDiscounts{
-		{
-			CampaignCode: "code-1",
-			Label:        "title-1",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-10.0, "$"),
-			SortOrder:    0,
+func BuildItemWithDuplicateDiscounts(t *testing.T) *cart.Item {
+	t.Helper()
+
+	item := cart.Item{
+		ID: "id-1",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    0,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    0,
+			},
 		},
-		{
-			CampaignCode: "code-1",
-			Label:        "title-1",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-10.0, "$"),
-			SortOrder:    0,
-		},
-	},
-} // todo: add discount total
+	} // todo: add discount total
+
+	return &item
+}
 
 // BuildShippingItemWithDiscounts helper for shipping item building
-var BuildShippingItemWithDiscounts = &cart.ShippingItem{
-	Title:      "",
-	PriceNet:   domain.NewFromFloat(20.0, "$"),
-	TaxAmount:  domain.NewFromFloat(2.0, "$"),
-	PriceGross: domain.NewFromFloat(22.0, "$"),
-	AppliedDiscounts: cart.AppliedDiscounts{
-		{
-			CampaignCode: "code-1",
-			Label:        "title-1",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-10.0, "$"),
-			SortOrder:    3,
+func BuildShippingItemWithDiscounts(t *testing.T) *cart.ShippingItem {
+	t.Helper()
+	return &cart.ShippingItem{
+		Title:      "",
+		PriceNet:   domain.NewFromFloat(20.0, "$"),
+		TaxAmount:  domain.NewFromFloat(2.0, "$"),
+		PriceGross: domain.NewFromFloat(22.0, "$"),
+		AppliedDiscounts: cart.AppliedDiscounts{
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    3,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-2",
+				Label:        "title-2",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    2,
+			},
 		},
-		{
-			CampaignCode: "code-2",
-			Label:        "title-2",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-5.0, "$"),
-			SortOrder:    2,
+	}
+}
+
+// BuildShippingItemWithAlternativeDiscounts helper for shipping item building with different discounts
+func BuildShippingItemWithAlternativeDiscounts(t *testing.T) *cart.ShippingItem {
+	t.Helper()
+	return &cart.ShippingItem{
+		Title:      "",
+		PriceNet:   domain.NewFromFloat(30.0, "$"),
+		TaxAmount:  domain.NewFromFloat(2.0, "$"),
+		PriceGross: domain.NewFromFloat(32.0, "$"),
+		AppliedDiscounts: cart.AppliedDiscounts{
+			cart.AppliedDiscount{
+				CampaignCode: "code-3",
+				Label:        "title-1",
+				Type:         "type-2",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    4,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-4",
+				Label:        "title-4",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-20.0, "$"),
+				SortOrder:    5,
+			},
 		},
-	},
+	}
 }
 
 // BuildShippingItemWithDuplicateDiscounts helper for shipping item building with duplicate discounts
-var BuildShippingItemWithDuplicateDiscounts = &cart.ShippingItem{
-	Title:      "",
-	PriceNet:   domain.NewFromFloat(40.0, "$"),
-	TaxAmount:  domain.NewFromFloat(2.0, "$"),
-	PriceGross: domain.NewFromFloat(42.0, "$"),
-	AppliedDiscounts: cart.AppliedDiscounts{
-		{
-			CampaignCode: "code-1",
-			Label:        "title-1",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-15.0, "$"),
-			SortOrder:    0,
+func BuildShippingItemWithDuplicateDiscounts(t *testing.T) *cart.ShippingItem {
+	t.Helper()
+	return &cart.ShippingItem{
+		Title:      "",
+		PriceNet:   domain.NewFromFloat(40.0, "$"),
+		TaxAmount:  domain.NewFromFloat(2.0, "$"),
+		PriceGross: domain.NewFromFloat(42.0, "$"),
+		AppliedDiscounts: cart.AppliedDiscounts{
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    0,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    0,
+			},
 		},
-		{
-			CampaignCode: "code-1",
-			Label:        "title-1",
-			Type:         "type-1",
-			Applied:      domain.NewFromFloat(-15.0, "$"),
-			SortOrder:    0,
-		},
-	},
+	}
 }
 
 // BuildDeliveryWithDiscounts helper for delivery building
 // Adds an item with discount twice
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
-var BuildDeliveryWithDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code"},
-	Cartitems:    []cart.Item{*BuildItemWithDiscounts, *BuildItemWithDiscounts},
+func BuildDeliveryWithDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code"},
+		Cartitems:    []cart.Item{*BuildItemWithDiscounts(t), *BuildItemWithDiscounts(t)},
+	}
+	return delivery
 }
 
 // BuildAlternativeDeliveryWithAlternativeDiscounts helper for delivery building
 // Adds an item with alternative discount twice
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
-var BuildAlternativeDeliveryWithAlternativeDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code-2"},
-	Cartitems:    []cart.Item{*BuildItemWithAlternativeDiscounts, *BuildItemWithAlternativeDiscounts},
+func BuildAlternativeDeliveryWithAlternativeDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-2"},
+		Cartitems:    []cart.Item{*BuildItemWithAlternativeDiscounts(t), *BuildItemWithAlternativeDiscounts(t)},
+	}
+	return delivery
 }
 
 // BuildDeliveryWithDifferentDiscounts helper for delivery building
 // Adds an item with alternative discount twice
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
-var BuildDeliveryWithDifferentDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
-	Cartitems:    []cart.Item{*BuildItemWithDiscounts, *BuildItemWithAlternativeDiscounts},
+func BuildDeliveryWithDifferentDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDiscounts(t), *BuildItemWithAlternativeDiscounts(t)},
+	}
+	return delivery
 }
 
 // BuildDeliveryWithDuplicateDiscounts helper for delivery building
 // Adds an item with alternative discount twice
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
-var BuildDeliveryWithDuplicateDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
-	Cartitems:    []cart.Item{*BuildItemWithDuplicateDiscounts},
+func BuildDeliveryWithDuplicateDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDuplicateDiscounts(t)},
+	}
+	return delivery
 }
 
 // BuildDeliveryWithoutDiscounts helper for delivery building
-var BuildDeliveryWithoutDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code"},
-	Cartitems:    []cart.Item{{}, {}},
+func BuildDeliveryWithoutDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code"},
+		Cartitems:    []cart.Item{{}, {}},
+	}
+	return delivery
 }
 
 // BuildDeliveryWithoutDiscountsAndShippingDiscounts helper for delivery building
-var BuildDeliveryWithoutDiscountsAndShippingDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code"},
-	Cartitems:    []cart.Item{{}, {}},
-	ShippingItem: *BuildShippingItemWithDiscounts,
+func BuildDeliveryWithoutDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code"},
+		Cartitems:    []cart.Item{{}, {}},
+		ShippingItem: *BuildShippingItemWithDiscounts(t),
+	}
+
+	return delivery
 }
 
 // BuildDeliveryWithDifferentDiscountsAndShippingDiscounts helper for delivery building
@@ -194,10 +274,15 @@ var BuildDeliveryWithoutDiscountsAndShippingDiscounts = &cart.Delivery{
 // Adds a shipping item with discounts
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
-var BuildDeliveryWithDifferentDiscountsAndShippingDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
-	Cartitems:    []cart.Item{*BuildItemWithDiscounts, *BuildItemWithAlternativeDiscounts},
-	ShippingItem: *BuildShippingItemWithDiscounts,
+func BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDiscounts(t), *BuildItemWithAlternativeDiscounts(t)},
+		ShippingItem: *BuildShippingItemWithDiscounts(t),
+	}
+
+	return delivery
 }
 
 // BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts helper for delivery building
@@ -205,8 +290,13 @@ var BuildDeliveryWithDifferentDiscountsAndShippingDiscounts = &cart.Delivery{
 // Adds a shipping item with discounts
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
-var BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts = &cart.Delivery{
-	DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
-	Cartitems:    []cart.Item{*BuildItemWithDuplicateDiscounts},
-	ShippingItem: *BuildShippingItemWithDiscounts,
+func BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
+	t.Helper()
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDuplicateDiscounts(t)},
+		ShippingItem: *BuildShippingItemWithDiscounts(t),
+	}
+
+	return delivery
 }

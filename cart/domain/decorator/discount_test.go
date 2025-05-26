@@ -26,7 +26,7 @@ func TestDecoratedItem_MergeDiscounts(t *testing.T) {
 		{
 			name: "multiple discounts on item",
 			item: &decorator.DecoratedCartItem{
-				Item: *testutils.BuildItemWithDiscounts,
+				Item: *testutils.BuildItemWithDiscounts(t),
 			},
 			want: cart.AppliedDiscounts{
 				{
@@ -139,7 +139,7 @@ func TestDecoratedDelivery_MergeDiscounts(t *testing.T) {
 		{
 			name: "delivery with items with discounts",
 			delivery: &decorator.DecoratedDelivery{
-				Delivery: *testutils.BuildDeliveryWithDiscounts,
+				Delivery: *testutils.BuildDeliveryWithDiscounts(t),
 			},
 			want: cart.AppliedDiscounts{
 				{
@@ -203,14 +203,14 @@ func TestDecoratedDelivery_HasDiscounts(t *testing.T) {
 		{
 			name: "delivery with items but without discounts",
 			delivery: &decorator.DecoratedDelivery{
-				Delivery: *testutils.BuildDeliveryWithoutDiscounts,
+				Delivery: *testutils.BuildDeliveryWithoutDiscounts(t),
 			},
 			want: false,
 		},
 		{
 			name: "delivery with items with discounts",
 			delivery: &decorator.DecoratedDelivery{
-				Delivery: *testutils.BuildDeliveryWithDiscounts,
+				Delivery: *testutils.BuildDeliveryWithDiscounts(t),
 			},
 			want: true,
 		},
@@ -257,9 +257,9 @@ func TestDecoratedCart_MergeDiscounts(t *testing.T) {
 				Cart: cart.Cart{
 					Deliveries: func() []cart.Delivery {
 						result := make([]cart.Delivery, 0)
-						delivery := testutils.BuildDeliveryWithDiscounts
+						delivery := testutils.BuildDeliveryWithDiscounts(t)
 						result = append(result, *delivery)
-						delivery = testutils.BuildDeliveryWithDiscounts
+						delivery = testutils.BuildDeliveryWithDiscounts(t)
 						result = append(result, *delivery)
 						return result
 					}(),
@@ -330,9 +330,9 @@ func TestDecoratedCart_HasDiscounts(t *testing.T) {
 				Cart: cart.Cart{
 					Deliveries: func() []cart.Delivery {
 						result := make([]cart.Delivery, 0)
-						delivery := testutils.BuildDeliveryWithDiscounts
+						delivery := testutils.BuildDeliveryWithDiscounts(t)
 						result = append(result, *delivery)
-						delivery = testutils.BuildDeliveryWithDiscounts
+						delivery = testutils.BuildDeliveryWithDiscounts(t)
 						result = append(result, *delivery)
 						return result
 					}(),
