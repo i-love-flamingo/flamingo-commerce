@@ -1,3 +1,4 @@
+//nolint:mnd // this is a helper file with static data for unit tests
 package testutils
 
 import (
@@ -32,6 +33,17 @@ func BuildItemWithDiscounts(t *testing.T) *cart.Item {
 				Type:         "type-2",
 				Applied:      domain.NewFromFloat(-5.0, "$"),
 				SortOrder:    4,
+			},
+			{
+				CampaignCode: "code-7",
+				Label:        "title-7",
+				Type:         "type-7",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    6,
+				CustomAttributes: map[string]interface{}{
+					"attr1": 3,
+					"attr2": 1,
+				},
 			},
 		},
 	}
