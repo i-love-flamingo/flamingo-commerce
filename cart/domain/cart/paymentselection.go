@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	splitQualifierSeparator = "-"
-	expectedSplitSize       = 4
+	splitQualifierSeparator              = "-"
+	expectedSplitSizeWithChargeReference = 3
+	expectedSplitSizeWithGateway         = 4
 )
 
 type (
@@ -340,7 +341,7 @@ func (s PaymentSplit) MarshalJSON() ([]byte, error) {
 			return nil, errors.New("method or ChargeType is empty")
 		}
 		// SplitQualifier is parsed to a string method-chargeType-chargeReference
-		result[qualifier.Method+splitQualifierSeparator+qualifier.Gateway+splitQualifierSeparator+qualifier.ChargeType+splitQualifierSeparator+qualifier.ChargeReference] = charge
+		result[qualifier.Method+splitQualifierSeparator+qualifier.ChargeType+splitQualifierSeparator+qualifier.ChargeReference+splitQualifierSeparator+qualifier.Gateway] = charge
 	}
 	return json.Marshal(result)
 }
@@ -361,12 +362,15 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 		}
 		qualifier := SplitQualifier{
 			Method:     splitted[0],
-			Gateway:    splitted[1],
-			ChargeType: splitted[2],
+			ChargeType: splitted[1],
 		}
 
-		if len(splitted) == expectedSplitSize {
-			qualifier.ChargeReference = splitted[3]
+		if len(splitted) >= expectedSplitSizeWithChargeReference {
+			qualifier.ChargeReference = splitted[2]
+		}
+
+		if len(splitted) >= expectedSplitSizeWithGateway {
+			qualifier.Gateway = splitted[3]
 		}
 
 		result[qualifier] = charge
