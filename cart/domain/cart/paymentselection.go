@@ -14,6 +14,7 @@ import (
 
 const (
 	splitQualifierSeparator = "-"
+	expectedSplitSize       = 4
 )
 
 type (
@@ -364,7 +365,7 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 			ChargeType: splitted[2],
 		}
 
-		if len(splitted) == 4 {
+		if len(splitted) == expectedSplitSize {
 			qualifier.ChargeReference = splitted[3]
 		}
 
@@ -437,6 +438,8 @@ func (pb *PaymentSplitByItemBuilder) init() {
 }
 
 // SplitWithGiftCards calculates a payment selection based on given method, priced items and applied gift cards
+//
+//nolint:cyclop // this will be fixed some time later
 func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod map[string]string, gateway string, items PricedItems, cards AppliedGiftCards) (*PaymentSplitByItem, error) {
 	totalValue := items.Sum()
 	// guard clause, if no gift cards no payment split with gift cards
