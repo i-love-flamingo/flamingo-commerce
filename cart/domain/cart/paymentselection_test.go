@@ -222,7 +222,7 @@ func TestRemoveZeroCharges(t *testing.T) {
 	})
 
 	selection.ChargedItemsProp = builder.Build()
-	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod, "gateway")
+	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod)
 	_, found := filteredSelection.ItemSplit().CartItems["item-1"].ChargesByType().GetByType(domain.ChargeTypeGiftCard)
 
 	if found == true {
