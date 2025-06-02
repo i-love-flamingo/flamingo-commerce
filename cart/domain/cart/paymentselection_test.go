@@ -58,7 +58,7 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "marshall payment split",
+			name: "marshall payment split without gateway",
 			split: func() cart.PaymentSplit {
 				result := cart.PaymentSplit{}
 				charge := domain.Charge{
@@ -77,7 +77,32 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 				result[secondQualifier] = charge
 				return result
 			}(),
-			want:    `{"m1-t1-":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""},"m2-t1-r2":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""}}`,
+			want:    `{"m1--t1-":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""},"m2--t1-r2":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""}}`,
+			wantErr: false,
+		},
+		{
+			name: "marshall payment split with gateway",
+			split: func() cart.PaymentSplit {
+				result := cart.PaymentSplit{}
+				charge := domain.Charge{
+					Type: "t1",
+				}
+				firstQualifier := cart.SplitQualifier{
+					Method:     "m1",
+					Gateway:    "g1",
+					ChargeType: charge.Type,
+				}
+				secondQualifier := cart.SplitQualifier{
+					Method:          "m2",
+					Gateway:         "g2",
+					ChargeType:      charge.Type,
+					ChargeReference: "r2",
+				}
+				result[firstQualifier] = charge
+				result[secondQualifier] = charge
+				return result
+			}(),
+			want:    `{"m1-g1-t1-":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""},"m2-g2-t1-r2":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""}}`,
 			wantErr: false,
 		},
 		{
@@ -128,7 +153,7 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 		{
 			name: "unmarshall payment split",
 			args: args{
-				data: []byte("{\"m1-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1-r2\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
+				data: []byte("{\"m1--t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2--t1-r2\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
 			},
 			want: func() cart.PaymentSplit {
 				result := cart.PaymentSplit{}
