@@ -2,7 +2,7 @@
 
 ## v3.13.0 [upcoming]
 **cart**
-* Added a 'Gateway' field to SplitQualifier, to ensure a diversity of payment possibilities.
+* **Breaking:** Added a 'Gateway' field to SplitQualifier, to ensure a diversity of payment possibilities.
 
 ## v3.12.0 
 **product**
