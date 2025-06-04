@@ -1,6 +1,8 @@
 # Changelog
 
-## v3.12.1 [upcoming]
+## v3.13.0 [upcoming]
+**cart**
+* **Breaking:** Added a 'Gateway' field to SplitQualifier, to ensure a diversity of payment possibilities.
 
 ## v3.12.0 
 **product**

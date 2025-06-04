@@ -8,10 +8,11 @@ import (
 	"reflect"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 func TestPrice_MarshalBinaryForGob(t *testing.T) {
@@ -26,7 +27,7 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 	enc := gob.NewEncoder(&network) // Will write to network.
 	dec := gob.NewDecoder(&network) // Will read from network.
 	builder := cart.PaymentSplitByItemBuilder{}
-	builder.AddCartItem("id", "method", domain.Charge{
+	builder.AddCartItem("id", "method", "gateway", domain.Charge{
 		Type:  "type",
 		Price: domain.NewFromInt(100, 1, "EUR"),
 		Value: domain.NewFromInt(100, 1, "EUR"),
@@ -57,7 +58,7 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "marshall payment split",
+			name: "marshall payment split without gateway",
 			split: func() cart.PaymentSplit {
 				result := cart.PaymentSplit{}
 				charge := domain.Charge{
@@ -76,7 +77,32 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 				result[secondQualifier] = charge
 				return result
 			}(),
-			want:    `{"m1-t1-":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""},"m2-t1-r2":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""}}`,
+			want:    `{"m1-t1--":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""},"m2-t1-r2-":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""}}`,
+			wantErr: false,
+		},
+		{
+			name: "marshall payment split with gateway",
+			split: func() cart.PaymentSplit {
+				result := cart.PaymentSplit{}
+				charge := domain.Charge{
+					Type: "t1",
+				}
+				firstQualifier := cart.SplitQualifier{
+					Method:     "m1",
+					Gateway:    "g1",
+					ChargeType: charge.Type,
+				}
+				secondQualifier := cart.SplitQualifier{
+					Method:          "m2",
+					Gateway:         "g2",
+					ChargeType:      charge.Type,
+					ChargeReference: "r2",
+				}
+				result[firstQualifier] = charge
+				result[secondQualifier] = charge
+				return result
+			}(),
+			want:    `{"m1-t1--g1":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""},"m2-t1-r2-g2":{"Price":{"Amount":"0.00","Currency":""},"Value":{"Amount":"0.00","Currency":""},"Type":"t1","Reference":""}}`,
 			wantErr: false,
 		},
 		{
@@ -127,7 +153,7 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 		{
 			name: "unmarshall payment split",
 			args: args{
-				data: []byte("{\"m1-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1-r2\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
+				data: []byte("{\"m1-t1-\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1-r2-\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
 			},
 			want: func() cart.PaymentSplit {
 				result := cart.PaymentSplit{}
@@ -143,6 +169,36 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 				}
 				secondQualifier := cart.SplitQualifier{
 					Method:          "m2",
+					ChargeType:      charge.Type,
+					ChargeReference: "r2",
+				}
+				result[firstQualifier] = charge
+				result[secondQualifier] = charge
+				return result
+			}(),
+			wantErr: false,
+		},
+		{
+			name: "unmarshall payment split",
+			args: args{
+				data: []byte("{\"m1-t1--g1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1-r2-g2\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
+			},
+			want: func() cart.PaymentSplit {
+				result := cart.PaymentSplit{}
+				charge := domain.Charge{
+					Price:     domain.NewZero(""),
+					Value:     domain.NewZero(""),
+					Type:      "t1",
+					Reference: "",
+				}
+				firstQualifier := cart.SplitQualifier{
+					Method:     "m1",
+					Gateway:    "g1",
+					ChargeType: charge.Type,
+				}
+				secondQualifier := cart.SplitQualifier{
+					Method:          "m2",
+					Gateway:         "g2",
 					ChargeType:      charge.Type,
 					ChargeReference: "r2",
 				}
@@ -190,31 +246,31 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 	builder := cart.PaymentSplitByItemBuilder{}
 
-	builder.AddCartItem("item-1", "cc", domain.Charge{
+	builder.AddCartItem("item-1", "cc", "gateway", domain.Charge{
 		Price: domain.NewFromInt(25, 1, "$"),
 		Value: domain.NewFromInt(25, 1, "$"),
 		Type:  domain.ChargeTypeMain,
 	})
 
-	builder.AddCartItem("item-1", "loyalty", domain.Charge{
+	builder.AddCartItem("item-1", "loyalty", "gateway", domain.Charge{
 		Price: domain.NewFromInt(500, 1, "Points"),
 		Value: domain.NewFromInt(5, 1, "$"),
 		Type:  "loyalty",
 	})
 
-	builder.AddCartItem("item-1", "giftcard", domain.Charge{
+	builder.AddCartItem("item-1", "giftcard", "gateway", domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
 		Type:  domain.ChargeTypeGiftCard,
 	})
 
-	builder.AddShippingItem("delivery-1", "loyalty", domain.Charge{
+	builder.AddShippingItem("delivery-1", "loyalty", "gateway", domain.Charge{
 		Price: domain.NewFromInt(20, 1, "Points"),
 		Value: domain.NewFromInt(5, 1, "$"),
 		Type:  "loyalty",
 	})
 
-	builder.AddShippingItem("delivery-1", "cc", domain.Charge{
+	builder.AddShippingItem("delivery-1", "cc", "gateway", domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
 		Type:  domain.ChargeTypeMain,
