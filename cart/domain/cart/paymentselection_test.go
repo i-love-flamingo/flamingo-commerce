@@ -27,7 +27,7 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 	enc := gob.NewEncoder(&network) // Will write to network.
 	dec := gob.NewDecoder(&network) // Will read from network.
 	builder := cart.PaymentSplitByItemBuilder{}
-	builder.AddCartItem("id", "method", "gateway", domain.Charge{
+	builder.AddCartItem("id", cart.Method{Code: "method", Gateway: ""}, domain.Charge{
 		Type:  "type",
 		Price: domain.NewFromInt(100, 1, "EUR"),
 		Value: domain.NewFromInt(100, 1, "EUR"),
@@ -233,10 +233,10 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 }
 
 func TestRemoveZeroCharges(t *testing.T) {
-	chargeTypeToPaymentMethod := map[string]string{
-		domain.ChargeTypeMain:     "cc",
-		domain.ChargeTypeGiftCard: "giftcard",
-		"loyalty":                 "loyalty",
+	chargeTypeToPaymentMethod := map[string]cart.Method{
+		domain.ChargeTypeMain:     {Code: "cc"},
+		domain.ChargeTypeGiftCard: {Code: "giftcard"},
+		"loyalty":                 {Code: "loyalty"},
 	}
 
 	selection := cart.DefaultPaymentSelection{
@@ -246,31 +246,31 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 	builder := cart.PaymentSplitByItemBuilder{}
 
-	builder.AddCartItem("item-1", "cc", "gateway", domain.Charge{
+	builder.AddCartItem("item-1", cart.Method{Code: "cc"}, domain.Charge{
 		Price: domain.NewFromInt(25, 1, "$"),
 		Value: domain.NewFromInt(25, 1, "$"),
 		Type:  domain.ChargeTypeMain,
 	})
 
-	builder.AddCartItem("item-1", "loyalty", "gateway", domain.Charge{
+	builder.AddCartItem("item-1", cart.Method{Code: "loyalty"}, domain.Charge{
 		Price: domain.NewFromInt(500, 1, "Points"),
 		Value: domain.NewFromInt(5, 1, "$"),
 		Type:  "loyalty",
 	})
 
-	builder.AddCartItem("item-1", "giftcard", "gateway", domain.Charge{
+	builder.AddCartItem("item-1", cart.Method{Code: "giftcard"}, domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
 		Type:  domain.ChargeTypeGiftCard,
 	})
 
-	builder.AddShippingItem("delivery-1", "loyalty", "gateway", domain.Charge{
+	builder.AddShippingItem("delivery-1", cart.Method{Code: "loyalty"}, domain.Charge{
 		Price: domain.NewFromInt(20, 1, "Points"),
 		Value: domain.NewFromInt(5, 1, "$"),
 		Type:  "loyalty",
 	})
 
-	builder.AddShippingItem("delivery-1", "cc", "gateway", domain.Charge{
+	builder.AddShippingItem("delivery-1", cart.Method{Code: "cc"}, domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
 		Type:  domain.ChargeTypeMain,
@@ -296,7 +296,7 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 func Test_NewDefaultPaymentSelection_IdempotencyKey(t *testing.T) {
 	// NewDefaultPaymentSelection should generate a new idempotency key
-	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
+	selection, _ := cart.NewDefaultPaymentSelection("", map[string]cart.Method{domain.ChargeTypeMain: {Code: "main"}}, cart.Cart{})
 	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", selection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
 	assert.NotEqual(t, uuid.Nil.String(), selection.IdempotencyKey())
 
@@ -317,7 +317,7 @@ func Test_NewPaymentSelection_IdempotencyKey(t *testing.T) {
 }
 
 func TestDefaultPaymentSelection_MarshalJSON(t *testing.T) {
-	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
+	selection, _ := cart.NewDefaultPaymentSelection("", map[string]cart.Method{domain.ChargeTypeMain: {Code: "main"}}, cart.Cart{})
 
 	expectedJSON := fmt.Sprintf("{\"GatewayProp\":\"\",\"ChargedItemsProp\":{\"CartItems\":{},\"ShippingItems\":{},\"TotalItems\":{}},\"IdempotencyKey\":\"%s\"}", selection.IdempotencyKey())
 

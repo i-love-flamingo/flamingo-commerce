@@ -1,4 +1,27 @@
 definitions:
+  ProductAttribute:
+    properties:
+      Code:
+        description: Code is the internal attribute identifier
+        type: string
+      CodeLabel:
+        description: CodeLabel is the human-readable (perhaps localized) attribute
+          name
+        type: string
+      Label:
+        description: Label is the human-readable (perhaps localized) attribute value
+        type: string
+      RawValue:
+        description: RawValue is the untouched original value of the attribute
+      UnitCode:
+        description: UnitCode is the internal code of the attribute values measuring
+          unit
+        type: string
+    type: object
+  ProductAttributes:
+    additionalProperties:
+      $ref: '#/definitions/ProductAttribute'
+    type: object
   ProductMedia:
     properties:
       MimeType:
@@ -101,6 +124,10 @@ definitions:
       CouponCode:
         description: code of discount e.g. provided by user "summer2018"
         type: string
+      CustomAttributes:
+        additionalProperties: true
+        description: stores additional discount attributes
+        type: object
       IsItemRelated:
         description: flag indicating if the discount is applied due to item in cart
         type: boolean
@@ -668,9 +695,6 @@ definitions:
       Delivery:
         $ref: '#/definitions/cart.Delivery'
     type: object
-  domain.Attributes:
-    additionalProperties: {}
-    type: object
   domain.Badge:
     properties:
       Code:
@@ -843,7 +867,7 @@ definitions:
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:
-        $ref: '#/definitions/domain.Attributes'
+        $ref: '#/definitions/ProductAttributes'
       AvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'
