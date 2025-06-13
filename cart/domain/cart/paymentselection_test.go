@@ -277,7 +277,7 @@ func TestRemoveZeroCharges(t *testing.T) {
 	})
 
 	selection.ChargedItemsProp = builder.Build()
-	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod)
+	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod, "gateway")
 	_, found := filteredSelection.ItemSplit().CartItems["item-1"].ChargesByType().GetByType(domain.ChargeTypeGiftCard)
 
 	if found == true {
@@ -296,7 +296,7 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 func Test_NewDefaultPaymentSelection_IdempotencyKey(t *testing.T) {
 	// NewDefaultPaymentSelection should generate a new idempotency key
-	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
+	selection, _ := cart.NewDefaultPaymentSelection("", "", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
 	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", selection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
 	assert.NotEqual(t, uuid.Nil.String(), selection.IdempotencyKey())
 
@@ -317,7 +317,7 @@ func Test_NewPaymentSelection_IdempotencyKey(t *testing.T) {
 }
 
 func TestDefaultPaymentSelection_MarshalJSON(t *testing.T) {
-	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
+	selection, _ := cart.NewDefaultPaymentSelection("", "", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
 
 	expectedJSON := fmt.Sprintf("{\"GatewayProp\":\"\",\"ChargedItemsProp\":{\"CartItems\":{},\"ShippingItems\":{},\"TotalItems\":{}},\"IdempotencyKey\":\"%s\"}", selection.IdempotencyKey())
 

@@ -152,6 +152,6 @@ func (p *SimplePaymentFormService) MapFormToPaymentSelection(f SimplePaymentForm
 		priceDomain.ChargeTypeMain:     f.Method,
 		priceDomain.ChargeTypeGiftCard: p.giftCardPaymentMethod,
 	}
-	selection, _ := cartDomain.NewDefaultPaymentSelection(f.Gateway, chargeTypeToPaymentMethod, *currentCart)
+	selection, _ := cartDomain.NewDefaultPaymentSelection(f.Gateway, "", chargeTypeToPaymentMethod, *currentCart)
 	return selection
 }

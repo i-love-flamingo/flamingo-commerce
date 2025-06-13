@@ -1082,6 +1082,36 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "ProductAttribute": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "description": "Code is the internal attribute identifier",
+                    "type": "string"
+                },
+                "CodeLabel": {
+                    "description": "CodeLabel is the human-readable (perhaps localized) attribute name",
+                    "type": "string"
+                },
+                "Label": {
+                    "description": "Label is the human-readable (perhaps localized) attribute value",
+                    "type": "string"
+                },
+                "RawValue": {
+                    "description": "RawValue is the untouched original value of the attribute"
+                },
+                "UnitCode": {
+                    "description": "UnitCode is the internal code of the attribute values measuring unit",
+                    "type": "string"
+                }
+            }
+        },
+        "ProductAttributes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/ProductAttribute"
+            }
+        },
         "ProductMedia": {
             "type": "object",
             "properties": {
@@ -1231,6 +1261,11 @@ const docTemplate = `{
                 "CouponCode": {
                     "description": "code of discount e.g. provided by user \"summer2018\"",
                     "type": "string"
+                },
+                "CustomAttributes": {
+                    "description": "stores additional discount attributes",
+                    "type": "object",
+                    "additionalProperties": true
                 },
                 "IsItemRelated": {
                     "description": "flag indicating if the discount is applied due to item in cart",
@@ -2091,10 +2126,6 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.Attributes": {
-            "type": "object",
-            "additionalProperties": {}
-        },
         "domain.Badge": {
             "type": "object",
             "properties": {
@@ -2346,7 +2377,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/domain.Attributes"
+                    "$ref": "#/definitions/ProductAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",

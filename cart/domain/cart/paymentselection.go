@@ -100,18 +100,20 @@ var (
 
 // NewDefaultPaymentSelection returns a PaymentSelection that can be used to update the cart
 // is able to include gift card charges if applied to cart
-func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[string]string, cart Cart) (PaymentSelection, error) {
+func NewDefaultPaymentSelection(commerceGateway string, gateway string, chargeTypeToPaymentMethod map[string]string, cart Cart) (PaymentSelection, error) {
 	pricedItems := cart.GetAllPaymentRequiredItems()
 	giftCards := cart.AppliedGiftCards
 	if _, ok := chargeTypeToPaymentMethod[price.ChargeTypeMain]; !ok {
 		return nil, fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeMain)
 	}
-	result, err := newPaymentSelectionWithGiftCard(gateway, chargeTypeToPaymentMethod, pricedItems, giftCards)
+
+	result, err := newPaymentSelectionWithGiftCard(commerceGateway, gateway, chargeTypeToPaymentMethod, pricedItems, giftCards)
 	if err != nil {
 		return result, err
 	}
+
 	// filter out zero charges from here on out
-	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
+	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod, gateway)
 	// add an new Idempotency-Key to the payment selection
 	return result.GenerateNewIdempotencyKey()
 }
@@ -119,7 +121,7 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 // RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
 // for our internal calculations but not for external clients, we assume zero charges are ignored
 // moreover charges are transformed to pay ables
-func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string) PaymentSelection {
+func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string, gateway string) PaymentSelection {
 	// guard clause for nil selection
 	if selection == nil {
 		return nil
@@ -129,9 +131,9 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 	}
 	builder := &PaymentSplitByItemBuilder{}
 	// remove all zero charges from selection with helper function
-	removeZeroChargesFromSplit(selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, selection.Gateway(), builder.AddCartItem)
-	removeZeroChargesFromSplit(selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, selection.Gateway(), builder.AddShippingItem)
-	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, selection.Gateway(), builder.AddTotalItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, gateway, builder.AddCartItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, gateway, builder.AddShippingItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, gateway, builder.AddTotalItem)
 
 	result.ChargedItemsProp = builder.Build()
 
@@ -169,9 +171,9 @@ func removeZeroChargesFromSplit(
 
 // newSimplePaymentSelection returns a PaymentSelection that can be used to update the cart.
 // multiple charges by item are not used here: The complete grandtotal is selected to be paid in one charge with the given paymentgateway and paymentmethod
-func newSimplePaymentSelection(gateway string, method string, pricedItems PricedItems) PaymentSelection {
+func newSimplePaymentSelection(commerceGateway string, gateway string, method string, pricedItems PricedItems) PaymentSelection {
 	selection := DefaultPaymentSelection{
-		GatewayProp: gateway,
+		GatewayProp: commerceGateway,
 	}
 	builder := PaymentSplitByItemBuilder{}
 
@@ -203,7 +205,7 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 }
 
 // newPaymentSelectionWithGiftCard returns Selection with given gift card charge type taken into account
-func newPaymentSelectionWithGiftCard(gateway string, chargeTypeToPaymentMethod map[string]string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
+func newPaymentSelectionWithGiftCard(commerceGateway string, gateway string, chargeTypeToPaymentMethod map[string]string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
 	// create payment split by item with gift cards
 	service := PaymentSplitService{}
 	result, err := service.SplitWithGiftCards(chargeTypeToPaymentMethod, gateway, pricedItems, appliedGiftCards)
@@ -211,28 +213,28 @@ func newPaymentSelectionWithGiftCard(gateway string, chargeTypeToPaymentMethod m
 	if err != nil {
 		switch err {
 		case ErrSplitNoGiftCards:
-			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
+			return newSimplePaymentSelection(commerceGateway, gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
 		case ErrSplitEmptyGiftCards:
-			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
+			return newSimplePaymentSelection(commerceGateway, gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
 		case ErrSplitGiftCardsNoChargeTypeMapping:
-			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
+			return newSimplePaymentSelection(commerceGateway, gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
 		default:
 			return nil, err
 		}
 	}
 	// create selection
 	selection := DefaultPaymentSelection{
-		GatewayProp: gateway,
+		GatewayProp: commerceGateway,
 	}
 	selection.ChargedItemsProp = *result
 	return selection, nil
 }
 
 // NewPaymentSelection - with the passed PaymentSplitByItem
-func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) PaymentSelection {
+func NewPaymentSelection(commerceGateway string, chargedItems PaymentSplitByItem) PaymentSelection {
 	var selection PaymentSelection
 	selection = DefaultPaymentSelection{
-		GatewayProp:      gateway,
+		GatewayProp:      commerceGateway,
 		ChargedItemsProp: chargedItems,
 	}
 	selection, _ = selection.GenerateNewIdempotencyKey()
