@@ -148,7 +148,7 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 
 // MapFormToPaymentSelection maps form values to a valid payment selection
 func (p *SimplePaymentFormService) MapFormToPaymentSelection(f SimplePaymentForm, currentCart *cartDomain.Cart) cartDomain.PaymentSelection {
-	chargeTypeToPaymentMethod := map[string]cartDomain.Method{
+	chargeTypeToPaymentMethod := map[string]cartDomain.PaymentMethod{
 		priceDomain.ChargeTypeMain:     {Code: f.Method},
 		priceDomain.ChargeTypeGiftCard: {Code: p.giftCardPaymentMethod},
 	}

@@ -1,7 +1,7 @@
 package cart
 
 type (
-	Method struct {
+	PaymentMethod struct {
 		Code    string
 		Gateway string
 	}

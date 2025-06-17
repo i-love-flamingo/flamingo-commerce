@@ -58,7 +58,7 @@ func TestPaymentService_PaymentGatewayByCart(t *testing.T) {
 
 	// cart with valid payment selection and working gateway
 	cart = cartDomain.Cart{}
-	paymentSelection, _ := cartDomain.NewDefaultPaymentSelection("gateway-code", map[string]cartDomain.Method{domain.ChargeTypeMain: {Code: "main"}}, cart)
+	paymentSelection, _ := cartDomain.NewDefaultPaymentSelection("gateway-code", map[string]cartDomain.PaymentMethod{domain.ChargeTypeMain: {Code: "main"}}, cart)
 	cart.PaymentSelection = paymentSelection
 	gateway, err = ps.PaymentGatewayByCart(cart)
 	assert.Equal(t, &mocks.WebCartPaymentGateway{}, gateway)

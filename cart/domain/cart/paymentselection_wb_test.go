@@ -10,10 +10,10 @@ import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
-func getPaymentMethodMapping(t *testing.T) map[string]Method {
+func getPaymentMethodMapping(t *testing.T) map[string]PaymentMethod {
 	t.Helper()
 
-	return map[string]Method{
+	return map[string]PaymentMethod{
 		domain.ChargeTypeMain:     {Code: "creditcard", Gateway: ""},
 		domain.ChargeTypeGiftCard: {Code: "giftcard", Gateway: ""},
 	}
