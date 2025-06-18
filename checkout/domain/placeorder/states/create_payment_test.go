@@ -139,7 +139,7 @@ func provideProcessFactory(t *testing.T) *process.Factory {
 func provideCartWithPaymentSelection(t *testing.T) cartDomain.Cart {
 	t.Helper()
 	cart := cartDomain.Cart{}
-	paymentSelection, err := cartDomain.NewDefaultPaymentSelection("test", map[string]string{price.ChargeTypeMain: "main"}, cart)
+	paymentSelection, err := cartDomain.NewDefaultPaymentSelection("test", map[string]cartDomain.PaymentMethod{price.ChargeTypeMain: {Code: "main"}}, cart)
 	require.NoError(t, err)
 	cart.PaymentSelection = paymentSelection
 	return cart

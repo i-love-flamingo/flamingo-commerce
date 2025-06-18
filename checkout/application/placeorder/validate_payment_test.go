@@ -6,6 +6,11 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -15,10 +20,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces/mocks"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
-	"github.com/google/go-cmp/cmp"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func provideProcessFactory(t *testing.T) *process.Factory {
@@ -42,7 +43,7 @@ func provideProcessFactory(t *testing.T) *process.Factory {
 func provideCartWithPaymentSelection(t *testing.T) cartDomain.Cart {
 	t.Helper()
 	cart := cartDomain.Cart{}
-	paymentSelection, err := cartDomain.NewDefaultPaymentSelection("test", map[string]string{price.ChargeTypeMain: "main"}, cart)
+	paymentSelection, err := cartDomain.NewDefaultPaymentSelection("test", map[string]cartDomain.PaymentMethod{price.ChargeTypeMain: {Code: "main"}}, cart)
 	require.NoError(t, err)
 	cart.PaymentSelection = paymentSelection
 	return cart
