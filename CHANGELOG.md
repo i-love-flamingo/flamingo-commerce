@@ -2,7 +2,8 @@
 
 ## v3.13.0 [upcoming]
 **cart**
-* **Breaking:** Added a 'Gateway' field to SplitQualifier, to ensure a diversity of payment possibilities.
+* **Breaking:** Added a 'Gateway' to payment method information, provided to create payment selection. Gateway in PaymentMethod is actual Payment Gateway. 
+* **Breaking:** Added a 'Gateway' field, representing actual Payment Gateway, to SplitQualifier, to ensure a diversity of payment possibilities.
 
 ## v3.12.0 
 **product**
