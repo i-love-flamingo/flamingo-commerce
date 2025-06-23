@@ -28,6 +28,7 @@ type (
 		ItemSplit() PaymentSplitByItem
 		TotalValue() price.Price
 		MethodByType(string) string
+		GatewayByType(string) string
 		IdempotencyKey() string
 		GenerateNewIdempotencyKey() (PaymentSelection, error)
 	}
@@ -583,6 +584,17 @@ func (d DefaultPaymentSelection) MethodByType(chargeType string) string {
 	for qualifier := range d.CartSplit() {
 		if qualifier.ChargeType == chargeType {
 			return qualifier.Method
+		}
+	}
+
+	return ""
+}
+
+// GatewayByType returns the payment gateway by charge type
+func (d DefaultPaymentSelection) GatewayByType(chargeType string) string {
+	for qualifier := range d.CartSplit() {
+		if qualifier.ChargeType == chargeType {
+			return qualifier.Gateway
 		}
 	}
 
