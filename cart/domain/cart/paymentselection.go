@@ -343,6 +343,8 @@ func (s PaymentSplit) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON deserialize from json
+//
+//nolint:mnd // self explanatory numbers
 func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 	var input map[string]price.Charge
 	if err := json.Unmarshal(data, &input); err != nil {
@@ -431,6 +433,8 @@ func (pb *PaymentSplitByItemBuilder) init() {
 }
 
 // SplitWithGiftCards calculates a payment selection based on given method, priced items and applied gift cards
+//
+//nolint:cyclop // will be reworked some day
 func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod map[string]string, items PricedItems, cards AppliedGiftCards) (*PaymentSplitByItem, error) {
 	totalValue := items.Sum()
 	// guard clause, if no gift cards no payment split with gift cards

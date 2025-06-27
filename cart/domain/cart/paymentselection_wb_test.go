@@ -12,6 +12,7 @@ import (
 
 func getPaymentMethodMapping(t *testing.T) map[string]string {
 	t.Helper()
+
 	return map[string]string{
 		domain.ChargeTypeMain:     "creditcard",
 		domain.ChargeTypeGiftCard: "giftcard",
