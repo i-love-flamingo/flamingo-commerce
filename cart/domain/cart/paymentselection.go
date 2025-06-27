@@ -13,9 +13,7 @@ import (
 )
 
 const (
-	splitQualifierSeparator              = "-"
-	expectedSplitSizeWithChargeReference = 3
-	expectedSplitSizeWithGateway         = 4
+	splitQualifierSeparator = "-"
 )
 
 type (
@@ -37,7 +35,6 @@ type (
 		ChargeType      string
 		ChargeReference string
 		Method          string
-		Gateway         string
 	}
 
 	// PaymentSplit represents the Charges qualified by Charge Type, Charge Reference and Payment Method
@@ -68,7 +65,7 @@ type (
 
 	// builderAddFunc is a function used by the builder to add items
 	// function which corresponds to builder addX function (addCartItem, addShipping, addTotal)
-	builderAddFunc func(string, string, string, price.Charge) *PaymentSplitByItemBuilder
+	builderAddFunc func(string, string, price.Charge) *PaymentSplitByItemBuilder
 
 	// itemsWithAdd is a helper struct which holds items with their corresponding add function
 	// from PaymentSplitByItemBuilder
@@ -129,9 +126,9 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 	}
 	builder := &PaymentSplitByItemBuilder{}
 	// remove all zero charges from selection with helper function
-	removeZeroChargesFromSplit(selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, selection.Gateway(), builder.AddCartItem)
-	removeZeroChargesFromSplit(selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, selection.Gateway(), builder.AddShippingItem)
-	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, selection.Gateway(), builder.AddTotalItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, builder.AddCartItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, builder.AddShippingItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
 
 	result.ChargedItemsProp = builder.Build()
 
@@ -144,7 +141,6 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 func removeZeroChargesFromSplit(
 	paymentSplit map[string]PaymentSplit,
 	chargeTypeToPaymentMethod map[string]string,
-	gateway string,
 	add builderAddFunc,
 ) {
 	for id, split := range paymentSplit {
@@ -162,7 +158,7 @@ func removeZeroChargesFromSplit(
 			}
 			// we assume that map of types and method matches
 			method := chargeTypeToPaymentMethod[qualifier.Type]
-			add(id, method, gateway, charge)
+			add(id, method, charge)
 		}
 	}
 }
@@ -176,7 +172,7 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 	builder := PaymentSplitByItemBuilder{}
 
 	for k, itemPrice := range pricedItems.CartItems() {
-		builder.AddCartItem(k, method, gateway, price.Charge{
+		builder.AddCartItem(k, method, price.Charge{
 			Price: itemPrice,
 			Value: itemPrice,
 			Type:  price.ChargeTypeMain,
@@ -184,7 +180,7 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 
 	}
 	for k, itemPrice := range pricedItems.ShippingItems() {
-		builder.AddShippingItem(k, method, gateway, price.Charge{
+		builder.AddShippingItem(k, method, price.Charge{
 			Price: itemPrice,
 			Value: itemPrice,
 			Type:  price.ChargeTypeMain,
@@ -192,7 +188,7 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 
 	}
 	for k, itemPrice := range pricedItems.TotalItems() {
-		builder.AddTotalItem(k, method, gateway, price.Charge{
+		builder.AddTotalItem(k, method, price.Charge{
 			Price: itemPrice,
 			Value: itemPrice,
 			Type:  price.ChargeTypeMain,
@@ -206,7 +202,7 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 func newPaymentSelectionWithGiftCard(gateway string, chargeTypeToPaymentMethod map[string]string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
 	// create payment split by item with gift cards
 	service := PaymentSplitService{}
-	result, err := service.SplitWithGiftCards(chargeTypeToPaymentMethod, gateway, pricedItems, appliedGiftCards)
+	result, err := service.SplitWithGiftCards(chargeTypeToPaymentMethod, pricedItems, appliedGiftCards)
 	// error handling
 	if err != nil {
 		switch err {
@@ -341,7 +337,7 @@ func (s PaymentSplit) MarshalJSON() ([]byte, error) {
 			return nil, errors.New("method or ChargeType is empty")
 		}
 		// SplitQualifier is parsed to a string method-chargeType-chargeReference
-		result[qualifier.Method+splitQualifierSeparator+qualifier.ChargeType+splitQualifierSeparator+qualifier.ChargeReference+splitQualifierSeparator+qualifier.Gateway] = charge
+		result[qualifier.Method+splitQualifierSeparator+qualifier.ChargeType+splitQualifierSeparator+qualifier.ChargeReference] = charge
 	}
 	return json.Marshal(result)
 }
@@ -365,12 +361,8 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 			ChargeType: splitted[1],
 		}
 
-		if len(splitted) >= expectedSplitSizeWithChargeReference {
+		if len(splitted) == 3 {
 			qualifier.ChargeReference = splitted[2]
-		}
-
-		if len(splitted) >= expectedSplitSizeWithGateway {
-			qualifier.Gateway = splitted[3]
 		}
 
 		result[qualifier] = charge
@@ -380,14 +372,13 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 }
 
 // AddCartItem adds a cart items charge to the PaymentSplitByItem
-func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, gateway string, charge price.Charge) *PaymentSplitByItemBuilder {
+func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.CartItems[id] == nil {
 		pb.inBuilding.CartItems[id] = make(PaymentSplit)
 	}
 	pb.inBuilding.CartItems[id][SplitQualifier{
 		Method:          method,
-		Gateway:         gateway,
 		ChargeType:      charge.Type,
 		ChargeReference: charge.Reference,
 	}] = charge
@@ -395,14 +386,13 @@ func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, gatew
 }
 
 // AddShippingItem adds shipping charge
-func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method string, gateway string, charge price.Charge) *PaymentSplitByItemBuilder {
+func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.ShippingItems[deliveryCode] == nil {
 		pb.inBuilding.ShippingItems[deliveryCode] = make(PaymentSplit)
 	}
 	pb.inBuilding.ShippingItems[deliveryCode][SplitQualifier{
 		Method:          method,
-		Gateway:         gateway,
 		ChargeType:      charge.Type,
 		ChargeReference: charge.Reference,
 	}] = charge
@@ -410,14 +400,13 @@ func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method
 }
 
 // AddTotalItem adds total item charge
-func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method string, gateway string, charge price.Charge) *PaymentSplitByItemBuilder {
+func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.TotalItems[totalType] == nil {
 		pb.inBuilding.TotalItems[totalType] = make(PaymentSplit)
 	}
 	pb.inBuilding.TotalItems[totalType][SplitQualifier{
 		Method:          method,
-		Gateway:         gateway,
 		ChargeType:      charge.Type,
 		ChargeReference: charge.Reference,
 	}] = charge
@@ -442,9 +431,7 @@ func (pb *PaymentSplitByItemBuilder) init() {
 }
 
 // SplitWithGiftCards calculates a payment selection based on given method, priced items and applied gift cards
-//
-//nolint:cyclop // this will be fixed some time later
-func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod map[string]string, gateway string, items PricedItems, cards AppliedGiftCards) (*PaymentSplitByItem, error) {
+func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod map[string]string, items PricedItems, cards AppliedGiftCards) (*PaymentSplitByItem, error) {
 	totalValue := items.Sum()
 	// guard clause, if no gift cards no payment split with gift cards
 	if len(cards) == 0 {
@@ -498,14 +485,14 @@ func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod 
 				itemPrice = remainingItem
 
 				// add calculated charges to builder for payment selection
-				builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeMain], gateway, price.Charge{
+				builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeMain], price.Charge{
 					Price: remainingItem,
 					Value: remainingItem,
 					Type:  price.ChargeTypeMain,
 				})
 
 				if !appliedGiftCard.IsZero() {
-					builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeGiftCard], gateway, price.Charge{
+					builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeGiftCard], price.Charge{
 						Price:     appliedGiftCard,
 						Value:     appliedGiftCard,
 						Type:      price.ChargeTypeGiftCard,
