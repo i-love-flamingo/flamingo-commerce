@@ -3,13 +3,12 @@ package application_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/payment/application"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces/mocks"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPaymentService_AvailablePaymentGateways(t *testing.T) {
@@ -58,7 +57,7 @@ func TestPaymentService_PaymentGatewayByCart(t *testing.T) {
 
 	// cart with valid payment selection and working gateway
 	cart = cartDomain.Cart{}
-	paymentSelection, _ := cartDomain.NewDefaultPaymentSelection("gateway-code", map[string]cartDomain.PaymentMethod{domain.ChargeTypeMain: {Code: "main"}}, cart)
+	paymentSelection, _ := cartDomain.NewDefaultPaymentSelection("gateway-code", map[string]string{domain.ChargeTypeMain: "main"}, cart)
 	cart.PaymentSelection = paymentSelection
 	gateway, err = ps.PaymentGatewayByCart(cart)
 	assert.Equal(t, &mocks.WebCartPaymentGateway{}, gateway)
