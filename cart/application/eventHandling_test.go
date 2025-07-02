@@ -2,17 +2,19 @@ package application_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/application/mocks"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/core/auth"
 	authMock "flamingo.me/flamingo/v3/core/auth/mock"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/stretchr/testify/mock"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/application/mocks"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 func TestEventReceiver_Notify(t *testing.T) {
@@ -104,108 +106,222 @@ func TestEventReceiver_Notify(t *testing.T) {
 func TestCartMergeStrategyReplace_Merge(t *testing.T) {
 	t.Parallel()
 
-	session := web.EmptySession()
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
 
-	c := &application.CartMergeStrategyReplace{}
-	cartService := mocks.NewCartService(t)
-	cartService.EXPECT().Clean(mock.Anything, session).Return(nil)
-	cartService.EXPECT().UpdateDeliveryInfo(mock.Anything, session, "delivery1", mock.Anything).Return(nil)
-	cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
-		MarketplaceCode: "foo",
-		Qty:             1,
-	}).Return(nil, nil)
-	cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
-		MarketplaceCode: "bundle",
-		Qty:             1,
-		BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
-			MarketplaceCode:        "bar",
-			VariantMarketplaceCode: "baz",
-			Qty:                    2,
-		}},
-	}).Return(nil, nil)
-	cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
-	cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
-	cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
-	cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
-	cartService.EXPECT().UpdatePaymentSelection(mock.Anything, session, mock.Anything).Return(nil)
-	c.Inject(flamingo.NullLogger{}, cartService)
-	c.Merge(context.Background(), session, cart.Cart{
-		ID: "guest", BelongsToAuthenticatedUser: false,
-		Deliveries: []cart.Delivery{{
-			DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
-			Cartitems: []cart.Item{
-				{MarketplaceCode: "foo", Qty: 1},
-				{
+		session := web.EmptySession()
 
-					MarketplaceCode: "bundle",
-					BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
-						MarketplaceCode:        "bar",
-						VariantMarketplaceCode: "baz",
-						Qty:                    2,
-					}},
-					Qty: 1,
+		c := &application.CartMergeStrategyReplace{}
+		cartService := mocks.NewCartService(t)
+		cartService.EXPECT().Clean(mock.Anything, session).Return(nil)
+		cartService.EXPECT().UpdateDeliveryInfo(mock.Anything, session, "delivery1", mock.Anything).Return(nil)
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "foo",
+			Qty:             1,
+		}).Return(nil, nil)
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "bundle",
+			Qty:             1,
+			BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+				MarketplaceCode:        "bar",
+				VariantMarketplaceCode: "baz",
+				Qty:                    2,
+			}},
+		}).Return(nil, nil)
+		cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
+		cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
+		cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
+		cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
+		cartService.EXPECT().UpdatePaymentSelection(mock.Anything, session, mock.Anything).Return(nil)
+		c.Inject(flamingo.NullLogger{}, cartService)
+		c.Merge(context.Background(), session, cart.Cart{
+			ID: "guest", BelongsToAuthenticatedUser: false,
+			Deliveries: []cart.Delivery{{
+				DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
+				Cartitems: []cart.Item{
+					{MarketplaceCode: "foo", Qty: 1},
+					{
+
+						MarketplaceCode: "bundle",
+						BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+							MarketplaceCode:        "bar",
+							VariantMarketplaceCode: "baz",
+							Qty:                    2,
+						}},
+						Qty: 1,
+					},
 				},
-			},
-		}},
-		BillingAddress:     &cart.Address{},
-		Purchaser:          &cart.Person{},
-		AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
-		AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
-		PaymentSelection:   cart.DefaultPaymentSelection{},
-	}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+			}},
+			BillingAddress:     &cart.Address{},
+			Purchaser:          &cart.Person{},
+			AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
+			AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
+			PaymentSelection:   cart.DefaultPaymentSelection{},
+		}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+	})
+
+	t.Run("one item addition failed", func(t *testing.T) {
+		t.Parallel()
+
+		session := web.EmptySession()
+
+		c := &application.CartMergeStrategyReplace{}
+		cartService := mocks.NewCartService(t)
+		cartService.EXPECT().Clean(mock.Anything, session).Return(nil)
+		cartService.EXPECT().UpdateDeliveryInfo(mock.Anything, session, "delivery1", mock.Anything).Return(nil)
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "foo",
+			Qty:             1,
+		}).Return(nil, nil)
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "bundle",
+			Qty:             1,
+			BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+				MarketplaceCode:        "bar",
+				VariantMarketplaceCode: "baz",
+				Qty:                    2,
+			}},
+		}).Return(nil, errors.New("some error"))
+		cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
+		cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
+		cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
+		cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
+
+		c.Inject(flamingo.NullLogger{}, cartService)
+		c.Merge(context.Background(), session, cart.Cart{
+			ID: "guest", BelongsToAuthenticatedUser: false,
+			Deliveries: []cart.Delivery{{
+				DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
+				Cartitems: []cart.Item{
+					{MarketplaceCode: "foo", Qty: 1},
+					{
+
+						MarketplaceCode: "bundle",
+						BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+							MarketplaceCode:        "bar",
+							VariantMarketplaceCode: "baz",
+							Qty:                    2,
+						}},
+						Qty: 1,
+					},
+				},
+			}},
+			BillingAddress:     &cart.Address{},
+			Purchaser:          &cart.Person{},
+			AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
+			AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
+			PaymentSelection:   cart.DefaultPaymentSelection{},
+		}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+	})
 }
 
 func TestCartMergeStrategyMerge_Merge(t *testing.T) {
 	t.Parallel()
 
-	session := web.EmptySession()
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
 
-	c := &application.CartMergeStrategyMerge{}
-	cartService := mocks.NewCartService(t)
-	cartService.EXPECT().UpdateDeliveryInfo(mock.Anything, session, "delivery1", mock.Anything).Return(nil)
-	cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
-		MarketplaceCode: "foo",
-		Qty:             1,
-	}).Return(nil, nil)
-	cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
-		MarketplaceCode: "bundle",
-		Qty:             1,
-		BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
-			MarketplaceCode:        "bar",
-			VariantMarketplaceCode: "baz",
-			Qty:                    2,
-		}},
-	}).Return(nil, nil)
-	cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
-	cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
-	cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
-	cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
-	cartService.EXPECT().UpdatePaymentSelection(mock.Anything, session, mock.Anything).Return(nil)
-	c.Inject(flamingo.NullLogger{}, cartService)
-	c.Merge(context.Background(), session, cart.Cart{
-		ID: "guest", BelongsToAuthenticatedUser: false,
-		Deliveries: []cart.Delivery{{
-			DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
-			Cartitems: []cart.Item{
-				{MarketplaceCode: "foo", Qty: 1},
-				{
+		session := web.EmptySession()
 
-					MarketplaceCode: "bundle",
-					BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
-						MarketplaceCode:        "bar",
-						VariantMarketplaceCode: "baz",
-						Qty:                    2,
-					}},
-					Qty: 1,
+		c := &application.CartMergeStrategyMerge{}
+		cartService := mocks.NewCartService(t)
+		cartService.EXPECT().UpdateDeliveryInfo(mock.Anything, session, "delivery1", mock.Anything).Return(nil)
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "foo",
+			Qty:             1,
+		}).Return(nil, nil)
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "bundle",
+			Qty:             1,
+			BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+				MarketplaceCode:        "bar",
+				VariantMarketplaceCode: "baz",
+				Qty:                    2,
+			}},
+		}).Return(nil, nil)
+		cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
+		cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
+		cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
+		cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
+		cartService.EXPECT().UpdatePaymentSelection(mock.Anything, session, mock.Anything).Return(nil)
+		c.Inject(flamingo.NullLogger{}, cartService)
+		c.Merge(context.Background(), session, cart.Cart{
+			ID: "guest", BelongsToAuthenticatedUser: false,
+			Deliveries: []cart.Delivery{{
+				DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
+				Cartitems: []cart.Item{
+					{MarketplaceCode: "foo", Qty: 1},
+					{
+
+						MarketplaceCode: "bundle",
+						BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+							MarketplaceCode:        "bar",
+							VariantMarketplaceCode: "baz",
+							Qty:                    2,
+						}},
+						Qty: 1,
+					},
 				},
-			},
-		}},
-		BillingAddress:     &cart.Address{},
-		Purchaser:          &cart.Person{},
-		AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
-		AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
-		PaymentSelection:   cart.DefaultPaymentSelection{},
-	}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+			}},
+			BillingAddress:     &cart.Address{},
+			Purchaser:          &cart.Person{},
+			AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
+			AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
+			PaymentSelection:   cart.DefaultPaymentSelection{},
+		}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+	})
+
+	t.Run("failed to add one item", func(t *testing.T) {
+		t.Parallel()
+
+		session := web.EmptySession()
+
+		c := &application.CartMergeStrategyMerge{}
+		cartService := mocks.NewCartService(t)
+		cartService.EXPECT().UpdateDeliveryInfo(mock.Anything, session, "delivery1", mock.Anything).Return(nil)
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "foo",
+			Qty:             1,
+		}).Return(nil, errors.New("some error"))
+		cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+			MarketplaceCode: "bundle",
+			Qty:             1,
+			BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+				MarketplaceCode:        "bar",
+				VariantMarketplaceCode: "baz",
+				Qty:                    2,
+			}},
+		}).Return(nil, nil)
+		cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
+		cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
+		cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
+		cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
+		c.Inject(flamingo.NullLogger{}, cartService)
+		c.Merge(context.Background(), session, cart.Cart{
+			ID: "guest", BelongsToAuthenticatedUser: false,
+			Deliveries: []cart.Delivery{{
+				DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
+				Cartitems: []cart.Item{
+					{MarketplaceCode: "foo", Qty: 1},
+					{
+
+						MarketplaceCode: "bundle",
+						BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+							MarketplaceCode:        "bar",
+							VariantMarketplaceCode: "baz",
+							Qty:                    2,
+						}},
+						Qty: 1,
+					},
+				},
+			}},
+			BillingAddress:     &cart.Address{},
+			Purchaser:          &cart.Person{},
+			AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
+			AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
+			PaymentSelection:   cart.DefaultPaymentSelection{},
+		}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+	})
 }
 
 func TestCartMergeStrategyNone_Merge(t *testing.T) {

@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"go.opencensus.io/trace"
@@ -53,9 +54,14 @@ type (
 	}
 )
 
-var _ CartMerger = &CartMergeStrategyReplace{}
-var _ CartMerger = &CartMergeStrategyMerge{}
-var _ CartMerger = &CartMergeStrategyNone{}
+var (
+	_ CartMerger = &CartMergeStrategyReplace{}
+	_ CartMerger = &CartMergeStrategyMerge{}
+	_ CartMerger = &CartMergeStrategyNone{}
+
+	errAddToCartFailed         = errors.New("add to cart for at least one product failed during cart merge")
+	errAddToCartFailedDelivery = errors.New("add to cart for at least one delivery failed during cart merge")
+)
 
 // Inject dependencies
 func (e *EventReceiver) Inject(
@@ -198,29 +204,7 @@ func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Sessi
 		c.logger.WithContext(ctx).Error(fmt.Errorf("cleaning the customer cart didn't work: %w", err))
 	}
 
-	for _, delivery := range guestCart.Deliveries {
-		err = c.cartService.UpdateDeliveryInfo(ctx, session, delivery.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(delivery.DeliveryInfo))
-		if err != nil {
-			c.logger.WithContext(ctx).Error(fmt.Errorf("error during delivery info update: %w", err))
-			continue
-		}
-
-		for _, item := range delivery.Cartitems {
-			c.logger.WithContext(ctx).Debugf("adding guest cart item to customer cart: %v", item)
-			addRequest := cartDomain.AddRequest{
-				MarketplaceCode:        item.MarketplaceCode,
-				Qty:                    item.Qty,
-				VariantMarketplaceCode: item.VariantMarketPlaceCode,
-				AdditionalData:         item.AdditionalData,
-				BundleConfiguration:    item.BundleConfig,
-			}
-
-			_, err = c.cartService.AddProduct(ctx, session, delivery.DeliveryInfo.Code, addRequest)
-			if err != nil {
-				c.logger.WithContext(ctx).Error(fmt.Errorf("add to cart for guest item %v failed: %w", item, err))
-			}
-		}
-	}
+	errAddDelivery := c.addDeliveries(ctx, session, guestCart)
 
 	if guestCart.BillingAddress != nil {
 		err = c.cartService.UpdateBillingAddress(ctx, session, guestCart.BillingAddress)
@@ -254,12 +238,67 @@ func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Sessi
 		}
 	}
 
-	if guestCart.PaymentSelection != nil {
+	if errAddDelivery == nil && guestCart.PaymentSelection != nil {
 		err = c.cartService.UpdatePaymentSelection(ctx, session, guestCart.PaymentSelection)
+
 		if err != nil {
 			c.logger.WithContext(ctx).Error(fmt.Errorf("couldn't payment selection: %w", err))
 		}
 	}
+}
+
+func (c *CartMergeStrategyReplace) addDeliveries(ctx context.Context, session *web.Session, guestCart cartDomain.Cart) error {
+	var errAddDeliveries error
+
+	for _, delivery := range guestCart.Deliveries {
+		err := c.cartService.UpdateDeliveryInfo(ctx, session, delivery.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(delivery.DeliveryInfo))
+		if err != nil {
+			c.logger.WithContext(ctx).Error(fmt.Errorf("error during delivery info update: %w", err))
+
+			errAddDeliveries = err
+
+			continue
+		}
+
+		err = c.addItems(ctx, session, delivery)
+		if err != nil {
+			errAddDeliveries = err
+		}
+	}
+
+	if errAddDeliveries != nil {
+		return errAddToCartFailedDelivery
+	}
+
+	return nil
+}
+
+func (c *CartMergeStrategyReplace) addItems(ctx context.Context, session *web.Session, delivery cartDomain.Delivery) error {
+	var errAddItems error
+
+	for _, item := range delivery.Cartitems {
+		c.logger.WithContext(ctx).Debugf("adding guest cart item to customer cart: %v", item)
+		addRequest := cartDomain.AddRequest{
+			MarketplaceCode:        item.MarketplaceCode,
+			Qty:                    item.Qty,
+			VariantMarketplaceCode: item.VariantMarketPlaceCode,
+			AdditionalData:         item.AdditionalData,
+			BundleConfiguration:    item.BundleConfig,
+		}
+
+		_, err := c.cartService.AddProduct(ctx, session, delivery.DeliveryInfo.Code, addRequest)
+		if err != nil {
+			c.logger.WithContext(ctx).Error(fmt.Errorf("add to cart for guest item %v failed: %w", item, err))
+
+			errAddItems = err
+		}
+	}
+
+	if errAddItems != nil {
+		return errAddToCartFailed
+	}
+
+	return nil
 }
 
 // Inject dependencies
@@ -277,31 +316,7 @@ func (c *CartMergeStrategyMerge) Inject(
 func (c *CartMergeStrategyMerge) Merge(ctx context.Context, session *web.Session, guestCart cartDomain.Cart, customerCart cartDomain.Cart) {
 	var err error
 
-	for _, delivery := range guestCart.Deliveries {
-		c.logger.WithContext(ctx).Info(fmt.Sprintf("Merging delivery with code %v of guestCart with ID %v into customerCart with ID %v", delivery.DeliveryInfo.Code, guestCart.ID, customerCart.ID))
-
-		err = c.cartService.UpdateDeliveryInfo(ctx, session, delivery.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(delivery.DeliveryInfo))
-		if err != nil {
-			c.logger.WithContext(ctx).Error("WebLoginEvent customerCart UpdateDeliveryInfo error", err)
-			continue
-		}
-
-		for _, item := range delivery.Cartitems {
-			c.logger.WithContext(ctx).Debugf("Merging item from guest to user cart %v", item)
-			addRequest := cartDomain.AddRequest{
-				MarketplaceCode:        item.MarketplaceCode,
-				Qty:                    item.Qty,
-				VariantMarketplaceCode: item.VariantMarketPlaceCode,
-				AdditionalData:         item.AdditionalData,
-				BundleConfiguration:    item.BundleConfig,
-			}
-
-			_, err = c.cartService.AddProduct(ctx, session, delivery.DeliveryInfo.Code, addRequest)
-			if err != nil {
-				c.logger.WithContext(ctx).Error("WebLoginEvent - customerCart product has merge error", addRequest.MarketplaceCode, err)
-			}
-		}
-	}
+	errAddDelivery := c.addDeliveries(ctx, session, guestCart, customerCart)
 
 	if customerCart.BillingAddress == nil && guestCart.BillingAddress != nil {
 		err = c.cartService.UpdateBillingAddress(ctx, session, guestCart.BillingAddress)
@@ -335,10 +350,66 @@ func (c *CartMergeStrategyMerge) Merge(ctx context.Context, session *web.Session
 		}
 	}
 
-	if customerCart.PaymentSelection == nil && guestCart.PaymentSelection != nil && customerCart.ItemCount() == 0 {
+	if errAddDelivery == nil && customerCart.PaymentSelection == nil && guestCart.PaymentSelection != nil && customerCart.ItemCount() == 0 {
 		err = c.cartService.UpdatePaymentSelection(ctx, session, guestCart.PaymentSelection)
 		if err != nil {
 			c.logger.WithContext(ctx).Error("WebLoginEvent - customerCart UpdatePaymentSelection error", err)
 		}
 	}
+}
+
+func (c *CartMergeStrategyMerge) addDeliveries(ctx context.Context, session *web.Session, guestCart cartDomain.Cart, customerCart cartDomain.Cart) error {
+	var errAddDeliveries error
+
+	for _, delivery := range guestCart.Deliveries {
+		c.logger.WithContext(ctx).Info(fmt.Sprintf("Merging delivery with code %v of guestCart with ID %v into customerCart with ID %v", delivery.DeliveryInfo.Code, guestCart.ID, customerCart.ID))
+
+		err := c.cartService.UpdateDeliveryInfo(ctx, session, delivery.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(delivery.DeliveryInfo))
+		if err != nil {
+			c.logger.WithContext(ctx).Error("WebLoginEvent customerCart UpdateDeliveryInfo error", err)
+
+			errAddDeliveries = err
+
+			continue
+		}
+
+		err = c.addItems(ctx, session, delivery)
+		if err != nil {
+			errAddDeliveries = err
+		}
+	}
+
+	if errAddDeliveries != nil {
+		return errAddToCartFailedDelivery
+	}
+
+	return nil
+}
+
+func (c *CartMergeStrategyMerge) addItems(ctx context.Context, session *web.Session, delivery cartDomain.Delivery) error {
+	var errAddItems error
+
+	for _, item := range delivery.Cartitems {
+		c.logger.WithContext(ctx).Debugf("Merging item from guest to user cart %v", item)
+		addRequest := cartDomain.AddRequest{
+			MarketplaceCode:        item.MarketplaceCode,
+			Qty:                    item.Qty,
+			VariantMarketplaceCode: item.VariantMarketPlaceCode,
+			AdditionalData:         item.AdditionalData,
+			BundleConfiguration:    item.BundleConfig,
+		}
+
+		_, err := c.cartService.AddProduct(ctx, session, delivery.DeliveryInfo.Code, addRequest)
+		if err != nil {
+			c.logger.WithContext(ctx).Error("WebLoginEvent - customerCart product has merge error", addRequest.MarketplaceCode, err)
+
+			errAddItems = err
+		}
+	}
+
+	if errAddItems != nil {
+		return errAddToCartFailed
+	}
+
+	return nil
 }
