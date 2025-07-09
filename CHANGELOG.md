@@ -1,6 +1,8 @@
 # Changelog
 
 ## v3.12.1 [upcoming]
+**cart**
+* Fixed hiccups in cart merge strategies caused by the addition of payment selection from guest cart, when some items were not added to customer's cart due to errors.
 
 ## v3.12.0 
 **product**
