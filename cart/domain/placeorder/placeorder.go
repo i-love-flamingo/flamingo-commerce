@@ -38,6 +38,8 @@ type (
 		PaymentProvider string
 		// Method like "paymark_cc" , "paypal",
 		Method string
+		// EffectiveMethod which customer actually used on payment provider page
+		EffectiveMethod string
 		// Status - Method specific status e.g. Auth, Captured, Open, ...
 		Status string
 		// TransactionID - The main reference of the payment that was done
