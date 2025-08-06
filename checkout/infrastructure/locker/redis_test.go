@@ -80,6 +80,7 @@ func TestRedis_TryLock(t *testing.T) {
 
 	server := startUp(t)
 	defer func() { _ = server.Term() }()
+
 	redisLocker := getRedisLocker("unix", server.Socket(), username, password)
 
 	runTestCases(t, redisLocker)
@@ -124,7 +125,11 @@ func runTestCases(t *testing.T, redisLocker *locker.Redis) {
 }
 
 func TestRedis_StatusDocker(t *testing.T) {
+	t.Parallel()
+
 	t.Run("redis not ready", func(t *testing.T) {
+		t.Parallel()
+
 		username := "myuser"
 		password := "MySecurePassword"
 
@@ -135,6 +140,8 @@ func TestRedis_StatusDocker(t *testing.T) {
 	})
 
 	t.Run("redis is there", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := context.Background()
 
 		username := "myuser"
@@ -164,6 +171,8 @@ func TestRedis_StatusDocker(t *testing.T) {
 	})
 
 	t.Run("incorrect password", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := context.Background()
 
 		username := "myuser"
@@ -176,6 +185,7 @@ func TestRedis_StatusDocker(t *testing.T) {
 			Started:          true,
 		})
 		require.NoError(t, err)
+
 		defer func() { _ = redisC.Terminate(ctx) }()
 		defer goleak.VerifyNone(t, goleak.IgnoreCurrent())
 
@@ -184,9 +194,10 @@ func TestRedis_StatusDocker(t *testing.T) {
 
 		host, err := redisC.Host(ctx)
 		require.NoError(t, err)
+
 		address := fmt.Sprintf("%s:%s", host, port.Port())
 
-		redisLocker := getRedisLocker("tcp", address, username, "password")
+		redisLocker := getRedisLocker("tcp", address, "username", "password")
 		alive, _ := redisLocker.Status()
 
 		assert.False(t, alive)

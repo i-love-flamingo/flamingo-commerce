@@ -154,8 +154,10 @@ func TestRedis_Get(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
+
 		shutdown, address, _ := startUpDockerRedis(t, username, password)
 		defer shutdown()
+
 		store := getRedisStore("tcp", address, username, password)
 		runTestCases(t, store)
 	})
@@ -211,8 +213,10 @@ func TestRedis_Store(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
+
 		shutdown, address, conn := startUpDockerRedis(t, username, password)
 		defer shutdown()
+
 		store := getRedisStore("tcp", address, username, password)
 		runTestCases(t, store, conn)
 	})
@@ -259,8 +263,10 @@ func TestRedis_Delete(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
+
 		shutdown, address, conn := startUpDockerRedis(t, username, password)
 		defer shutdown()
+
 		store := getRedisStore("tcp", address, username, password)
 		runTestCases(t, store, conn)
 	})

@@ -5,6 +5,9 @@
 * Fixed hiccups in cart merge strategies caused by the addition of payment selection from guest cart, when some items were not added to customer's cart due to errors.
 * Add effective payment method to transactions
 
+**checkout**
+* Added support for login, password and tls to the redis client
+
 ## v3.12.0 
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
