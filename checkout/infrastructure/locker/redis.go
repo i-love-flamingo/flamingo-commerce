@@ -19,11 +19,6 @@ type (
 	// Redis TryLocker for clustered applications
 	Redis struct {
 		redsync     *redsync.Redsync
-		network     string
-		address     string
-		maxIdle     int
-		idleTimeout time.Duration
-		database    int
 		healthcheck func() error
 	}
 )
@@ -39,23 +34,40 @@ func NewRedis(
 		Network                 string `inject:"config:commerce.checkout.placeorder.lock.redis.network"`
 		Address                 string `inject:"config:commerce.checkout.placeorder.lock.redis.address"`
 		Database                int    `inject:"config:commerce.checkout.placeorder.lock.redis.database"`
+		Username                string `inject:"config:commerce.checkout.placeorder.lock.redis.username,optional"`
+		Password                string `inject:"config:commerce.checkout.placeorder.lock.redis.password,optional"`
+		UseTLS                  bool   `inject:"config:commerce.checkout.placeorder.lock.redis.useTLS,optional"`
 	},
 ) *Redis {
 	r := new(Redis)
 
-	if cfg != nil {
-		r.maxIdle = cfg.MaxIdle
-		r.idleTimeout = time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond
-		r.network = cfg.Network
-		r.address = cfg.Address
-		r.database = cfg.Database
+	if cfg == nil {
+		return r
+	}
+
+	idleTimeout := time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond
+
+	options := []redis.DialOption{
+		redis.DialDatabase(cfg.Database),
+	}
+
+	if cfg.Username != "" {
+		options = append(options, redis.DialUsername(cfg.Username))
+	}
+
+	if cfg.Password != "" {
+		options = append(options, redis.DialPassword(cfg.Password))
+	}
+
+	if cfg.UseTLS {
+		options = append(options, redis.DialUseTLS(cfg.UseTLS))
 	}
 
 	pool := redigo.NewPool(&redis.Pool{
-		MaxIdle:     r.maxIdle,
-		IdleTimeout: r.idleTimeout,
+		MaxIdle:     cfg.MaxIdle,
+		IdleTimeout: idleTimeout,
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial(r.network, r.address, redis.DialDatabase(r.database))
+			return redis.Dial(cfg.Network, cfg.Address, options...)
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
 			_, err := c.Do("PING")
