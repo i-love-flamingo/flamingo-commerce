@@ -110,6 +110,9 @@ commerce: checkout: {
 		network:                 string | *"tcp"
 		address:                 string | *"localhost:6379"
 		database:                number | *0
+		username?:               string & != ""
+		password?:               string & != ""
+		useTLS?:                 bool
 		ttl:                     string | *"2h"
 	}
 	useDeliveryForms:                 bool | *true

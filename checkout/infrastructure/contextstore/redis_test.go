@@ -31,7 +31,7 @@ var (
 	emptyContext = process.Context{}
 )
 
-func getRedisStore(network, address string) *contextstore.Redis {
+func getRedisStore(network, address, username, password string) *contextstore.Redis {
 	return new(contextstore.Redis).Inject(
 		new(flamingo.NullLogger),
 		&struct {
@@ -40,8 +40,11 @@ func getRedisStore(network, address string) *contextstore.Redis {
 			Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
 			Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
 			Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
+			Username                string `inject:"config:commerce.checkout.placeorder.contextstore.redis.username,optional"`
+			Password                string `inject:"config:commerce.checkout.placeorder.contextstore.redis.password,optional"`
+			UseTLS                  bool   `inject:"config:commerce.checkout.placeorder.contextstore.redis.useTLS,optional"`
 			TTL                     string `inject:"config:commerce.checkout.placeorder.contextstore.redis.ttl"`
-		}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address, Database: 0, TTL: "2h"})
+		}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address, Database: 0, TTL: "2h", Username: username, Password: password})
 }
 
 func prepareData(t *testing.T, conn redis.Conn) {
@@ -68,9 +71,12 @@ func startUpLocalRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
 	return server, conn
 }
 
-func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
+func startUpDockerRedis(t *testing.T, username, password string) (func(), string, redis.Conn) {
+	t.Helper()
+
 	ctx := context.Background()
-	req := getContainerRequest()
+
+	req := getContainerRequest(username, password)
 	redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
@@ -84,7 +90,7 @@ func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 	require.NoError(t, err)
 	address := fmt.Sprintf("%s:%s", host, port.Port())
 
-	conn, err := redis.Dial("tcp", address)
+	conn, err := redis.Dial("tcp", address, redis.DialUsername(username), redis.DialPassword(password))
 	require.NoError(t, err)
 
 	_, err = conn.Do("PING")
@@ -96,6 +102,9 @@ func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 }
 
 func TestRedis_Get(t *testing.T) {
+	username := "testuser"
+	password := "testPassword"
+
 	runTestCases := func(t *testing.T, store *contextstore.Redis) {
 		tests := []struct {
 			name          string
@@ -138,22 +147,27 @@ func TestRedis_Get(t *testing.T) {
 			t.Skip("redis-server not installed")
 		}
 		server, _ := startUpLocalRedis(t)
-		store := getRedisStore("unix", server.Socket())
+		store := getRedisStore("unix", server.Socket(), "", "")
 		runTestCases(t, store)
 	})
 	t.Run("docker-redis", func(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
-		shutdown, address, _ := startUpDockerRedis(t)
+
+		shutdown, address, _ := startUpDockerRedis(t, username, password)
 		defer shutdown()
-		store := getRedisStore("tcp", address)
+
+		store := getRedisStore("tcp", address, username, password)
 		runTestCases(t, store)
 	})
 
 }
 
 func TestRedis_Store(t *testing.T) {
+	username := "testuser"
+	password := "testPassword"
+
 	runTestCases := func(t *testing.T, store *contextstore.Redis, conn redis.Conn) {
 		tests := []struct {
 			name  string
@@ -192,21 +206,26 @@ func TestRedis_Store(t *testing.T) {
 			t.Skip("redis-server not installed")
 		}
 		server, conn := startUpLocalRedis(t)
-		store := getRedisStore("unix", server.Socket())
+		store := getRedisStore("unix", server.Socket(), "", "")
 		runTestCases(t, store, conn)
 	})
 	t.Run("docker-redis", func(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
-		shutdown, address, conn := startUpDockerRedis(t)
+
+		shutdown, address, conn := startUpDockerRedis(t, username, password)
 		defer shutdown()
-		store := getRedisStore("tcp", address)
+
+		store := getRedisStore("tcp", address, username, password)
 		runTestCases(t, store, conn)
 	})
 }
 
 func TestRedis_Delete(t *testing.T) {
+	username := "testuser"
+	password := "testPassword"
+
 	runTestCases := func(t *testing.T, store *contextstore.Redis, conn redis.Conn) {
 		tests := []struct {
 			name string
@@ -237,26 +256,33 @@ func TestRedis_Delete(t *testing.T) {
 			t.Skip("redis-server not installed")
 		}
 		server, conn := startUpLocalRedis(t)
-		store := getRedisStore("unix", server.Socket())
+		store := getRedisStore("unix", server.Socket(), "", "")
 		runTestCases(t, store, conn)
 	})
 	t.Run("docker-redis", func(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
-		shutdown, address, conn := startUpDockerRedis(t)
+
+		shutdown, address, conn := startUpDockerRedis(t, username, password)
 		defer shutdown()
-		store := getRedisStore("tcp", address)
+
+		store := getRedisStore("tcp", address, username, password)
 		runTestCases(t, store, conn)
 	})
 }
 
-func getContainerRequest() testcontainers.ContainerRequest {
+func getContainerRequest(username, password string) testcontainers.ContainerRequest {
 	return testcontainers.ContainerRequest{
 		Image:        "valkey/valkey:7",
 		ExposedPorts: []string{"6379/tcp"},
 		WaitingFor: wait.ForAll(
 			wait.ForLog("Ready to accept connections"),
 			wait.ForListeningPort("6379/tcp")),
+		Cmd: []string{
+			"valkey-server",
+			"--user default off",
+			fmt.Sprintf("--user %s on >%s allcommands allkeys", username, password),
+		},
 	}
 }
