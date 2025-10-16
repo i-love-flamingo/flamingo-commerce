@@ -2678,7 +2678,7 @@ const docTemplate = `{
             "name": "Cart"
         },
         {
-            "description": "All Payment related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.",
+            "description": "All Payment-related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.",
             "name": "Payment"
         },
         {
@@ -2686,7 +2686,7 @@ const docTemplate = `{
             "name": "Product"
         },
         {
-            "description": "All Checkout related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.",
+            "description": "All Checkout-related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.",
             "name": "Checkout"
         }
     ]

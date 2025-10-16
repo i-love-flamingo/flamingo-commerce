@@ -2,7 +2,7 @@ package commerce
 
 /*
 	Flamingo Commerce Modules.
-	The subpackage represent Flamingo Commerce modules - please refer to the documentations for the individual modules.
+	The subpackage represents Flamingo Commerce modules - please refer to the documentations for the individual modules.
 */
 
 //go:generate rm -rf docs/openapi
@@ -19,8 +19,8 @@ package commerce
 // @tag.name Cart
 // @tag.description All Cart related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.
 // @tag.name Payment
-// @tag.description All Payment related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.
+// @tag.description All Payment-related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.
 // @tag.name Product
 // @tag.description All Product related APIs endpoints.
 // @tag.name Checkout
-// @tag.description  All Checkout related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.
+// @tag.description All Checkout-related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.
