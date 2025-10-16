@@ -16,7 +16,7 @@ require (
 	github.com/go-playground/form/v4 v4.2.1
 	github.com/go-redsync/redsync/v4 v4.13.0
 	github.com/go-test/deep v1.1.1
-	github.com/gomodule/redigo v1.9.2
+	github.com/gomodule/redigo v1.9.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/leekchan/accounting v0.3.1
