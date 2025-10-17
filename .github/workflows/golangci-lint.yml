@@ -14,7 +14,7 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     env:
-#      finds your first commit ahead from master then finds revision before your first commit to be used as starting point for linter
+#      finds your first commit ahead from master, then finds revision before your first commit to be used as a starting point for linter
       REV: $(FIRST_COMMIT=$(git rev-list --topo-order origin/master..HEAD | tail -1); if [[ $FIRST_COMMIT == '' ]]; then echo $(git rev-parse origin/master^1); else echo $(git rev-parse $FIRST_COMMIT^1); fi)
     steps:
       - uses: actions/checkout@v5
@@ -31,6 +31,6 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
-          version: 'v2.1'
+          version: 'v2.5'
           args: $(rev=${{ env.REV }}; if [[ $rev != '' ]]; then echo --new-from-rev=$rev; fi)
 
