@@ -24,11 +24,11 @@ jobs:
           check-latest: true
       - name: Get dependencies
         env:
-          GOTOOLCHAIN: '1.24.9+auto'
+          GOTOOLCHAIN: 'go1.24.9+auto'
         run: go get -v -t -d ./...
       - name: Test
         env:
-          GOTOOLCHAIN: '1.24.9+auto'
+          GOTOOLCHAIN: 'go1.24.9+auto'
         run: go test -race ./...
   generate-checks:
     runs-on: ubuntu-latest
