@@ -16,6 +16,109 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
+// parseSpecificationEntry parses a single specification entry from raw interface data
+func parseSpecificationEntry(entryRaw interface{}) (domain.SpecificationEntry, bool) {
+	entryMap, ok := entryRaw.(map[string]interface{})
+	if !ok {
+		return domain.SpecificationEntry{}, false
+	}
+
+	label, _ := entryMap["Label"].(string)
+
+	valuesRaw, ok := entryMap["Values"].([]interface{})
+	if !ok {
+		return domain.SpecificationEntry{}, false
+	}
+
+	values := make([]string, 0, len(valuesRaw))
+
+	for _, v := range valuesRaw {
+		if str, ok := v.(string); ok {
+			values = append(values, str)
+		}
+	}
+
+	return domain.SpecificationEntry{Label: label, Values: values}, true
+}
+
+// parseSpecificationGroup parses a single specification group from raw interface data
+func parseSpecificationGroup(groupRaw interface{}) (domain.SpecificationGroup, bool) {
+	groupMap, ok := groupRaw.(map[string]interface{})
+	if !ok {
+		return domain.SpecificationGroup{}, false
+	}
+
+	title, _ := groupMap["Title"].(string)
+
+	entriesRaw, ok := groupMap["Entries"].([]interface{})
+	if !ok {
+		return domain.SpecificationGroup{}, false
+	}
+
+	entries := make([]domain.SpecificationEntry, 0, len(entriesRaw))
+
+	for _, entryRaw := range entriesRaw {
+		if entry, ok := parseSpecificationEntry(entryRaw); ok {
+			entries = append(entries, entry)
+		}
+	}
+
+	return domain.SpecificationGroup{Title: title, Entries: entries}, true
+}
+
+// convertSpecifications converts map[string]interface{} to domain.Specifications
+// This is needed because json.Unmarshal stores interface{} fields as map[string]interface{}
+// instead of the concrete domain.Specifications type
+func convertSpecifications(value interface{}) domain.Specifications {
+	// If already the correct type, return as-is
+	if specs, ok := value.(domain.Specifications); ok {
+		return specs
+	}
+
+	// Handle map[string]interface{} from JSON unmarshal
+	rawMap, ok := value.(map[string]interface{})
+	if !ok {
+		return domain.Specifications{}
+	}
+
+	groupsRaw, ok := rawMap["Groups"].([]interface{})
+	if !ok {
+		return domain.Specifications{}
+	}
+
+	groups := make([]domain.SpecificationGroup, 0, len(groupsRaw))
+
+	for _, groupRaw := range groupsRaw {
+		if group, ok := parseSpecificationGroup(groupRaw); ok {
+			groups = append(groups, group)
+		}
+	}
+
+	return domain.Specifications{Groups: groups}
+}
+
+// processSpecificationsAttribute processes the "specifications" attribute
+// and converts it from map[string]interface{} to domain.Specifications
+func processSpecificationsAttribute(attributes domain.Attributes) {
+	if attributes == nil {
+		return
+	}
+
+	attr, exists := attributes["specifications"]
+	if !exists {
+		return
+	}
+
+	converted := convertSpecifications(attr.RawValue)
+	attributes["specifications"] = domain.Attribute{
+		Code:      attr.Code,
+		CodeLabel: attr.CodeLabel,
+		Label:     attr.Label,
+		RawValue:  converted,
+		UnitCode:  attr.UnitCode,
+	}
+}
+
 // registerTestData returns files of given folder
 func registerTestData(folder string, logger flamingo.Logger) map[string]string {
 	testDataFiles := make(map[string]string)
@@ -53,6 +156,12 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 		configurableProduct := &domain.ConfigurableProduct{}
 		err = json.Unmarshal(productRaw, configurableProduct)
 		if err == nil {
+			processSpecificationsAttribute(configurableProduct.Attributes)
+
+			for i := range configurableProduct.Variants {
+				processSpecificationsAttribute(configurableProduct.Variants[i].Attributes)
+			}
+
 			return *configurableProduct, nil
 		}
 	}
@@ -61,6 +170,7 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 		bundleProduct := &domain.BundleProduct{}
 		err = json.Unmarshal(productRaw, bundleProduct)
 		if err == nil {
+			processSpecificationsAttribute(bundleProduct.Attributes)
 			return *bundleProduct, nil
 		}
 	}
@@ -71,6 +181,7 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 		return nil, err
 	}
 
+	processSpecificationsAttribute(simpleProduct.Attributes)
 	return *simpleProduct, nil
 }
 
