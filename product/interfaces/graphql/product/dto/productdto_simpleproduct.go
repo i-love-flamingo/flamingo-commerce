@@ -100,6 +100,6 @@ func (sp SimpleProduct) Badges() ProductBadges {
 }
 
 // Specifications of the product
-func (sp SimpleProduct) Specifications() ProductSpecifications {
+func (sp SimpleProduct) Specifications() *ProductSpecifications {
 	return MapSpecifications(sp.product.GetSpecifications())
 }

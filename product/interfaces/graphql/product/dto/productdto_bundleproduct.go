@@ -127,7 +127,7 @@ func (sp BundleProduct) Badges() ProductBadges {
 }
 
 // Specifications of the product
-func (sp BundleProduct) Specifications() ProductSpecifications {
+func (sp BundleProduct) Specifications() *ProductSpecifications {
 	return MapSpecifications(sp.product.GetSpecifications())
 }
 

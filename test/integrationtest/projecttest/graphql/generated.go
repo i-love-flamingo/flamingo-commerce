@@ -18605,9 +18605,9 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_specification
 			return obj.Specifications(), nil
 		},
 		nil,
-		ec.marshalNCommerce_Product_Specifications2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
+		ec.marshalOCommerce_Product_Specifications2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -19810,9 +19810,9 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_specifications(ctx c
 			return obj.Specifications(), nil
 		},
 		nil,
-		ec.marshalNCommerce_Product_Specifications2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
+		ec.marshalOCommerce_Product_Specifications2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -20807,9 +20807,9 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_specifications
 			return obj.Specifications(), nil
 		},
 		nil,
-		ec.marshalNCommerce_Product_Specifications2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
+		ec.marshalOCommerce_Product_Specifications2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -22811,9 +22811,9 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_specifications(ctx c
 			return obj.Specifications(), nil
 		},
 		nil,
-		ec.marshalNCommerce_Product_Specifications2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
+		ec.marshalOCommerce_Product_Specifications2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -33670,9 +33670,6 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 			}
 		case "specifications":
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_specifications(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -34019,9 +34016,6 @@ func (ec *executionContext) _Commerce_Product_BundleProduct(ctx context.Context,
 			}
 		case "specifications":
 			out.Values[i] = ec._Commerce_Product_BundleProduct_specifications(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "choices":
 			out.Values[i] = ec._Commerce_Product_BundleProduct_choices(ctx, field, obj)
 		default:
@@ -34279,9 +34273,6 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 			}
 		case "specifications":
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_specifications(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -34951,9 +34942,6 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 			}
 		case "specifications":
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_specifications(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -37729,10 +37717,6 @@ func (ec *executionContext) marshalNCommerce_Product_SpecificationGroup2flamingo
 	return ec._Commerce_Product_SpecificationGroup(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_Specifications2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductSpecifications) graphql.Marshaler {
-	return ec._Commerce_Product_Specifications(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNCommerce_Product_VariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelection(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelection) graphql.Marshaler {
 	return ec._Commerce_Product_VariantSelection(ctx, sel, &v)
 }
@@ -40505,6 +40489,13 @@ func (ec *executionContext) marshalOCommerce_Product_SpecificationGroup2ᚕflami
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Specifications2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductSpecifications(ctx context.Context, sel ast.SelectionSet, v *graphqlproductdto.ProductSpecifications) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Product_Specifications(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Product_VariantSelection_Match_Attributes2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchAttributesᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionMatchAttributes) graphql.Marshaler {

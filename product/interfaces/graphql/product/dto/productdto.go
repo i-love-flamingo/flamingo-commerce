@@ -33,7 +33,7 @@ type (
 		Loyalty() ProductLoyalty
 		Attributes() productDomain.Attributes
 		Badges() ProductBadges
-		Specifications() ProductSpecifications
+		Specifications() *ProductSpecifications
 	}
 
 	// ProductLoyalty contains all loyalty related information
@@ -280,7 +280,11 @@ func (b *ProductBadges) First() *productDomain.Badge {
 }
 
 // MapSpecifications converts domain specifications to DTO specifications
-func MapSpecifications(specs productDomain.Specifications) ProductSpecifications {
+// Returns nil if there are no specification groups
+func MapSpecifications(specs productDomain.Specifications) *ProductSpecifications {
+	if len(specs.Groups) == 0 {
+		return nil
+	}
 	groups := make([]ProductSpecificationGroup, len(specs.Groups))
 	for i, group := range specs.Groups {
 		entries := make([]ProductSpecificationEntry, len(group.Entries))
@@ -295,5 +299,5 @@ func MapSpecifications(specs productDomain.Specifications) ProductSpecifications
 			Entries: entries,
 		}
 	}
-	return ProductSpecifications{Groups: groups}
+	return &ProductSpecifications{Groups: groups}
 }

@@ -102,6 +102,6 @@ func (cp ConfigurableProduct) Badges() ProductBadges {
 }
 
 // Specifications of the configurable product
-func (cp ConfigurableProduct) Specifications() ProductSpecifications {
+func (cp ConfigurableProduct) Specifications() *ProductSpecifications {
 	return MapSpecifications(cp.product.GetSpecifications())
 }
