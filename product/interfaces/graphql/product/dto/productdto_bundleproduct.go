@@ -126,6 +126,11 @@ func (sp BundleProduct) Badges() ProductBadges {
 	}
 }
 
+// Specifications of the product
+func (sp BundleProduct) Specifications() ProductSpecifications {
+	return MapSpecifications(sp.product.GetSpecifications())
+}
+
 // BundleConfiguration of the product
 func (sp BundleProduct) BundleConfiguration() productDomain.BundleConfiguration {
 	return sp.bundleConfig

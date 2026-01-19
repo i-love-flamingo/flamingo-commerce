@@ -22,11 +22,47 @@ func Test_CommerceProductGet(t *testing.T) {
 			"marketPlaceCode": "fake_simple",
 			"meta":            map[string]interface{}{"keywords": []interface{}{"keywords"}},
 			"price":           map[string]interface{}{"activeBase": map[string]interface{}{"amount": 1.0, "currency": "EUR"}},
+			"specifications": map[string]interface{}{
+				"groups": []interface{}{
+					map[string]interface{}{
+						"title": "Technical Details",
+						"entries": []interface{}{
+							map[string]interface{}{"label": "Weight", "values": []interface{}{"500g"}},
+							map[string]interface{}{"label": "Dimensions", "values": []interface{}{"10x20x30 cm"}},
+						},
+					},
+					map[string]interface{}{
+						"title": "Material",
+						"entries": []interface{}{
+							map[string]interface{}{"label": "Outer Material", "values": []interface{}{"Cotton", "Polyester"}},
+							map[string]interface{}{"label": "Inner Material", "values": []interface{}{"Silk"}},
+						},
+					},
+				},
+			},
 		},
 		"configurable": map[string]interface{}{
 			"title":           "TypeConfigurable product",
 			"marketPlaceCode": "fake_configurable",
 			"meta":            map[string]interface{}{"keywords": []interface{}{"keywords"}},
+			"specifications": map[string]interface{}{
+				"groups": []interface{}{
+					map[string]interface{}{
+						"title": "Technical Details",
+						"entries": []interface{}{
+							map[string]interface{}{"label": "Weight", "values": []interface{}{"500g"}},
+							map[string]interface{}{"label": "Dimensions", "values": []interface{}{"10x20x30 cm"}},
+						},
+					},
+					map[string]interface{}{
+						"title": "Material",
+						"entries": []interface{}{
+							map[string]interface{}{"label": "Outer Material", "values": []interface{}{"Cotton", "Polyester"}},
+							map[string]interface{}{"label": "Inner Material", "values": []interface{}{"Silk"}},
+						},
+					},
+				},
+			},
 			"variantSelection": map[string]interface{}{
 				"variants": []interface{}{
 					map[string]interface{}{
@@ -160,6 +196,24 @@ func Test_CommerceProductGet(t *testing.T) {
 			"type":  "configurable_with_activevariant",
 			"title": "Shirt Black L",
 			"meta":  map[string]interface{}{"keywords": []interface{}{"keywords"}},
+			"specifications": map[string]interface{}{
+				"groups": []interface{}{
+					map[string]interface{}{
+						"title": "Technical Details",
+						"entries": []interface{}{
+							map[string]interface{}{"label": "Weight", "values": []interface{}{"500g"}},
+							map[string]interface{}{"label": "Dimensions", "values": []interface{}{"10x20x30 cm"}},
+						},
+					},
+					map[string]interface{}{
+						"title": "Material",
+						"entries": []interface{}{
+							map[string]interface{}{"label": "Outer Material", "values": []interface{}{"Cotton", "Polyester"}},
+							map[string]interface{}{"label": "Inner Material", "values": []interface{}{"Silk"}},
+						},
+					},
+				},
+			},
 			"variationSelections": []interface{}{
 				map[string]interface{}{"code": "color", "label": "Color"},
 				map[string]interface{}{"code": "size", "label": "Size"},

@@ -380,6 +380,28 @@ func (ps *ProductService) addBasicData(product *domain.BasicProductData) {
 		"brandName":        domain.Attribute{Code: "brandName", Label: brand, RawValue: brandValue},
 		"collectionOption": domain.Attribute{Code: "collectionOption", Label: "Collection option", RawValue: []interface{}{"departure", "arrival"}},
 		"urlSlug":          domain.Attribute{Code: "urlSlug", Label: "product-slug", RawValue: "product-slug"},
+		"specifications": domain.Attribute{
+			Code:  "specifications",
+			Label: "Specifications",
+			RawValue: domain.Specifications{
+				Groups: []domain.SpecificationGroup{
+					{
+						Title: "Technical Details",
+						Entries: []domain.SpecificationEntry{
+							{Label: "Weight", Values: []string{"500g"}},
+							{Label: "Dimensions", Values: []string{"10x20x30 cm"}},
+						},
+					},
+					{
+						Title: "Material",
+						Entries: []domain.SpecificationEntry{
+							{Label: "Outer Material", Values: []string{"Cotton", "Polyester"}},
+							{Label: "Inner Material", Values: []string{"Silk"}},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	product.RetailerCode = "retailer"

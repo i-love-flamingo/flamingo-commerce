@@ -100,3 +100,8 @@ func (cp ConfigurableProduct) Badges() ProductBadges {
 		All: cp.product.BaseData().Badges,
 	}
 }
+
+// Specifications of the configurable product
+func (cp ConfigurableProduct) Specifications() ProductSpecifications {
+	return MapSpecifications(cp.product.GetSpecifications())
+}

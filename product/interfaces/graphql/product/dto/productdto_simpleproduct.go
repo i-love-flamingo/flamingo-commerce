@@ -98,3 +98,8 @@ func (sp SimpleProduct) Badges() ProductBadges {
 		All: sp.product.BaseData().Badges,
 	}
 }
+
+// Specifications of the product
+func (sp SimpleProduct) Specifications() ProductSpecifications {
+	return MapSpecifications(sp.product.GetSpecifications())
+}
