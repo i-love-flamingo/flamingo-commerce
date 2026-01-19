@@ -285,7 +285,9 @@ func MapSpecifications(specs productDomain.Specifications) *ProductSpecification
 	if len(specs.Groups) == 0 {
 		return nil
 	}
+
 	groups := make([]ProductSpecificationGroup, len(specs.Groups))
+
 	for i, group := range specs.Groups {
 		entries := make([]ProductSpecificationEntry, len(group.Entries))
 		for j, entry := range group.Entries {
@@ -294,10 +296,12 @@ func MapSpecifications(specs productDomain.Specifications) *ProductSpecification
 				Values: entry.Values,
 			}
 		}
+
 		groups[i] = ProductSpecificationGroup{
 			Title:   group.Title,
 			Entries: entries,
 		}
 	}
+
 	return &ProductSpecifications{Groups: groups}
 }
