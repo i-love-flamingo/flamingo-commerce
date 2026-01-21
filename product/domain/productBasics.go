@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/gob"
 	"fmt"
 	"math/big"
 	"strings"
@@ -8,6 +9,12 @@ import (
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 )
+
+func init() {
+	gob.Register(Specifications{})
+	gob.Register(SpecificationGroup{})
+	gob.Register(SpecificationEntry{})
+}
 
 // Media usage constants
 const (

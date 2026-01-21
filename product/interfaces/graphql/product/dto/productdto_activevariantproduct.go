@@ -135,3 +135,8 @@ func (avp ActiveVariantProduct) Badges() ProductBadges {
 		All: avp.getActiveVariant().BaseData().Badges,
 	}
 }
+
+// Specifications of the active variant
+func (avp ActiveVariantProduct) Specifications() *ProductSpecifications {
+	return MapSpecifications(avp.getActiveVariant().BaseData().GetSpecifications())
+}

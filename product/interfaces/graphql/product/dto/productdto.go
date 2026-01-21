@@ -33,6 +33,7 @@ type (
 		Loyalty() ProductLoyalty
 		Attributes() productDomain.Attributes
 		Badges() ProductBadges
+		Specifications() *ProductSpecifications
 	}
 
 	// ProductLoyalty contains all loyalty related information
@@ -61,6 +62,23 @@ type (
 	// ProductBadges wrapper for badges of the product
 	ProductBadges struct {
 		All []productDomain.Badge
+	}
+
+	// ProductSpecifications wrapper for specifications of the product
+	ProductSpecifications struct {
+		Groups []ProductSpecificationGroup
+	}
+
+	// ProductSpecificationGroup groups specifications
+	ProductSpecificationGroup struct {
+		Title   string
+		Entries []ProductSpecificationEntry
+	}
+
+	// ProductSpecificationEntry data
+	ProductSpecificationEntry struct {
+		Label  string
+		Values []string
 	}
 
 	// VariationSelection represents possible combinations for attached variants
@@ -259,4 +277,31 @@ func (b *ProductBadges) First() *productDomain.Badge {
 	badges := productDomain.Badges(b.All)
 
 	return badges.First()
+}
+
+// MapSpecifications converts domain specifications to DTO specifications
+// Returns nil if there are no specification groups
+func MapSpecifications(specs productDomain.Specifications) *ProductSpecifications {
+	if len(specs.Groups) == 0 {
+		return nil
+	}
+
+	groups := make([]ProductSpecificationGroup, len(specs.Groups))
+
+	for i, group := range specs.Groups {
+		entries := make([]ProductSpecificationEntry, len(group.Entries))
+		for j, entry := range group.Entries {
+			entries[j] = ProductSpecificationEntry{
+				Label:  entry.Label,
+				Values: entry.Values,
+			}
+		}
+
+		groups[i] = ProductSpecificationGroup{
+			Title:   group.Title,
+			Entries: entries,
+		}
+	}
+
+	return &ProductSpecifications{Groups: groups}
 }

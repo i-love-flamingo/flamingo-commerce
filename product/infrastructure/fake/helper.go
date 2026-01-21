@@ -16,6 +16,53 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
+// convertSpecifications converts map[string]interface{} to domain.Specifications
+// This is needed because json.Unmarshal stores interface{} fields as map[string]interface{}
+// instead of the concrete domain.Specifications type.
+// We use JSON marshal/unmarshal for idiomatic conversion that respects struct field names.
+func convertSpecifications(value interface{}) domain.Specifications {
+	// If already the correct type, return as-is
+	if specs, ok := value.(domain.Specifications); ok {
+		return specs
+	}
+
+	// Handle map[string]interface{} from JSON unmarshal by re-marshaling to JSON
+	// and then unmarshaling into the concrete type
+	jsonBytes, err := json.Marshal(value)
+	if err != nil {
+		return domain.Specifications{}
+	}
+
+	var specs domain.Specifications
+	if err := json.Unmarshal(jsonBytes, &specs); err != nil {
+		return domain.Specifications{}
+	}
+
+	return specs
+}
+
+// processSpecificationsAttribute processes the "specifications" attribute
+// and converts it from map[string]interface{} to domain.Specifications
+func processSpecificationsAttribute(attributes domain.Attributes) {
+	if attributes == nil {
+		return
+	}
+
+	attr, exists := attributes["specifications"]
+	if !exists {
+		return
+	}
+
+	converted := convertSpecifications(attr.RawValue)
+	attributes["specifications"] = domain.Attribute{
+		Code:      attr.Code,
+		CodeLabel: attr.CodeLabel,
+		Label:     attr.Label,
+		RawValue:  converted,
+		UnitCode:  attr.UnitCode,
+	}
+}
+
 // registerTestData returns files of given folder
 func registerTestData(folder string, logger flamingo.Logger) map[string]string {
 	testDataFiles := make(map[string]string)
@@ -53,6 +100,12 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 		configurableProduct := &domain.ConfigurableProduct{}
 		err = json.Unmarshal(productRaw, configurableProduct)
 		if err == nil {
+			processSpecificationsAttribute(configurableProduct.Attributes)
+
+			for i := range configurableProduct.Variants {
+				processSpecificationsAttribute(configurableProduct.Variants[i].Attributes)
+			}
+
 			return *configurableProduct, nil
 		}
 	}
@@ -61,6 +114,7 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 		bundleProduct := &domain.BundleProduct{}
 		err = json.Unmarshal(productRaw, bundleProduct)
 		if err == nil {
+			processSpecificationsAttribute(bundleProduct.Attributes)
 			return *bundleProduct, nil
 		}
 	}
@@ -71,6 +125,7 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 		return nil, err
 	}
 
+	processSpecificationsAttribute(simpleProduct.Attributes)
 	return *simpleProduct, nil
 }
 

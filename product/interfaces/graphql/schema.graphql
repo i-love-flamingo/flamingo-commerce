@@ -13,6 +13,7 @@ interface Commerce_Product {
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
     badges: Commerce_Product_Badges!
+    specifications: Commerce_Product_Specifications
 }
 
 """
@@ -33,6 +34,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
     badges: Commerce_Product_Badges!
+    specifications: Commerce_Product_Specifications
 }
 
 """
@@ -59,6 +61,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     """
     variantSelection: Commerce_Product_VariantSelection!
     badges: Commerce_Product_Badges!
+    specifications: Commerce_Product_Specifications
 }
 
 type Commerce_Product_VariantSelection {
@@ -123,6 +126,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     "Convenience property to access the active variant labels easily"
     activeVariationSelections: [Commerce_Product_ActiveVariationSelection!]
     badges: Commerce_Product_Badges!
+    specifications: Commerce_Product_Specifications
 }
 
 """
@@ -143,6 +147,7 @@ type Commerce_Product_BundleProduct implements Commerce_Product {
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
     badges: Commerce_Product_Badges!
+    specifications: Commerce_Product_Specifications
     choices: [Commerce_Product_Choice!]
 }
 
@@ -271,6 +276,23 @@ type Commerce_Product_Attribute {
     values: [String!]
     "Human-readable labels of a multi value attribute"
     labels: [String!]
+}
+
+"Wrapper for product specifications"
+type Commerce_Product_Specifications {
+    groups: [Commerce_Product_SpecificationGroup!]
+}
+
+"A group of specifications, e.g. 'Technical Details'"
+type Commerce_Product_SpecificationGroup {
+    title: String!
+    entries: [Commerce_Product_SpecificationEntry!]
+}
+
+"A single specification entry"
+type Commerce_Product_SpecificationEntry {
+    label: String!
+    values: [String!]
 }
 
 type Commerce_Product_CategoryTeaser {
