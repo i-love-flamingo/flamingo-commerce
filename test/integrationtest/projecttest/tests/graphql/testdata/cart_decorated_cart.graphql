@@ -52,6 +52,13 @@ query {
                     }
                 }
             }
+            purchaser {
+                personalDetails {
+                    dateOfBirth
+                    passportNumber
+                    passportCountry
+                }
+            }
         }
     }
 }

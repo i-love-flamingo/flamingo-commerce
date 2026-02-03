@@ -1,0 +1,32 @@
+mutation {
+    Commerce_Cart_UpdatePersonalData(
+        personalData: {
+            dateOfBirth: "1996-12-12"
+            passportCountry: "GB"
+            passportNumber: "CASDE12335W"
+            address: {
+                firstname: "foo-firstname"
+                lastname: "foo-lastname"
+                email: "foo@flamingo.me"
+            }
+        }
+    ) {
+        personalData {
+            dateOfBirth
+            passportCountry
+            passportNumber
+            address {
+                firstname
+                lastname
+                email
+            }
+        }
+        processed
+        validationInfo {
+            generalErrors {
+                defaultLabel
+                messageKey
+            }
+        }
+    }
+}

@@ -17,6 +17,13 @@ type (
 		ValidationInfo ValidationInfo
 	}
 
+	// PersonalDataForm is the GraphQL representation of the billing form
+	PersonalDataForm struct {
+		PersonalData   *forms.DefaultPersonalDataForm
+		Processed      bool
+		ValidationInfo ValidationInfo
+	}
+
 	// DeliveryAddressForm is the GraphQL representation of the delivery form
 	DeliveryAddressForm struct {
 		FormData          forms.AddressForm

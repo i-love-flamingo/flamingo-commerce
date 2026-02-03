@@ -331,6 +331,15 @@ type Commerce_Cart_BillingAddressForm {
     processed: Boolean
 }
 
+type Commerce_Cart_PersonalDataForm {
+    "Personal data form data"
+    personalData: Commerce_Cart_PersonalData
+    "Validation of supplied billing address, empty if address is valid"
+    validationInfo: Commerce_Cart_Form_ValidationInfo
+    "Shows if the request was successfully processed"
+    processed: Boolean
+}
+
 type Commerce_Cart_SelectedPaymentResult {
     validationInfo: Commerce_Cart_Form_ValidationInfo
     processed: Boolean
@@ -401,6 +410,20 @@ input Commerce_Cart_AddressFormInput {
     countryCode:            String
     phoneNumber:            String
     email:                  String!
+}
+
+type Commerce_Cart_PersonalData {
+    dateOfBirth: String!
+    passportCountry: String!
+    passportNumber: String!
+    address: Commerce_Cart_AddressForm
+}
+
+input Commerce_Cart_PersonalDataInput {
+    dateOfBirth: String
+    passportCountry: String
+    passportNumber: String
+    address: Commerce_Cart_AddressFormInput
 }
 
 input Commerce_Cart_DeliveryAddressInput {
@@ -493,6 +516,8 @@ extend type Mutation {
     Commerce_Cart_UpdateItemBundleConfig(itemID: ID!, bundleConfig: [Commerce_Cart_ChoiceConfigurationInput!]!): Commerce_Cart_DecoratedCart!
     "Adds/Updates the Billing Address of the current cart"
     Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_Cart_AddressFormInput): Commerce_Cart_BillingAddressForm!
+    "Adds/Updates the Personal Data of the current cart"
+    Commerce_Cart_UpdatePersonalData(personalData: Commerce_Cart_PersonalDataInput): Commerce_Cart_PersonalDataForm!
     Commerce_Cart_UpdateSelectedPayment(gateway: String!, method: String!): Commerce_Cart_SelectedPaymentResult!
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_Cart_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_Cart_DecoratedCart
