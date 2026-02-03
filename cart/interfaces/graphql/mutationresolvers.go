@@ -370,7 +370,7 @@ func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.Billin
 	}, nil
 }
 
-// mapCommerceBillingAddressForm helper to map the graphql type Commerce_Cart_BillingAddressForm from common form
+// mapCommerceBillingAddressForm helper to map the graphql type Commerce_Cart_PersonalDataForm from common form
 func mapCommercePersonalDataForm(form *domain.Form, success bool) (*dto.PersonalDataForm, error) {
 	personalDataFormData, ok := form.Data.(*forms.DefaultPersonalDataForm)
 
