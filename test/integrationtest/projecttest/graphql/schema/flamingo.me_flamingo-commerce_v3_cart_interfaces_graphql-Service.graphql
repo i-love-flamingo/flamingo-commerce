@@ -334,7 +334,7 @@ type Commerce_Cart_BillingAddressForm {
 type Commerce_Cart_PersonalDataForm {
     "Personal data form data"
     personalData: Commerce_Cart_PersonalData
-    "Validation of supplied billing address, empty if address is valid"
+    "Validation of supplied personal data, empty if details are valid"
     validationInfo: Commerce_Cart_Form_ValidationInfo
     "Shows if the request was successfully processed"
     processed: Boolean
