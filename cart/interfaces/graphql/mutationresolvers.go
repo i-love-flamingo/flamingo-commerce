@@ -379,7 +379,7 @@ func mapCommercePersonalDataForm(form *domain.Form, success bool) (*dto.Personal
 	}
 
 	return &dto.PersonalDataForm{
-		PersonalData: personalDataFormData,
+		PersonalData: *personalDataFormData,
 		Processed:    success,
 		ValidationInfo: dto.ValidationInfo{
 			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),

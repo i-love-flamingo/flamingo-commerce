@@ -19,7 +19,7 @@ type (
 
 	// PersonalDataForm is the GraphQL representation of the billing form
 	PersonalDataForm struct {
-		PersonalData   *forms.DefaultPersonalDataForm
+		PersonalData   forms.DefaultPersonalDataForm
 		Processed      bool
 		ValidationInfo ValidationInfo
 	}
