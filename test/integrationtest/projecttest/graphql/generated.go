@@ -12764,7 +12764,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDataForm_personalData(ctx con
 			return obj.PersonalData, nil
 		},
 		nil,
-		ec.marshalOCommerce_Cart_PersonalData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm,
+		ec.marshalOCommerce_Cart_PersonalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm,
 		true,
 		false,
 	)
@@ -39820,11 +39820,8 @@ func (ec *executionContext) marshalOCommerce_Cart_Person2ᚖflamingoᚗmeᚋflam
 	return ec._Commerce_Cart_Person(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_PersonalData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm(ctx context.Context, sel ast.SelectionSet, v *forms.DefaultPersonalDataForm) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_Cart_PersonalData(ctx, sel, v)
+func (ec *executionContext) marshalOCommerce_Cart_PersonalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm(ctx context.Context, sel ast.SelectionSet, v forms.DefaultPersonalDataForm) graphql.Marshaler {
+	return ec._Commerce_Cart_PersonalData(ctx, sel, &v)
 }
 
 func (ec *executionContext) unmarshalOCommerce_Cart_PersonalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm(ctx context.Context, v any) (*forms.DefaultPersonalDataForm, error) {
