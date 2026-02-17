@@ -14,7 +14,7 @@ require (
 	github.com/Rhymond/go-money v1.0.15
 	github.com/gavv/httpexpect/v2 v2.17.0
 	github.com/go-playground/form/v4 v4.3.0
-	github.com/go-redsync/redsync/v4 v4.14.0
+	github.com/go-redsync/redsync/v4 v4.15.0
 	github.com/go-test/deep v1.1.1
 	github.com/gomodule/redigo v1.9.3
 	github.com/google/go-cmp v0.7.0
@@ -135,7 +135,7 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/prometheus/statsd_exporter v0.22.7 // indirect
 	github.com/rbcervilla/redisstore/v9 v9.0.0 // indirect
-	github.com/redis/go-redis/v9 v9.14.0 // indirect
+	github.com/redis/go-redis/v9 v9.17.2 // indirect
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.6 // indirect
