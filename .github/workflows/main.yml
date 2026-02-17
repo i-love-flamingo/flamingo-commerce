@@ -16,7 +16,7 @@ jobs:
         go: [ '1.23', '1.24', '1.x' ]
     name: With Go ${{ matrix.go }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Generate check
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Integration
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
