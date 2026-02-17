@@ -226,6 +226,7 @@ type rootResolverMutation struct {
 	resolveCommerceCartUpdateItemQty                  func(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error)
 	resolveCommerceCartUpdateItemBundleConfig         func(ctx context.Context, itemID string, bundleConfig []*dto.ChoiceConfiguration) (*dto.DecoratedCart, error)
 	resolveCommerceCartUpdateBillingAddress           func(ctx context.Context, addressForm *forms.AddressForm) (*dto.BillingAddressForm, error)
+	resolveCommerceCartUpdatePersonalData             func(ctx context.Context, personalData *forms.DefaultPersonalDataForm) (*dto.PersonalDataForm, error)
 	resolveCommerceCartUpdateSelectedPayment          func(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error)
 	resolveCommerceCartApplyCouponCodeOrGiftCard      func(ctx context.Context, code string) (*dto.DecoratedCart, error)
 	resolveCommerceCartRemoveGiftCard                 func(ctx context.Context, giftCardCode string) (*dto.DecoratedCart, error)
@@ -250,6 +251,7 @@ func (r *rootResolverMutation) Inject(
 	mutationCommerceCartUpdateItemQty *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateItemBundleConfig *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateBillingAddress *graphql1.CommerceCartMutationResolver,
+	mutationCommerceCartUpdatePersonalData *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateSelectedPayment *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartApplyCouponCodeOrGiftCard *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartRemoveGiftCard *graphql1.CommerceCartMutationResolver,
@@ -272,6 +274,7 @@ func (r *rootResolverMutation) Inject(
 	r.resolveCommerceCartUpdateItemQty = mutationCommerceCartUpdateItemQty.CommerceUpdateItemQty
 	r.resolveCommerceCartUpdateItemBundleConfig = mutationCommerceCartUpdateItemBundleConfig.CommerceUpdateItemBundleConfig
 	r.resolveCommerceCartUpdateBillingAddress = mutationCommerceCartUpdateBillingAddress.CommerceCartUpdateBillingAddress
+	r.resolveCommerceCartUpdatePersonalData = mutationCommerceCartUpdatePersonalData.CommerceCartUpdatePersonalData
 	r.resolveCommerceCartUpdateSelectedPayment = mutationCommerceCartUpdateSelectedPayment.CommerceCartUpdateSelectedPayment
 	r.resolveCommerceCartApplyCouponCodeOrGiftCard = mutationCommerceCartApplyCouponCodeOrGiftCard.CommerceCartApplyCouponCodeOrGiftCard
 	r.resolveCommerceCartRemoveGiftCard = mutationCommerceCartRemoveGiftCard.CommerceCartRemoveGiftCard
@@ -308,6 +311,9 @@ func (r *rootResolverMutation) CommerceCartUpdateItemBundleConfig(ctx context.Co
 }
 func (r *rootResolverMutation) CommerceCartUpdateBillingAddress(ctx context.Context, addressForm *forms.AddressForm) (*dto.BillingAddressForm, error) {
 	return r.resolveCommerceCartUpdateBillingAddress(ctx, addressForm)
+}
+func (r *rootResolverMutation) CommerceCartUpdatePersonalData(ctx context.Context, personalData *forms.DefaultPersonalDataForm) (*dto.PersonalDataForm, error) {
+	return r.resolveCommerceCartUpdatePersonalData(ctx, personalData)
 }
 func (r *rootResolverMutation) CommerceCartUpdateSelectedPayment(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error) {
 	return r.resolveCommerceCartUpdateSelectedPayment(ctx, gateway, method)
@@ -449,6 +455,7 @@ func direct(root *rootResolver) map[string]interface{} {
 		"Mutation.CommerceCartUpdateItemQty":                  root.Mutation().CommerceCartUpdateItemQty,
 		"Mutation.CommerceCartUpdateItemBundleConfig":         root.Mutation().CommerceCartUpdateItemBundleConfig,
 		"Mutation.CommerceCartUpdateBillingAddress":           root.Mutation().CommerceCartUpdateBillingAddress,
+		"Mutation.CommerceCartUpdatePersonalData":             root.Mutation().CommerceCartUpdatePersonalData,
 		"Mutation.CommerceCartUpdateSelectedPayment":          root.Mutation().CommerceCartUpdateSelectedPayment,
 		"Mutation.CommerceCartApplyCouponCodeOrGiftCard":      root.Mutation().CommerceCartApplyCouponCodeOrGiftCard,
 		"Mutation.CommerceCartRemoveGiftCard":                 root.Mutation().CommerceCartRemoveGiftCard,

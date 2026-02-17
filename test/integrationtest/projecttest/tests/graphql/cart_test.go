@@ -68,6 +68,23 @@ func Test_CartUpdateDeliveryAddresses(t *testing.T) {
 	getValue(response, "Commerce_Cart_DecoratedCart", "cart").Object().Value("deliveries").Array().Length().IsEqual(2)
 }
 
+func Test_CartUpdatePersonalData(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	e := integrationtest.NewHTTPExpect(t, baseURL)
+	prepareCartWithDeliveries(t, e)
+
+	response := helper.GraphQlRequest(t, e, loadGraphQL(t, "update_personal_data", nil)).Expect()
+	response.Status(http.StatusOK)
+	personalData := getValue(response, "Commerce_Cart_UpdatePersonalData", "personalData").Object()
+	personalData.Value("dateOfBirth").String().IsEqual("1996-12-12")
+	personalData.Value("passportCountry").String().IsEqual("GB")
+	personalData.Value("passportNumber").String().IsEqual("CASDE12335W")
+	address := personalData.Value("address").Object()
+	address.Value("firstname").String().IsEqual("foo-firstname")
+	address.Value("lastname").String().IsEqual("foo-lastname")
+	address.Value("email").String().IsEqual("foo@flamingo.me")
+}
+
 func Test_CommerceCartUpdateDeliveryShippingOptions(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	e := integrationtest.NewHTTPExpect(t, baseURL)

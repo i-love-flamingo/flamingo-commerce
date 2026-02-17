@@ -23,16 +23,24 @@ type CommerceCartMutationResolver struct {
 	cartService                  *application.CartService
 	cartReceiverService          *application.CartReceiverService
 	billingAddressFormController *forms.BillingAddressFormController
+	personalDataFormController   *forms.PersonalDataFormController
 	deliveryFormController       *forms.DeliveryFormController
 	simplePaymentFormController  *forms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
 }
+
+var (
+	ErrFormData             = errors.New("unexpected form data")
+	ErrFormEncode           = errors.New("failed to encode form")
+	ErrPersonalDataFormData = errors.New("failed to submit personal data")
+)
 
 // Inject dependencies
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	billingAddressFormController *forms.BillingAddressFormController,
 	deliveryFormController *forms.DeliveryFormController,
 	formDataEncoderFactory formApplication.FormDataEncoderFactory,
+	personalDataFormController *forms.PersonalDataFormController,
 	simplePaymentFormController *forms.SimplePaymentFormController,
 	cartService *application.CartService,
 	cartReceiverService *application.CartReceiverService) *CommerceCartMutationResolver {
@@ -41,6 +49,7 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	r.deliveryFormController = deliveryFormController
 	r.formDataEncoderFactory = formDataEncoderFactory
 	r.simplePaymentFormController = simplePaymentFormController
+	r.personalDataFormController = personalDataFormController
 	r.cartService = cartService
 	r.cartReceiverService = cartReceiverService
 	return r
@@ -142,7 +151,25 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx cont
 		return nil, err
 	}
 	return mapCommerceBillingAddressForm(form, success)
+}
 
+// CommerceCartUpdatePersonalData resolver method
+func (r *CommerceCartMutationResolver) CommerceCartUpdatePersonalData(ctx context.Context, personalDataForm *forms.DefaultPersonalDataForm) (*dto.PersonalDataForm, error) {
+	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
+	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.personalDataFormService").Encode(ctx, personalDataForm)
+
+	if err != nil {
+		return nil, ErrFormEncode
+	}
+
+	newRequest.Request().Form = v
+	form, success, err := r.personalDataFormController.HandleFormAction(ctx, newRequest)
+
+	if err != nil {
+		return nil, ErrPersonalDataFormData
+	}
+
+	return mapCommercePersonalDataForm(form, success)
 }
 
 // CommerceCartUpdateSelectedPayment resolver method
@@ -308,7 +335,7 @@ func (r *CommerceCartMutationResolver) UpdateDeliveriesAdditionalData(ctx contex
 func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.DeliveryAddressForm, error) {
 	formData, ok := form.Data.(forms.DeliveryForm)
 	if !ok {
-		return dto.DeliveryAddressForm{}, errors.New("unexpected form data")
+		return dto.DeliveryAddressForm{}, ErrFormData
 	}
 
 	return dto.DeliveryAddressForm{
@@ -330,12 +357,30 @@ func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.Delive
 func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.BillingAddressForm, error) {
 	billingFormData, ok := form.Data.(forms.BillingAddressForm)
 	if !ok {
-		return nil, errors.New("unexpected form data")
+		return nil, ErrFormData
 	}
 
 	return &dto.BillingAddressForm{
 		FormData:  forms.AddressForm(billingFormData),
 		Processed: success,
+		ValidationInfo: dto.ValidationInfo{
+			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
+			FieldErrors:   mapFieldErrors(form.ValidationInfo),
+		},
+	}, nil
+}
+
+// mapCommerceBillingAddressForm helper to map the graphql type Commerce_Cart_PersonalDataForm from common form
+func mapCommercePersonalDataForm(form *domain.Form, success bool) (*dto.PersonalDataForm, error) {
+	personalDataFormData, ok := form.Data.(*forms.DefaultPersonalDataForm)
+
+	if !ok {
+		return nil, ErrFormData
+	}
+
+	return &dto.PersonalDataForm{
+		PersonalData: *personalDataFormData,
+		Processed:    success,
 		ValidationInfo: dto.ValidationInfo{
 			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
 			FieldErrors:   mapFieldErrors(form.ValidationInfo),

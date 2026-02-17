@@ -346,6 +346,19 @@ type ComplexityRoot struct {
 		PersonalDetails      func(childComplexity int) int
 	}
 
+	Commerce_Cart_PersonalData struct {
+		Address         func(childComplexity int) int
+		DateOfBirth     func(childComplexity int) int
+		PassportCountry func(childComplexity int) int
+		PassportNumber  func(childComplexity int) int
+	}
+
+	Commerce_Cart_PersonalDataForm struct {
+		PersonalData   func(childComplexity int) int
+		Processed      func(childComplexity int) int
+		ValidationInfo func(childComplexity int) int
+	}
+
 	Commerce_Cart_PersonalDetails struct {
 		DateOfBirth     func(childComplexity int) int
 		Nationality     func(childComplexity int) int
@@ -1048,6 +1061,7 @@ type ComplexityRoot struct {
 		CommerceCartUpdateDeliveryShippingOptions  func(childComplexity int, shippingOptions []*dto.DeliveryShippingOption) int
 		CommerceCartUpdateItemBundleConfig         func(childComplexity int, itemID string, bundleConfig []*dto.ChoiceConfiguration) int
 		CommerceCartUpdateItemQty                  func(childComplexity int, itemID string, deliveryCode string, qty int) int
+		CommerceCartUpdatePersonalData             func(childComplexity int, personalData *forms.DefaultPersonalDataForm) int
 		CommerceCartUpdateSelectedPayment          func(childComplexity int, gateway string, method string) int
 		CommerceCheckoutCancelPlaceOrder           func(childComplexity int) int
 		CommerceCheckoutClearPlaceOrder            func(childComplexity int) int
@@ -1105,6 +1119,7 @@ type MutationResolver interface {
 	CommerceCartUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error)
 	CommerceCartUpdateItemBundleConfig(ctx context.Context, itemID string, bundleConfig []*dto.ChoiceConfiguration) (*dto.DecoratedCart, error)
 	CommerceCartUpdateBillingAddress(ctx context.Context, addressForm *forms.AddressForm) (*dto.BillingAddressForm, error)
+	CommerceCartUpdatePersonalData(ctx context.Context, personalData *forms.DefaultPersonalDataForm) (*dto.PersonalDataForm, error)
 	CommerceCartUpdateSelectedPayment(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error)
 	CommerceCartApplyCouponCodeOrGiftCard(ctx context.Context, code string) (*dto.DecoratedCart, error)
 	CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*dto.DecoratedCart, error)
@@ -2362,6 +2377,50 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Commerce_Cart_Person.PersonalDetails(childComplexity), true
+
+	case "Commerce_Cart_PersonalData.address":
+		if e.complexity.Commerce_Cart_PersonalData.Address == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_PersonalData.Address(childComplexity), true
+	case "Commerce_Cart_PersonalData.dateOfBirth":
+		if e.complexity.Commerce_Cart_PersonalData.DateOfBirth == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_PersonalData.DateOfBirth(childComplexity), true
+	case "Commerce_Cart_PersonalData.passportCountry":
+		if e.complexity.Commerce_Cart_PersonalData.PassportCountry == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_PersonalData.PassportCountry(childComplexity), true
+	case "Commerce_Cart_PersonalData.passportNumber":
+		if e.complexity.Commerce_Cart_PersonalData.PassportNumber == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_PersonalData.PassportNumber(childComplexity), true
+
+	case "Commerce_Cart_PersonalDataForm.personalData":
+		if e.complexity.Commerce_Cart_PersonalDataForm.PersonalData == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_PersonalDataForm.PersonalData(childComplexity), true
+	case "Commerce_Cart_PersonalDataForm.processed":
+		if e.complexity.Commerce_Cart_PersonalDataForm.Processed == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_PersonalDataForm.Processed(childComplexity), true
+	case "Commerce_Cart_PersonalDataForm.validationInfo":
+		if e.complexity.Commerce_Cart_PersonalDataForm.ValidationInfo == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_PersonalDataForm.ValidationInfo(childComplexity), true
 
 	case "Commerce_Cart_PersonalDetails.dateOfBirth":
 		if e.complexity.Commerce_Cart_PersonalDetails.DateOfBirth == nil {
@@ -5038,6 +5097,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.CommerceCartUpdateItemQty(childComplexity, args["itemID"].(string), args["deliveryCode"].(string), args["qty"].(int)), true
+	case "Mutation.Commerce_Cart_UpdatePersonalData":
+		if e.complexity.Mutation.CommerceCartUpdatePersonalData == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_UpdatePersonalData_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartUpdatePersonalData(childComplexity, args["personalData"].(*forms.DefaultPersonalDataForm)), true
 	case "Mutation.Commerce_Cart_UpdateSelectedPayment":
 		if e.complexity.Mutation.CommerceCartUpdateSelectedPayment == nil {
 			break
@@ -5204,6 +5274,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCommerce_Cart_DeliveryAddressInput,
 		ec.unmarshalInputCommerce_Cart_DeliveryShippingOptionInput,
 		ec.unmarshalInputCommerce_Cart_KeyValueInput,
+		ec.unmarshalInputCommerce_Cart_PersonalDataInput,
 		ec.unmarshalInputCommerce_Price_ChargeQualifierInput,
 		ec.unmarshalInputCommerce_Product_ChoiceConfigurationInput,
 		ec.unmarshalInputCommerce_Search_KeyValueFilter,
@@ -5793,6 +5864,17 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx 
 		return nil, err
 	}
 	args["qty"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdatePersonalData_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "personalData", ec.unmarshalOCommerce_Cart_PersonalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm)
+	if err != nil {
+		return nil, err
+	}
+	args["personalData"] = arg0
 	return args, nil
 }
 
@@ -12511,6 +12593,265 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Person_existingCustomerDa
 				return ec.fieldContext_Commerce_Cart_ExistingCustomerData_id(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_ExistingCustomerData", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalData_dateOfBirth(ctx context.Context, field graphql.CollectedField, obj *forms.DefaultPersonalDataForm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_PersonalData_dateOfBirth,
+		func(ctx context.Context) (any, error) {
+			return obj.DateOfBirth, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalData_dateOfBirth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_PersonalData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalData_passportCountry(ctx context.Context, field graphql.CollectedField, obj *forms.DefaultPersonalDataForm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_PersonalData_passportCountry,
+		func(ctx context.Context) (any, error) {
+			return obj.PassportCountry, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalData_passportCountry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_PersonalData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalData_passportNumber(ctx context.Context, field graphql.CollectedField, obj *forms.DefaultPersonalDataForm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_PersonalData_passportNumber,
+		func(ctx context.Context) (any, error) {
+			return obj.PassportNumber, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalData_passportNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_PersonalData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalData_address(ctx context.Context, field graphql.CollectedField, obj *forms.DefaultPersonalDataForm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_PersonalData_address,
+		func(ctx context.Context) (any, error) {
+			return obj.Address, nil
+		},
+		nil,
+		ec.marshalOCommerce_Cart_AddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalData_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_PersonalData",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "vat":
+				return ec.fieldContext_Commerce_Cart_AddressForm_vat(ctx, field)
+			case "firstname":
+				return ec.fieldContext_Commerce_Cart_AddressForm_firstname(ctx, field)
+			case "lastname":
+				return ec.fieldContext_Commerce_Cart_AddressForm_lastname(ctx, field)
+			case "middleName":
+				return ec.fieldContext_Commerce_Cart_AddressForm_middleName(ctx, field)
+			case "title":
+				return ec.fieldContext_Commerce_Cart_AddressForm_title(ctx, field)
+			case "salutation":
+				return ec.fieldContext_Commerce_Cart_AddressForm_salutation(ctx, field)
+			case "street":
+				return ec.fieldContext_Commerce_Cart_AddressForm_street(ctx, field)
+			case "streetNr":
+				return ec.fieldContext_Commerce_Cart_AddressForm_streetNr(ctx, field)
+			case "addressLine1":
+				return ec.fieldContext_Commerce_Cart_AddressForm_addressLine1(ctx, field)
+			case "addressLine2":
+				return ec.fieldContext_Commerce_Cart_AddressForm_addressLine2(ctx, field)
+			case "company":
+				return ec.fieldContext_Commerce_Cart_AddressForm_company(ctx, field)
+			case "city":
+				return ec.fieldContext_Commerce_Cart_AddressForm_city(ctx, field)
+			case "postCode":
+				return ec.fieldContext_Commerce_Cart_AddressForm_postCode(ctx, field)
+			case "state":
+				return ec.fieldContext_Commerce_Cart_AddressForm_state(ctx, field)
+			case "regionCode":
+				return ec.fieldContext_Commerce_Cart_AddressForm_regionCode(ctx, field)
+			case "country":
+				return ec.fieldContext_Commerce_Cart_AddressForm_country(ctx, field)
+			case "countryCode":
+				return ec.fieldContext_Commerce_Cart_AddressForm_countryCode(ctx, field)
+			case "phoneNumber":
+				return ec.fieldContext_Commerce_Cart_AddressForm_phoneNumber(ctx, field)
+			case "email":
+				return ec.fieldContext_Commerce_Cart_AddressForm_email(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_AddressForm", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDataForm_personalData(ctx context.Context, field graphql.CollectedField, obj *dto.PersonalDataForm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_PersonalDataForm_personalData,
+		func(ctx context.Context) (any, error) {
+			return obj.PersonalData, nil
+		},
+		nil,
+		ec.marshalOCommerce_Cart_PersonalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDataForm_personalData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_PersonalDataForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "dateOfBirth":
+				return ec.fieldContext_Commerce_Cart_PersonalData_dateOfBirth(ctx, field)
+			case "passportCountry":
+				return ec.fieldContext_Commerce_Cart_PersonalData_passportCountry(ctx, field)
+			case "passportNumber":
+				return ec.fieldContext_Commerce_Cart_PersonalData_passportNumber(ctx, field)
+			case "address":
+				return ec.fieldContext_Commerce_Cart_PersonalData_address(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_PersonalData", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDataForm_validationInfo(ctx context.Context, field graphql.CollectedField, obj *dto.PersonalDataForm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_PersonalDataForm_validationInfo,
+		func(ctx context.Context) (any, error) {
+			return obj.ValidationInfo, nil
+		},
+		nil,
+		ec.marshalOCommerce_Cart_Form_ValidationInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDataForm_validationInfo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_PersonalDataForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "fieldErrors":
+				return ec.fieldContext_Commerce_Cart_Form_ValidationInfo_fieldErrors(ctx, field)
+			case "generalErrors":
+				return ec.fieldContext_Commerce_Cart_Form_ValidationInfo_generalErrors(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_Form_ValidationInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDataForm_processed(ctx context.Context, field graphql.CollectedField, obj *dto.PersonalDataForm) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_PersonalDataForm_processed,
+		func(ctx context.Context) (any, error) {
+			return obj.Processed, nil
+		},
+		nil,
+		ec.marshalOBoolean2bool,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDataForm_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_PersonalDataForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -25724,6 +26065,55 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateBillingAdd
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_Commerce_Cart_UpdatePersonalData(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_Commerce_Cart_UpdatePersonalData,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().CommerceCartUpdatePersonalData(ctx, fc.Args["personalData"].(*forms.DefaultPersonalDataForm))
+		},
+		nil,
+		ec.marshalNCommerce_Cart_PersonalDataForm2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPersonalDataForm,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdatePersonalData(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "personalData":
+				return ec.fieldContext_Commerce_Cart_PersonalDataForm_personalData(ctx, field)
+			case "validationInfo":
+				return ec.fieldContext_Commerce_Cart_PersonalDataForm_validationInfo(ctx, field)
+			case "processed":
+				return ec.fieldContext_Commerce_Cart_PersonalDataForm_processed(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_PersonalDataForm", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdatePersonalData_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_Commerce_Cart_UpdateSelectedPayment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -28821,6 +29211,54 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCommerce_Cart_PersonalDataInput(ctx context.Context, obj any) (forms.DefaultPersonalDataForm, error) {
+	var it forms.DefaultPersonalDataForm
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"dateOfBirth", "passportCountry", "passportNumber", "address"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "dateOfBirth":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateOfBirth"))
+			data, err := ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateOfBirth = data
+		case "passportCountry":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passportCountry"))
+			data, err := ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PassportCountry = data
+		case "passportNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passportNumber"))
+			data, err := ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PassportNumber = data
+		case "address":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			data, err := ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Address = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ctx context.Context, obj any) (domain.ChargeQualifier, error) {
 	var it domain.ChargeQualifier
 	asMap := map[string]any{}
@@ -31094,6 +31532,97 @@ func (ec *executionContext) _Commerce_Cart_Person(ctx context.Context, sel ast.S
 			}
 		case "existingCustomerData":
 			out.Values[i] = ec._Commerce_Cart_Person_existingCustomerData(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var commerce_Cart_PersonalDataImplementors = []string{"Commerce_Cart_PersonalData"}
+
+func (ec *executionContext) _Commerce_Cart_PersonalData(ctx context.Context, sel ast.SelectionSet, obj *forms.DefaultPersonalDataForm) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonalDataImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_PersonalData")
+		case "dateOfBirth":
+			out.Values[i] = ec._Commerce_Cart_PersonalData_dateOfBirth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "passportCountry":
+			out.Values[i] = ec._Commerce_Cart_PersonalData_passportCountry(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "passportNumber":
+			out.Values[i] = ec._Commerce_Cart_PersonalData_passportNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "address":
+			out.Values[i] = ec._Commerce_Cart_PersonalData_address(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var commerce_Cart_PersonalDataFormImplementors = []string{"Commerce_Cart_PersonalDataForm"}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDataForm(ctx context.Context, sel ast.SelectionSet, obj *dto.PersonalDataForm) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonalDataFormImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_PersonalDataForm")
+		case "personalData":
+			out.Values[i] = ec._Commerce_Cart_PersonalDataForm_personalData(ctx, field, obj)
+		case "validationInfo":
+			out.Values[i] = ec._Commerce_Cart_PersonalDataForm_validationInfo(ctx, field, obj)
+		case "processed":
+			out.Values[i] = ec._Commerce_Cart_PersonalDataForm_processed(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -36299,6 +36828,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "Commerce_Cart_UpdatePersonalData":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_Commerce_Cart_UpdatePersonalData(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "Commerce_Cart_UpdateSelectedPayment":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateSelectedPayment(ctx, field)
@@ -37335,6 +37871,20 @@ func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_Split2ᚖflam
 
 func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_SplitQualifier2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐSplitQualifier(ctx context.Context, sel ast.SelectionSet, v cart.SplitQualifier) graphql.Marshaler {
 	return ec._Commerce_Cart_PaymentSelection_SplitQualifier(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_PersonalDataForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPersonalDataForm(ctx context.Context, sel ast.SelectionSet, v dto.PersonalDataForm) graphql.Marshaler {
+	return ec._Commerce_Cart_PersonalDataForm(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_PersonalDataForm2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPersonalDataForm(ctx context.Context, sel ast.SelectionSet, v *dto.PersonalDataForm) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_PersonalDataForm(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_PersonalDetails2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPersonalDetails(ctx context.Context, sel ast.SelectionSet, v cart.PersonalDetails) graphql.Marshaler {
@@ -39268,6 +39818,18 @@ func (ec *executionContext) marshalOCommerce_Cart_Person2ᚖflamingoᚗmeᚋflam
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_Person(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_PersonalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm(ctx context.Context, sel ast.SelectionSet, v forms.DefaultPersonalDataForm) graphql.Marshaler {
+	return ec._Commerce_Cart_PersonalData(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalOCommerce_Cart_PersonalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDefaultPersonalDataForm(ctx context.Context, v any) (*forms.DefaultPersonalDataForm, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputCommerce_Cart_PersonalDataInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_PlacedOrderInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋplaceorderᚐPlacedOrderInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []placeorder.PlacedOrderInfo) graphql.Marshaler {

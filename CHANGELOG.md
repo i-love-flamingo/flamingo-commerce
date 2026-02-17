@@ -4,6 +4,7 @@
 **cart**
 * Fixed hiccups in cart merge strategies caused by the addition of payment selection from guest cart, when some items were not added to customer's cart due to errors.
 * Add effective payment method to transactions
+* GraphQL: Expose `PersonalDataForm` in query and mutation 
 
 **product**
 * GraphQL: Expose product specifications via `specifications` field on all product types (SimpleProduct, ConfigurableProduct, ActiveVariantProduct, BundleProduct)
