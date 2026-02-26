@@ -6,7 +6,6 @@ import (
 	context "context"
 
 	cart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-
 	mock "github.com/stretchr/testify/mock"
 )
 

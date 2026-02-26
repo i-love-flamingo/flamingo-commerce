@@ -5,10 +5,8 @@ package mocks
 import (
 	context "context"
 
-	auth "flamingo.me/flamingo/v3/core/auth"
-
 	domain "flamingo.me/flamingo-commerce/v3/customer/domain"
-
+	auth "flamingo.me/flamingo/v3/core/auth"
 	mock "github.com/stretchr/testify/mock"
 )
 
