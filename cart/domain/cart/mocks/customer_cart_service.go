@@ -7,7 +7,6 @@ import (
 
 	cart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	auth "flamingo.me/flamingo/v3/core/auth"
-
 	mock "github.com/stretchr/testify/mock"
 )
 
