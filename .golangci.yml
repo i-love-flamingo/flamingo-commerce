@@ -60,7 +60,7 @@ linters:
     - usetesting
     - varnamelen
     - wrapcheck
-    - wsl
+    - wsl_v5
   settings:
     mnd:
       ignored-functions:
