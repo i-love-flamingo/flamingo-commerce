@@ -12,6 +12,9 @@
 **checkout**
 * Added support for login, password and tls to the redis client
 
+**sourcing**
+* Extended Source model with SuppliedBy attribute
+
 ## v3.12.0 
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
