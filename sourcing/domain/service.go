@@ -20,14 +20,14 @@ type (
 	SourcingService interface {
 		// AllocateItems returns Sources for the given item in the given cart
 		// e.g. use this during place order to know
-		// throws ErrInsufficientSourceQty if not enough stock is available for the amount of items in the cart
+		// throws ErrInsufficientSourceQty if not enough stock is available for the number of items in the cart
 		// throws ErrNoSourceAvailable if no source is available at all for one of the items
 		// throws ErrNeedMoreDetailsSourceCannotBeDetected if information on the cart (or delivery is missing)
 		AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error)
 
 		// GetAvailableSources returns possible Sources for the product and the desired delivery.
-		// Optional the existing cart can be passed so that existing items in the cart can be evaluated also (e.g. deduct stock)
-		// e.g. use this before a product should be placed in the cart to know if and from where an item can be sourced
+		// Optionally, the existing cart can be passed so that existing items in the cart can be evaluated also (e.g. deduct stock)
+		// e.g., use this before a product should be placed in the cart to know if and from where an item can be sourced
 		// throws ErrNeedMoreDetailsSourceCannotBeDetected
 		// throws ErrNoSourceAvailable if no source is available for the product and the given delivery
 		GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSourcesPerProduct, error)
@@ -58,6 +58,8 @@ type (
 		LocationCode string
 		// ExternalLocationCode identifies the source location in an external system
 		ExternalLocationCode string
+		// SuppliedBy identifies the location that supplies this stock location.
+		SuppliedBy string
 	}
 
 	// AvailableSources is the result value object containing the available Qty per Source
@@ -88,13 +90,13 @@ var (
 	// ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
 	ErrInsufficientSourceQty = errors.New("available Source Qty insufficient")
 
-	// ErrNoSourceAvailable - use to indicate that no source for item is available at all
+	// ErrNoSourceAvailable - use to indicate that no source for an item is available at all
 	ErrNoSourceAvailable = errors.New("no Available Source Qty")
 
-	// ErrNeedMoreDetailsSourceCannotBeDetected - use to indicate that information are missing to determine a source
+	// ErrNeedMoreDetailsSourceCannotBeDetected - use to indicate that information is missing to determine a source
 	ErrNeedMoreDetailsSourceCannotBeDetected = errors.New("source cannot be detected")
 
-	// ErrUnsupportedProductType return when product type is not supported by the service
+	// ErrUnsupportedProductType return when the service does not support a product type
 	ErrUnsupportedProductType = errors.New("unsupported product type")
 
 	// ErrEmptyProductIdentifier return when product id is missing
@@ -201,7 +203,7 @@ func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx contex
 		}
 	}
 
-	// if a cart is given we need to deduct the possible allocated items in the cart
+	// if a cart is given, we need to deduct the possible allocated items in the cart
 	if decoratedCart != nil {
 		allocatedSources, err := d.AllocateItems(ctx, decoratedCart)
 		if err != nil {
@@ -272,7 +274,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		return nil, ErrCartNotProvided
 	}
 
-	productSourcestock := make(map[string]map[Source]int)
+	productSourceStock := make(map[string]map[Source]int)
 
 	if len(decoratedCart.DecoratedDeliveries) == 0 {
 		return nil, ErrNeedMoreDetailsSourceCannotBeDetected
@@ -286,7 +288,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		for _, decoratedItem := range delivery.DecoratedItems {
 			item := decoratedItem // create a new variable to avoid memory aliasing
 
-			itemAllocation, err := d.allocateItem(ctx, productSourcestock, &item, deliveryInfo)
+			itemAllocation, err := d.allocateItem(ctx, productSourceStock, &item, deliveryInfo)
 			if err != nil {
 				return nil, err
 			}
@@ -300,7 +302,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 
 func (d *DefaultSourcingService) allocateItem(
 	ctx context.Context,
-	productSourcestock map[string]map[Source]int,
+	productSourceStock map[string]map[Source]int,
 	decoratedItem *decorator.DecoratedCartItem,
 	deliveryInfo cartDomain.DeliveryInfo,
 ) (ItemAllocation, error) {
@@ -309,7 +311,7 @@ func (d *DefaultSourcingService) allocateItem(
 	}
 
 	if bundleProduct, ok := decoratedItem.Product.(domain.BundleProductWithActiveChoices); ok {
-		itemAllocation := d.allocateBundleWithActiveChoices(ctx, decoratedItem.Item.Qty, productSourcestock, bundleProduct, deliveryInfo)
+		itemAllocation := d.allocateBundleWithActiveChoices(ctx, decoratedItem.Item.Qty, productSourceStock, bundleProduct, deliveryInfo)
 		return itemAllocation, nil
 	}
 
@@ -321,7 +323,7 @@ func (d *DefaultSourcingService) allocateItem(
 		}, nil
 	}
 
-	allocatedQtys, err := d.allocateProduct(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, deliveryInfo)
+	allocatedQtys, err := d.allocateProduct(ctx, productSourceStock, decoratedItem.Product, decoratedItem.Item.Qty, deliveryInfo)
 
 	itemAllocation := ItemAllocation{
 		AllocatedQtys: map[ProductID]AllocatedQtys{ProductID(decoratedItem.Product.GetIdentifier()): allocatedQtys},
@@ -425,7 +427,7 @@ func (d *DefaultSourcingService) allocateFromSources(
 		stockToAllocate := min(qtyToAllocate-allocatedQty, sourceStock)
 		productSourcestock[productID][source] -= stockToAllocate
 		allocatedQty += stockToAllocate
-		allocatedQtys[source] = stockToAllocate // Added this line to update allocatedQtys map
+		allocatedQtys[source] = stockToAllocate // Added this line to update the allocatedQtys map
 	}
 
 	return allocatedQty
@@ -478,14 +480,6 @@ func (s AvailableSources) Reduce(reducedBy AllocatedQtys) AvailableSources {
 		}
 	}
 	return newAvailableSources
-}
-
-// min returns minimum of 2 ints
-func min(a int, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 func formatSources(sources []Source) string {
