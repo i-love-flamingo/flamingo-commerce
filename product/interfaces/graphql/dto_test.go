@@ -1,11 +1,13 @@
-package graphql
+package graphql_test
 
 import (
+	"fmt"
 	"testing"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"flamingo.me/flamingo-commerce/v3/product/application"
+	graphql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 )
@@ -74,17 +76,23 @@ func TestMapFacet_BuiltInTypes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result := mapFacet(tt.facet, nil, logger)
+			result := graphql.MapFacetForTest(tt.facet, nil, logger)
 
 			if tt.wantNil {
 				if result != nil {
 					t.Errorf("expected nil, got %v", result)
 				}
+
 				return
 			}
 
 			if result == nil {
 				t.Fatal("expected non-nil result")
+			}
+
+			gotType := fmt.Sprintf("%T", result)
+			if gotType != tt.wantType {
+				t.Errorf("expected type %q, got %q", tt.wantType, gotType)
 			}
 
 			if result.Name() != tt.facet.Name {
@@ -107,7 +115,7 @@ func TestMapFacet_CustomMapperTakesPrecedence(t *testing.T) {
 		Position: 5,
 	}
 
-	result := mapFacet(facet, mappers, logger)
+	result := graphql.MapFacetForTest(facet, mappers, logger)
 	if result == nil {
 		t.Fatal("expected non-nil result for custom facet type")
 	}
@@ -137,7 +145,7 @@ func TestMapFacet_CustomMapperFallsBackToBuiltIn(t *testing.T) {
 		Name: "color",
 	}
 
-	result := mapFacet(facet, mappers, logger)
+	result := graphql.MapFacetForTest(facet, mappers, logger)
 	if result == nil {
 		t.Fatal("expected non-nil result for list facet with custom mapper present")
 	}
@@ -163,7 +171,7 @@ func TestMapFacet_CustomMapperCanOverrideBuiltIn(t *testing.T) {
 		Position: 1,
 	}
 
-	result := mapFacet(facet, mappers, logger)
+	result := graphql.MapFacetForTest(facet, mappers, logger)
 	if result == nil {
 		t.Fatal("expected non-nil result")
 	}
@@ -192,8 +200,8 @@ func (m *overrideListFacetMapper) MapFacet(facet searchdomain.Facet) searchdto.C
 func TestSearchResultDTO_Facets_WithCustomMapper(t *testing.T) {
 	t.Parallel()
 
-	dto := &SearchResultDTO{
-		result: &application.SearchResult{
+	dto := graphql.NewSearchResultDTOForTest(
+		&application.SearchResult{
 			Facets: searchdomain.FacetCollection{
 				"custom": searchdomain.Facet{
 					Type:     "CustomFacet",
@@ -209,9 +217,9 @@ func TestSearchResultDTO_Facets_WithCustomMapper(t *testing.T) {
 				},
 			},
 		},
-		logger:       flamingo.NullLogger{},
-		facetMappers: []searchdto.FacetMapper{&testFacetMapper{}},
-	}
+		flamingo.NullLogger{},
+		[]searchdto.FacetMapper{&testFacetMapper{}},
+	)
 
 	facets := dto.Facets()
 
@@ -232,8 +240,8 @@ func TestSearchResultDTO_Facets_WithCustomMapper(t *testing.T) {
 func TestSearchResultDTO_Facets_UnknownFacetDroppedWithoutMapper(t *testing.T) {
 	t.Parallel()
 
-	dto := &SearchResultDTO{
-		result: &application.SearchResult{
+	dto := graphql.NewSearchResultDTOForTest(
+		&application.SearchResult{
 			Facets: searchdomain.FacetCollection{
 				"custom": searchdomain.Facet{
 					Type:     "CustomFacet",
@@ -243,9 +251,9 @@ func TestSearchResultDTO_Facets_UnknownFacetDroppedWithoutMapper(t *testing.T) {
 				},
 			},
 		},
-		logger:       flamingo.NullLogger{},
-		facetMappers: nil,
-	}
+		flamingo.NullLogger{},
+		nil,
+	)
 
 	facets := dto.Facets()
 
