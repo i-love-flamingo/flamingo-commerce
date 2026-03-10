@@ -119,125 +119,6 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 		}
 	})
 
-	t.Run("custom mapper", func(t *testing.T) {
-		t.Parallel()
-
-		mappers := []searchdto.FacetMapper{&testFacetMapper{}}
-
-		t.Run("custom facet type is handled by mapper", func(t *testing.T) {
-			t.Parallel()
-
-			result := &application.SearchResult{
-				Facets: searchdomain.FacetCollection{
-					"custom": searchdomain.Facet{
-						Type:     "CustomFacet",
-						Name:     "custom",
-						Label:    "Custom",
-						Position: 5,
-					},
-				},
-			}
-
-			dto := newSearchResultDTO(result, mappers)
-			facets := dto.Facets()
-
-			if len(facets) != 1 {
-				t.Fatalf("expected 1 facet, got %d", len(facets))
-			}
-
-			if facets[0].Name() != "custom" {
-				t.Errorf("expected name 'custom', got %q", facets[0].Name())
-			}
-
-			if facets[0].Label() != "Custom" {
-				t.Errorf("expected label 'Custom', got %q", facets[0].Label())
-			}
-
-			if facets[0].Position() != 5 {
-				t.Errorf("expected position 5, got %d", facets[0].Position())
-			}
-		})
-
-		t.Run("built-in type still works with mapper registered", func(t *testing.T) {
-			t.Parallel()
-
-			result := &application.SearchResult{
-				Facets: searchdomain.FacetCollection{
-					"list": searchdomain.Facet{
-						Type:  searchdomain.ListFacet,
-						Name:  "list",
-						Label: "List",
-					},
-				},
-			}
-
-			dto := newSearchResultDTO(result, mappers)
-			facets := dto.Facets()
-
-			if len(facets) != 1 {
-				t.Fatalf("expected 1 facet, got %d", len(facets))
-			}
-
-			if facets[0].Name() != "list" {
-				t.Errorf("expected name 'list', got %q", facets[0].Name())
-			}
-		})
-
-		t.Run("unknown type is skipped when mapper does not handle it", func(t *testing.T) {
-			t.Parallel()
-
-			result := &application.SearchResult{
-				Facets: searchdomain.FacetCollection{
-					"unknown": searchdomain.Facet{
-						Type: "AnotherUnknownType",
-						Name: "unknown",
-					},
-				},
-			}
-
-			dto := newSearchResultDTO(result, mappers)
-			facets := dto.Facets()
-
-			if len(facets) != 0 {
-				t.Errorf("expected 0 facets for unhandled type, got %d", len(facets))
-			}
-		})
-	})
-
-	t.Run("mapper priority", func(t *testing.T) {
-		t.Parallel()
-
-		mappers := []searchdto.FacetMapper{&overrideListFacetMapper{}}
-
-		result := &application.SearchResult{
-			Facets: searchdomain.FacetCollection{
-				"overridden": searchdomain.Facet{
-					Type:     searchdomain.ListFacet,
-					Name:     "overridden",
-					Label:    "Overridden",
-					Position: 3,
-				},
-			},
-		}
-
-		dto := newSearchResultDTO(result, mappers)
-		facets := dto.Facets()
-
-		if len(facets) != 1 {
-			t.Fatalf("expected 1 facet, got %d", len(facets))
-		}
-
-		// The custom mapper should take precedence over the built-in handler
-		cf, ok := facets[0].(*customFacet)
-		if !ok {
-			t.Fatal("expected result to be *customFacet (from override mapper)")
-		}
-
-		if cf.Name() != "overridden" {
-			t.Errorf("expected name 'overridden', got %q", cf.Name())
-		}
-	})
-
 	t.Run("mixed facets sorted by position", func(t *testing.T) {
 		t.Parallel()
 
@@ -265,7 +146,6 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 			t.Fatalf("expected 2 facets, got %d", len(facets))
 		}
 
-		// Facets should be sorted by position
 		if facets[0].Name() != "custom" {
 			t.Errorf("expected first facet to be 'custom' (position 1), got %q", facets[0].Name())
 		}
@@ -298,7 +178,6 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 		dto := newSearchResultDTO(result, nil)
 		facets := dto.Facets()
 
-		// Without mappers, only built-in types are returned
 		if len(facets) != 1 {
 			t.Fatalf("expected 1 facet (only built-in), got %d", len(facets))
 		}
@@ -307,4 +186,122 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 			t.Errorf("expected facet 'list', got %q", facets[0].Name())
 		}
 	})
+}
+
+func TestSearchResultDTO_FacetMapper(t *testing.T) {
+	t.Parallel()
+
+	mappers := []searchdto.FacetMapper{&testFacetMapper{}}
+
+	t.Run("custom facet type is handled by mapper", func(t *testing.T) {
+		t.Parallel()
+
+		result := &application.SearchResult{
+			Facets: searchdomain.FacetCollection{
+				"custom": searchdomain.Facet{
+					Type:     "CustomFacet",
+					Name:     "custom",
+					Label:    "Custom",
+					Position: 5,
+				},
+			},
+		}
+
+		dto := newSearchResultDTO(result, mappers)
+		facets := dto.Facets()
+
+		if len(facets) != 1 {
+			t.Fatalf("expected 1 facet, got %d", len(facets))
+		}
+
+		if facets[0].Name() != "custom" {
+			t.Errorf("expected name 'custom', got %q", facets[0].Name())
+		}
+
+		if facets[0].Label() != "Custom" {
+			t.Errorf("expected label 'Custom', got %q", facets[0].Label())
+		}
+
+		if facets[0].Position() != 5 {
+			t.Errorf("expected position 5, got %d", facets[0].Position())
+		}
+	})
+
+	t.Run("built-in type still works with mapper registered", func(t *testing.T) {
+		t.Parallel()
+
+		result := &application.SearchResult{
+			Facets: searchdomain.FacetCollection{
+				"list": searchdomain.Facet{
+					Type:  searchdomain.ListFacet,
+					Name:  "list",
+					Label: "List",
+				},
+			},
+		}
+
+		dto := newSearchResultDTO(result, mappers)
+		facets := dto.Facets()
+
+		if len(facets) != 1 {
+			t.Fatalf("expected 1 facet, got %d", len(facets))
+		}
+
+		if facets[0].Name() != "list" {
+			t.Errorf("expected name 'list', got %q", facets[0].Name())
+		}
+	})
+
+	t.Run("unknown type is skipped when mapper does not handle it", func(t *testing.T) {
+		t.Parallel()
+
+		result := &application.SearchResult{
+			Facets: searchdomain.FacetCollection{
+				"unknown": searchdomain.Facet{
+					Type: "AnotherUnknownType",
+					Name: "unknown",
+				},
+			},
+		}
+
+		dto := newSearchResultDTO(result, mappers)
+		facets := dto.Facets()
+
+		if len(facets) != 0 {
+			t.Errorf("expected 0 facets for unhandled type, got %d", len(facets))
+		}
+	})
+}
+
+func TestSearchResultDTO_FacetMapperPriority(t *testing.T) {
+	t.Parallel()
+
+	mappers := []searchdto.FacetMapper{&overrideListFacetMapper{}}
+	result := &application.SearchResult{
+		Facets: searchdomain.FacetCollection{
+			"overridden": searchdomain.Facet{
+				Type:     searchdomain.ListFacet,
+				Name:     "overridden",
+				Label:    "Overridden",
+				Position: 3,
+			},
+		},
+	}
+
+	dto := newSearchResultDTO(result, mappers)
+	facets := dto.Facets()
+
+	if len(facets) != 1 {
+		t.Fatalf("expected 1 facet, got %d", len(facets))
+	}
+
+	// The custom mapper should take precedence over the built-in handler
+	cf, ok := facets[0].(*customFacet)
+	if !ok {
+		t.Fatal("expected result to be *customFacet (from override mapper)")
+	}
+
+	if cf.Name() != "overridden" {
+		t.Errorf("expected name 'overridden', got %q", cf.Name())
+	}
 }
