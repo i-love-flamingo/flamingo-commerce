@@ -21,13 +21,20 @@ func WrapSearchResult(res *application.SearchResult) *SearchResultDTO {
 
 // SearchResultDTO search result dto for graphql
 type SearchResultDTO struct {
-	result *application.SearchResult
-	logger flamingo.Logger
+	result       *application.SearchResult
+	logger       flamingo.Logger
+	facetMappers []searchdto.FacetMapper
 }
 
 // Inject dependencies
-func (obj *SearchResultDTO) Inject(logger flamingo.Logger) {
+func (obj *SearchResultDTO) Inject(logger flamingo.Logger, deps *struct {
+	FacetMappers []searchdto.FacetMapper `inject:",optional"`
+}) {
 	obj.logger = logger
+
+	if deps != nil {
+		obj.facetMappers = deps.FacetMappers
+	}
 }
 
 // Suggestions get suggestions
@@ -64,7 +71,7 @@ func (obj *SearchResultDTO) Facets() []searchdto.CommerceSearchFacet {
 	var res = []searchdto.CommerceSearchFacet{}
 
 	for _, facet := range obj.result.Facets {
-		mappedFacet := mapFacet(facet, obj.logger)
+		mappedFacet := mapFacet(facet, obj.logger, obj.facetMappers)
 		if mappedFacet != nil {
 			res = append(res, mappedFacet)
 		}
@@ -86,7 +93,15 @@ func (obj *SearchResultDTO) Promotion() *searchdto.PromotionDTO {
 	return nil
 }
 
-func mapFacet(facet searchdomain.Facet, logger flamingo.Logger) searchdto.CommerceSearchFacet {
+func mapFacet(facet searchdomain.Facet, logger flamingo.Logger, facetMappers []searchdto.FacetMapper) searchdto.CommerceSearchFacet {
+	// Check registered custom mappers first
+	for _, mapper := range facetMappers {
+		if mapped, ok := mapper.MapFacet(facet); ok {
+			return mapped
+		}
+	}
+
+	// Fall back to built-in types
 	switch searchdomain.FacetType(facet.Type) {
 	case searchdomain.ListFacet:
 		return searchdto.WrapListFacet(facet)

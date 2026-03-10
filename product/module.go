@@ -13,6 +13,7 @@ import (
 	productgraphql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/templatefunctions"
 	"flamingo.me/flamingo-commerce/v3/search"
+	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 )
 
 // Module represents the product module
@@ -48,6 +49,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 
 	injector.BindMulti(new(graphql.Service)).To(new(productgraphql.Service))
+	injector.BindMulti(new(searchdto.FacetMapper))
 	if m.fakeService {
 		injector.Override((*domain.ProductService)(nil), "").To(fake.ProductService{}).In(dingo.ChildSingleton)
 		injector.Override((*domain.SearchService)(nil), "").To(fake.SearchService{}).In(dingo.ChildSingleton)

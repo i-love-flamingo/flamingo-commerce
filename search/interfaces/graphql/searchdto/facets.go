@@ -11,6 +11,15 @@ type CommerceSearchFacet interface {
 	HasSelectedItem() bool
 }
 
+// FacetMapper allows mapping custom facet types to CommerceSearchFacet DTOs.
+// Implementations should be registered via dingo.Injector.BindMulti.
+type FacetMapper interface {
+	// MapFacet maps a domain facet to a CommerceSearchFacet DTO.
+	// Returns the mapped facet and true if the mapper handles this facet type,
+	// or nil and false if it does not.
+	MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool)
+}
+
 // CommerceSearchFacetItem interface for facet items
 type CommerceSearchFacetItem interface {
 	Label() string
