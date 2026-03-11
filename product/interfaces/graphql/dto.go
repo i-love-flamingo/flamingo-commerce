@@ -12,7 +12,36 @@ import (
 	"flamingo.me/flamingo-commerce/v3/search/utils"
 )
 
-// WrapSearchResult wraps the search result into the graphql dto
+// SearchResultDTOFactory creates SearchResultDTO instances with injected dependencies.
+type SearchResultDTOFactory struct {
+	logger       flamingo.Logger
+	facetMappers []searchdto.FacetMapper
+}
+
+// Inject dependencies
+func (f *SearchResultDTOFactory) Inject(logger flamingo.Logger, deps *struct {
+	FacetMappers []searchdto.FacetMapper
+}) {
+	f.logger = logger
+
+	if deps != nil {
+		f.facetMappers = deps.FacetMappers
+	}
+}
+
+// NewSearchResultDTO creates a new SearchResultDTO with the factory's dependencies.
+func (f *SearchResultDTOFactory) NewSearchResultDTO(res *application.SearchResult) *SearchResultDTO {
+	return &SearchResultDTO{
+		result:       res,
+		logger:       f.logger,
+		facetMappers: f.facetMappers,
+	}
+}
+
+// WrapSearchResult wraps the search result into the graphql dto.
+//
+// Deprecated: Use SearchResultDTOFactory.NewSearchResultDTO instead to ensure
+// proper dependency injection for facet mapping.
 func WrapSearchResult(res *application.SearchResult) *SearchResultDTO {
 	return &SearchResultDTO{
 		result: res,
@@ -24,17 +53,6 @@ type SearchResultDTO struct {
 	result       *application.SearchResult
 	logger       flamingo.Logger
 	facetMappers []searchdto.FacetMapper
-}
-
-// Inject dependencies
-func (obj *SearchResultDTO) Inject(logger flamingo.Logger, deps *struct {
-	FacetMappers []searchdto.FacetMapper `inject:",optional"`
-}) {
-	obj.logger = logger
-
-	if deps != nil {
-		obj.facetMappers = deps.FacetMappers
-	}
 }
 
 // Suggestions get suggestions
@@ -100,7 +118,9 @@ func mapFacet(facet searchdomain.Facet, logger flamingo.Logger, facetMappers []s
 		}
 	}
 
-	logger.Warn("Trying to map unknown facet type: ", facet.Type)
+	if logger != nil {
+		logger.Warn("Trying to map unknown facet type: ", facet.Type)
+	}
 
 	return nil
 }

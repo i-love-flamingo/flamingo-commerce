@@ -63,12 +63,12 @@ func builtInMappers() []searchdto.FacetMapper {
 }
 
 func newSearchResultDTO(result *application.SearchResult, mappers []searchdto.FacetMapper) *productgraphql.SearchResultDTO {
-	dto := productgraphql.WrapSearchResult(result)
-	dto.Inject(flamingo.NullLogger{}, &struct {
-		FacetMappers []searchdto.FacetMapper `inject:",optional"`
+	factory := &productgraphql.SearchResultDTOFactory{}
+	factory.Inject(flamingo.NullLogger{}, &struct {
+		FacetMappers []searchdto.FacetMapper
 	}{FacetMappers: mappers})
 
-	return dto
+	return factory.NewSearchResultDTO(result)
 }
 
 func TestSearchResultDTO_Facets(t *testing.T) {
