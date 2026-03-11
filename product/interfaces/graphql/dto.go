@@ -19,14 +19,9 @@ type SearchResultDTOFactory struct {
 }
 
 // Inject dependencies
-func (f *SearchResultDTOFactory) Inject(logger flamingo.Logger, deps *struct {
-	FacetMappers []searchdto.FacetMapper
-}) {
+func (f *SearchResultDTOFactory) Inject(logger flamingo.Logger, facetMappers []searchdto.FacetMapper) {
 	f.logger = logger
-
-	if deps != nil {
-		f.facetMappers = deps.FacetMappers
-	}
+	f.facetMappers = facetMappers
 }
 
 // NewSearchResultDTO creates a new SearchResultDTO with the factory's dependencies.
