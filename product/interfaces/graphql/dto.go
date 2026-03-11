@@ -94,28 +94,15 @@ func (obj *SearchResultDTO) Promotion() *searchdto.PromotionDTO {
 }
 
 func mapFacet(facet searchdomain.Facet, logger flamingo.Logger, facetMappers []searchdto.FacetMapper) searchdto.CommerceSearchFacet {
-	// Check registered custom mappers first
 	for _, mapper := range facetMappers {
 		if mapped, ok := mapper.MapFacet(facet); ok {
 			return mapped
 		}
 	}
 
-	// Fall back to built-in types
-	switch searchdomain.FacetType(facet.Type) {
-	case searchdomain.ListFacet:
-		return searchdto.WrapListFacet(facet)
+	logger.Warn("Trying to map unknown facet type: ", facet.Type)
 
-	case searchdomain.TreeFacet:
-		return searchdto.WrapTreeFacet(facet)
-
-	case searchdomain.RangeFacet:
-		return searchdto.WrapRangeFacet(facet)
-
-	default:
-		logger.Warn("Trying to map unknown facet type: ", facet.Type)
-		return nil
-	}
+	return nil
 }
 
 // HasSelectedFacet check if there are any selected facets

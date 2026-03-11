@@ -20,6 +20,42 @@ type FacetMapper interface {
 	MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool)
 }
 
+// ListFacetMapper maps ListFacet types to CommerceSearchListFacet DTOs.
+type ListFacetMapper struct{}
+
+// MapFacet maps a ListFacet domain facet to a CommerceSearchListFacet DTO.
+func (m *ListFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
+	if searchdomain.FacetType(facet.Type) == searchdomain.ListFacet {
+		return WrapListFacet(facet), true
+	}
+
+	return nil, false
+}
+
+// TreeFacetMapper maps TreeFacet types to CommerceSearchTreeFacet DTOs.
+type TreeFacetMapper struct{}
+
+// MapFacet maps a TreeFacet domain facet to a CommerceSearchTreeFacet DTO.
+func (m *TreeFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
+	if searchdomain.FacetType(facet.Type) == searchdomain.TreeFacet {
+		return WrapTreeFacet(facet), true
+	}
+
+	return nil, false
+}
+
+// RangeFacetMapper maps RangeFacet types to CommerceSearchRangeFacet DTOs.
+type RangeFacetMapper struct{}
+
+// MapFacet maps a RangeFacet domain facet to a CommerceSearchRangeFacet DTO.
+func (m *RangeFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
+	if searchdomain.FacetType(facet.Type) == searchdomain.RangeFacet {
+		return WrapRangeFacet(facet), true
+	}
+
+	return nil, false
+}
+
 // CommerceSearchFacetItem interface for facet items
 type CommerceSearchFacetItem interface {
 	Label() string

@@ -53,6 +53,15 @@ func (m *overrideListFacetMapper) MapFacet(facet searchdomain.Facet) (searchdto.
 	return nil, false
 }
 
+// builtInMappers returns the default facet mappers for built-in types.
+func builtInMappers() []searchdto.FacetMapper {
+	return []searchdto.FacetMapper{
+		&searchdto.ListFacetMapper{},
+		&searchdto.TreeFacetMapper{},
+		&searchdto.RangeFacetMapper{},
+	}
+}
+
 func newSearchResultDTO(result *application.SearchResult, mappers []searchdto.FacetMapper) *productgraphql.SearchResultDTO {
 	dto := productgraphql.WrapSearchResult(result)
 	dto.Inject(flamingo.NullLogger{}, &struct {
@@ -89,7 +98,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 				wantCount: 1,
 			},
 			{
-				name:      "Unknown facet is skipped without mappers",
+				name:      "Unknown facet is skipped without custom mappers",
 				facetType: "UnknownFacet",
 				wantCount: 0,
 			},
@@ -109,7 +118,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 					},
 				}
 
-				dto := newSearchResultDTO(result, nil)
+				dto := newSearchResultDTO(result, builtInMappers())
 				facets := dto.Facets()
 
 				if len(facets) != tt.wantCount {
@@ -121,6 +130,8 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 
 	t.Run("mixed facets sorted by position", func(t *testing.T) {
 		t.Parallel()
+
+		mappers := append([]searchdto.FacetMapper{&testFacetMapper{}}, builtInMappers()...)
 
 		result := &application.SearchResult{
 			Facets: searchdomain.FacetCollection{
@@ -139,7 +150,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 			},
 		}
 
-		dto := newSearchResultDTO(result, []searchdto.FacetMapper{&testFacetMapper{}})
+		dto := newSearchResultDTO(result, mappers)
 		facets := dto.Facets()
 
 		if len(facets) != 2 {
@@ -155,7 +166,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 		}
 	})
 
-	t.Run("without mappers only built-in types returned", func(t *testing.T) {
+	t.Run("no mappers returns no facets", func(t *testing.T) {
 		t.Parallel()
 
 		result := &application.SearchResult{
@@ -166,24 +177,14 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 					Label:    "List Facet",
 					Position: 1,
 				},
-				"custom": searchdomain.Facet{
-					Type:     "CustomFacet",
-					Name:     "custom",
-					Label:    "Custom Facet",
-					Position: 2,
-				},
 			},
 		}
 
 		dto := newSearchResultDTO(result, nil)
 		facets := dto.Facets()
 
-		if len(facets) != 1 {
-			t.Fatalf("expected 1 facet (only built-in), got %d", len(facets))
-		}
-
-		if facets[0].Name() != "list" {
-			t.Errorf("expected facet 'list', got %q", facets[0].Name())
+		if len(facets) != 0 {
+			t.Errorf("expected 0 facets without any mappers, got %d", len(facets))
 		}
 	})
 }
@@ -191,7 +192,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 func TestSearchResultDTO_FacetMapper(t *testing.T) {
 	t.Parallel()
 
-	mappers := []searchdto.FacetMapper{&testFacetMapper{}}
+	mappers := append([]searchdto.FacetMapper{&testFacetMapper{}}, builtInMappers()...)
 
 	t.Run("custom facet type is handled by mapper", func(t *testing.T) {
 		t.Parallel()
@@ -227,7 +228,7 @@ func TestSearchResultDTO_FacetMapper(t *testing.T) {
 		}
 	})
 
-	t.Run("built-in type still works with mapper registered", func(t *testing.T) {
+	t.Run("built-in type still works with custom mapper registered", func(t *testing.T) {
 		t.Parallel()
 
 		result := &application.SearchResult{
@@ -252,7 +253,7 @@ func TestSearchResultDTO_FacetMapper(t *testing.T) {
 		}
 	})
 
-	t.Run("unknown type is skipped when mapper does not handle it", func(t *testing.T) {
+	t.Run("unknown type is skipped when no mapper handles it", func(t *testing.T) {
 		t.Parallel()
 
 		result := &application.SearchResult{
@@ -276,7 +277,8 @@ func TestSearchResultDTO_FacetMapper(t *testing.T) {
 func TestSearchResultDTO_FacetMapperPriority(t *testing.T) {
 	t.Parallel()
 
-	mappers := []searchdto.FacetMapper{&overrideListFacetMapper{}}
+	// Override mapper is registered before built-in mappers, so it takes precedence
+	mappers := append([]searchdto.FacetMapper{&overrideListFacetMapper{}}, builtInMappers()...)
 	result := &application.SearchResult{
 		Facets: searchdomain.FacetCollection{
 			"overridden": searchdomain.Facet{
@@ -295,7 +297,7 @@ func TestSearchResultDTO_FacetMapperPriority(t *testing.T) {
 		t.Fatalf("expected 1 facet, got %d", len(facets))
 	}
 
-	// The custom mapper should take precedence over the built-in handler
+	// The custom mapper should take precedence over the built-in mapper
 	cf, ok := facets[0].(*customFacet)
 	if !ok {
 		t.Fatal("expected result to be *customFacet (from override mapper)")
