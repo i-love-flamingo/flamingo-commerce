@@ -25,7 +25,7 @@ type ListFacetMapper struct{}
 
 // MapFacet maps a ListFacet domain facet to a CommerceSearchListFacet DTO.
 func (m *ListFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
-	if searchdomain.FacetType(facet.Type) == searchdomain.ListFacet {
+	if facet.Type == searchdomain.ListFacet {
 		return WrapListFacet(facet), true
 	}
 
@@ -37,7 +37,7 @@ type TreeFacetMapper struct{}
 
 // MapFacet maps a TreeFacet domain facet to a CommerceSearchTreeFacet DTO.
 func (m *TreeFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
-	if searchdomain.FacetType(facet.Type) == searchdomain.TreeFacet {
+	if facet.Type == searchdomain.TreeFacet {
 		return WrapTreeFacet(facet), true
 	}
 
@@ -49,7 +49,7 @@ type RangeFacetMapper struct{}
 
 // MapFacet maps a RangeFacet domain facet to a CommerceSearchRangeFacet DTO.
 func (m *RangeFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
-	if searchdomain.FacetType(facet.Type) == searchdomain.RangeFacet {
+	if facet.Type == searchdomain.RangeFacet {
 		return WrapRangeFacet(facet), true
 	}
 
