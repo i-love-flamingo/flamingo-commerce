@@ -3,6 +3,9 @@ package graphql_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"flamingo.me/flamingo-commerce/v3/product/application"
@@ -119,9 +122,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 				dto := newSearchResultDTO(result, builtInMappers())
 				facets := dto.Facets()
 
-				if len(facets) != tt.wantCount {
-					t.Errorf("expected %d facet(s), got %d", tt.wantCount, len(facets))
-				}
+				assert.Len(t, facets, tt.wantCount)
 			})
 		}
 	})
@@ -151,17 +152,9 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 		dto := newSearchResultDTO(result, mappers)
 		facets := dto.Facets()
 
-		if len(facets) != 2 {
-			t.Fatalf("expected 2 facets, got %d", len(facets))
-		}
-
-		if facets[0].Name() != "custom" {
-			t.Errorf("expected first facet to be 'custom' (position 1), got %q", facets[0].Name())
-		}
-
-		if facets[1].Name() != "list" {
-			t.Errorf("expected second facet to be 'list' (position 2), got %q", facets[1].Name())
-		}
+		require.Len(t, facets, 2)
+		assert.Equal(t, "custom", facets[0].Name(), "expected first facet to be 'custom' (position 1)")
+		assert.Equal(t, "list", facets[1].Name(), "expected second facet to be 'list' (position 2)")
 	})
 
 	t.Run("no mappers returns no facets", func(t *testing.T) {
@@ -181,9 +174,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 		dto := newSearchResultDTO(result, nil)
 		facets := dto.Facets()
 
-		if len(facets) != 0 {
-			t.Errorf("expected 0 facets without any mappers, got %d", len(facets))
-		}
+		assert.Empty(t, facets, "expected no facets without any mappers")
 	})
 }
 
@@ -209,21 +200,10 @@ func TestSearchResultDTO_FacetMapper(t *testing.T) {
 		dto := newSearchResultDTO(result, mappers)
 		facets := dto.Facets()
 
-		if len(facets) != 1 {
-			t.Fatalf("expected 1 facet, got %d", len(facets))
-		}
-
-		if facets[0].Name() != "custom" {
-			t.Errorf("expected name 'custom', got %q", facets[0].Name())
-		}
-
-		if facets[0].Label() != "Custom" {
-			t.Errorf("expected label 'Custom', got %q", facets[0].Label())
-		}
-
-		if facets[0].Position() != 5 {
-			t.Errorf("expected position 5, got %d", facets[0].Position())
-		}
+		require.Len(t, facets, 1)
+		assert.Equal(t, "custom", facets[0].Name())
+		assert.Equal(t, "Custom", facets[0].Label())
+		assert.Equal(t, 5, facets[0].Position())
 	})
 
 	t.Run("built-in type still works with custom mapper registered", func(t *testing.T) {
@@ -242,13 +222,8 @@ func TestSearchResultDTO_FacetMapper(t *testing.T) {
 		dto := newSearchResultDTO(result, mappers)
 		facets := dto.Facets()
 
-		if len(facets) != 1 {
-			t.Fatalf("expected 1 facet, got %d", len(facets))
-		}
-
-		if facets[0].Name() != "list" {
-			t.Errorf("expected name 'list', got %q", facets[0].Name())
-		}
+		require.Len(t, facets, 1)
+		assert.Equal(t, "list", facets[0].Name())
 	})
 
 	t.Run("unknown type is skipped when no mapper handles it", func(t *testing.T) {
@@ -266,9 +241,7 @@ func TestSearchResultDTO_FacetMapper(t *testing.T) {
 		dto := newSearchResultDTO(result, mappers)
 		facets := dto.Facets()
 
-		if len(facets) != 0 {
-			t.Errorf("expected 0 facets for unhandled type, got %d", len(facets))
-		}
+		assert.Empty(t, facets, "expected no facets for unhandled type")
 	})
 }
 
@@ -291,17 +264,10 @@ func TestSearchResultDTO_FacetMapperPriority(t *testing.T) {
 	dto := newSearchResultDTO(result, mappers)
 	facets := dto.Facets()
 
-	if len(facets) != 1 {
-		t.Fatalf("expected 1 facet, got %d", len(facets))
-	}
+	require.Len(t, facets, 1)
 
 	// The custom mapper should take precedence over the built-in mapper
 	cf, ok := facets[0].(*customFacet)
-	if !ok {
-		t.Fatal("expected result to be *customFacet (from override mapper)")
-	}
-
-	if cf.Name() != "overridden" {
-		t.Errorf("expected name 'overridden', got %q", cf.Name())
-	}
+	require.True(t, ok, "expected result to be *customFacet (from override mapper)")
+	assert.Equal(t, "overridden", cf.Name())
 }

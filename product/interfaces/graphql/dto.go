@@ -113,9 +113,7 @@ func mapFacet(facet searchdomain.Facet, logger flamingo.Logger, facetMappers []s
 		}
 	}
 
-	if logger != nil {
-		logger.Warn("Trying to map unknown facet type: ", facet.Type)
-	}
+	logger.Warn("Trying to map unknown facet type: ", facet.Type)
 
 	return nil
 }
