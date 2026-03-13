@@ -29,7 +29,7 @@ func (f *customFacet) HasSelectedItem() bool { return false }
 // testFacetMapper is a test mapper that handles "CustomFacet" type.
 type testFacetMapper struct{}
 
-func (m *testFacetMapper) MapFacet(facet searchdomain.Facet) (searchdto.CommerceSearchFacet, bool) {
+func (m *testFacetMapper) MapFacet(facet searchdomain.Facet, next searchdto.FacetMapperFunc) (searchdto.CommerceSearchFacet, bool) {
 	if facet.Type == "CustomFacet" {
 		return &customFacet{
 			name:     facet.Name,
@@ -38,13 +38,13 @@ func (m *testFacetMapper) MapFacet(facet searchdomain.Facet) (searchdto.Commerce
 		}, true
 	}
 
-	return nil, false
+	return next(facet)
 }
 
 // overrideListFacetMapper overrides the built-in ListFacet handling.
 type overrideListFacetMapper struct{}
 
-func (m *overrideListFacetMapper) MapFacet(facet searchdomain.Facet) (searchdto.CommerceSearchFacet, bool) {
+func (m *overrideListFacetMapper) MapFacet(facet searchdomain.Facet, next searchdto.FacetMapperFunc) (searchdto.CommerceSearchFacet, bool) {
 	if facet.Type == searchdomain.ListFacet {
 		return &customFacet{
 			name:     facet.Name,
@@ -53,7 +53,7 @@ func (m *overrideListFacetMapper) MapFacet(facet searchdomain.Facet) (searchdto.
 		}, true
 	}
 
-	return nil, false
+	return next(facet)
 }
 
 // builtInMappers returns the default facet mappers for built-in types.
@@ -130,7 +130,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 	t.Run("mixed facets sorted by position", func(t *testing.T) {
 		t.Parallel()
 
-		mappers := append([]searchdto.FacetMapper{&testFacetMapper{}}, builtInMappers()...)
+		mappers := append(builtInMappers(), &testFacetMapper{})
 
 		result := &application.SearchResult{
 			Facets: searchdomain.FacetCollection{
@@ -181,7 +181,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 func TestSearchResultDTO_FacetMapper(t *testing.T) {
 	t.Parallel()
 
-	mappers := append([]searchdto.FacetMapper{&testFacetMapper{}}, builtInMappers()...)
+	mappers := append(builtInMappers(), &testFacetMapper{})
 
 	t.Run("custom facet type is handled by mapper", func(t *testing.T) {
 		t.Parallel()
@@ -248,8 +248,9 @@ func TestSearchResultDTO_FacetMapper(t *testing.T) {
 func TestSearchResultDTO_FacetMapperPriority(t *testing.T) {
 	t.Parallel()
 
-	// Override mapper is registered before built-in mappers, so it takes precedence
-	mappers := append([]searchdto.FacetMapper{&overrideListFacetMapper{}}, builtInMappers()...)
+	// Override mapper is registered after built-in mappers (by a downstream module),
+	// so it becomes the outermost middleware and takes precedence.
+	mappers := append(builtInMappers(), &overrideListFacetMapper{})
 	result := &application.SearchResult{
 		Facets: searchdomain.FacetCollection{
 			"overridden": searchdomain.Facet{

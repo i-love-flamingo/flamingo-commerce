@@ -11,49 +11,71 @@ type CommerceSearchFacet interface {
 	HasSelectedItem() bool
 }
 
+// FacetMapperFunc is a function that maps a domain facet to a DTO.
+// Used as the "next" callback in the FacetMapper middleware chain.
+type FacetMapperFunc func(facet searchdomain.Facet) (CommerceSearchFacet, bool)
+
 // FacetMapper allows mapping custom facet types to CommerceSearchFacet DTOs.
+// Mappers form a middleware chain: each mapper can handle the facet or delegate
+// to the next mapper via the next callback. Mappers registered later (e.g. by
+// downstream modules) wrap earlier ones, giving them higher priority.
 // Implementations should be registered via dingo.Injector.BindMulti.
 type FacetMapper interface {
-	// MapFacet maps a domain facet to a CommerceSearchFacet DTO.
-	// Returns the mapped facet and true if the mapper handles this facet type,
-	// or nil and false if it does not.
-	MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool)
+	MapFacet(facet searchdomain.Facet, next FacetMapperFunc) (CommerceSearchFacet, bool)
+}
+
+// BuildFacetMapperChain builds a middleware chain from the registered mappers.
+// The last mapper in the slice becomes the outermost layer (called first).
+func BuildFacetMapperChain(mappers []FacetMapper) FacetMapperFunc {
+	var chain FacetMapperFunc = func(_ searchdomain.Facet) (CommerceSearchFacet, bool) {
+		return nil, false
+	}
+
+	for _, mapper := range mappers {
+		next := chain
+		m := mapper
+		chain = func(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
+			return m.MapFacet(facet, next)
+		}
+	}
+
+	return chain
 }
 
 // ListFacetMapper maps ListFacet types to CommerceSearchListFacet DTOs.
 type ListFacetMapper struct{}
 
 // MapFacet maps a ListFacet domain facet to a CommerceSearchListFacet DTO.
-func (m *ListFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
+func (m *ListFacetMapper) MapFacet(facet searchdomain.Facet, next FacetMapperFunc) (CommerceSearchFacet, bool) {
 	if facet.Type == searchdomain.ListFacet {
 		return WrapListFacet(facet), true
 	}
 
-	return nil, false
+	return next(facet)
 }
 
 // TreeFacetMapper maps TreeFacet types to CommerceSearchTreeFacet DTOs.
 type TreeFacetMapper struct{}
 
 // MapFacet maps a TreeFacet domain facet to a CommerceSearchTreeFacet DTO.
-func (m *TreeFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
+func (m *TreeFacetMapper) MapFacet(facet searchdomain.Facet, next FacetMapperFunc) (CommerceSearchFacet, bool) {
 	if facet.Type == searchdomain.TreeFacet {
 		return WrapTreeFacet(facet), true
 	}
 
-	return nil, false
+	return next(facet)
 }
 
 // RangeFacetMapper maps RangeFacet types to CommerceSearchRangeFacet DTOs.
 type RangeFacetMapper struct{}
 
 // MapFacet maps a RangeFacet domain facet to a CommerceSearchRangeFacet DTO.
-func (m *RangeFacetMapper) MapFacet(facet searchdomain.Facet) (CommerceSearchFacet, bool) {
+func (m *RangeFacetMapper) MapFacet(facet searchdomain.Facet, next FacetMapperFunc) (CommerceSearchFacet, bool) {
 	if facet.Type == searchdomain.RangeFacet {
 		return WrapRangeFacet(facet), true
 	}
 
-	return nil, false
+	return next(facet)
 }
 
 // CommerceSearchFacetItem interface for facet items

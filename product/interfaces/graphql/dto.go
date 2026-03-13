@@ -107,10 +107,11 @@ func (obj *SearchResultDTO) Promotion() *searchdto.PromotionDTO {
 }
 
 func mapFacet(facet searchdomain.Facet, logger flamingo.Logger, facetMappers []searchdto.FacetMapper) searchdto.CommerceSearchFacet {
-	for _, mapper := range facetMappers {
-		if mapped, ok := mapper.MapFacet(facet); ok {
-			return mapped
-		}
+	chain := searchdto.BuildFacetMapperChain(facetMappers)
+
+	mapped, ok := chain(facet)
+	if ok {
+		return mapped
 	}
 
 	logger.Warn("Trying to map unknown facet type: ", facet.Type)
