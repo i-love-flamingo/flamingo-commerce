@@ -263,30 +263,6 @@ func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]
 		},
 
 		"categoryCodes": s.createCategoryFacet(categoryFilterValue),
-
-		"promotions": {
-			Type:  searchDomain.ListFacet,
-			Name:  "promotions",
-			Label: "Promotions",
-			Items: []*searchDomain.FacetItem{
-				{
-					Label: "2 for 500",
-					Value: "MultibuyTotal_2for500_Limit2",
-					Count: 5,
-				},
-				{
-					Label: "20% off",
-					Value: "20%off",
-					Count: 3,
-				},
-				{
-					Label: "Mix & Match 3 for 1000",
-					Value: "MixAndMatchTotal_3for1000",
-					Count: 2,
-				},
-			},
-			Position: 4,
-		},
 	}
 
 	if s.hasFilterWithValue(filters, "brandCode", "apple") {
