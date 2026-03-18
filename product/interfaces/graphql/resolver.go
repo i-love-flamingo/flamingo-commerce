@@ -16,17 +16,20 @@ import (
 
 // CommerceProductQueryResolver resolves graphql product queries
 type CommerceProductQueryResolver struct {
-	productService domain.ProductService
-	searchService  *productApplication.ProductSearchService
+	productService      domain.ProductService
+	searchService       *productApplication.ProductSearchService
+	searchResultFactory *SearchResultDTOFactory
 }
 
 // Inject dependencies
 func (r *CommerceProductQueryResolver) Inject(
 	productService domain.ProductService,
 	searchService *productApplication.ProductSearchService,
+	searchResultFactory *SearchResultDTOFactory,
 ) *CommerceProductQueryResolver {
 	r.productService = productService
 	r.searchService = searchService
+	r.searchResultFactory = searchResultFactory
 	return r
 }
 
@@ -70,7 +73,7 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 		return nil, interfaces.ErrProductGeneral
 	}
 
-	return WrapSearchResult(result), nil
+	return r.searchResultFactory.NewSearchResultDTO(result), nil
 }
 
 // ActiveBase resolves to price

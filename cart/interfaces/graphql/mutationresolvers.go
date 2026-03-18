@@ -156,15 +156,15 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx cont
 // CommerceCartUpdatePersonalData resolver method
 func (r *CommerceCartMutationResolver) CommerceCartUpdatePersonalData(ctx context.Context, personalDataForm *forms.DefaultPersonalDataForm) (*dto.PersonalDataForm, error) {
 	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
-	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.personalDataFormService").Encode(ctx, personalDataForm)
 
+	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.personalDataFormService").Encode(ctx, personalDataForm)
 	if err != nil {
 		return nil, ErrFormEncode
 	}
 
 	newRequest.Request().Form = v
-	form, success, err := r.personalDataFormController.HandleFormAction(ctx, newRequest)
 
+	form, success, err := r.personalDataFormController.HandleFormAction(ctx, newRequest)
 	if err != nil {
 		return nil, ErrPersonalDataFormData
 	}

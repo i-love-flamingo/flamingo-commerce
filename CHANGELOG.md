@@ -12,10 +12,13 @@
 **checkout**
 * Added support for login, password and tls to the redis client
 
+**search**
+* Added `FacetMapper` interface and `BindMulti` registry to allow custom facet types in GraphQL. Built-in facet types (ListFacet, TreeFacet, RangeFacet) are now registered as mappers.
+
 **sourcing**
 * Extended Source model with SuppliedBy attribute
 
-## v3.12.0 
+## v3.12.0
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
 * Deprecated struct error ProductNotFound in favour of var ErrProductNotFound

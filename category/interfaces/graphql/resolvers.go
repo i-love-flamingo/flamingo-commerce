@@ -8,7 +8,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/category/interfaces"
 	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/categorydto"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
-	"flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
+	productGraphql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
@@ -16,17 +16,20 @@ import (
 
 // CommerceCategoryQueryResolver resolves graphql category queries
 type CommerceCategoryQueryResolver struct {
-	categoryService domain.CategoryService
-	searchService   *productApplication.ProductSearchService
+	categoryService     domain.CategoryService
+	searchService       *productApplication.ProductSearchService
+	searchResultFactory *productGraphql.SearchResultDTOFactory
 }
 
 // Inject dependencies
 func (r *CommerceCategoryQueryResolver) Inject(
 	service domain.CategoryService,
 	searchService *productApplication.ProductSearchService,
+	searchResultFactory *productGraphql.SearchResultDTOFactory,
 ) *CommerceCategoryQueryResolver {
 	r.categoryService = service
 	r.searchService = searchService
+	r.searchResultFactory = searchResultFactory
 	return r
 }
 
@@ -73,5 +76,5 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 		return nil, interfaces.ErrCategoryGeneral
 	}
 
-	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: graphql.WrapSearchResult(result)}, nil
+	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: r.searchResultFactory.NewSearchResultDTO(result)}, nil
 }
