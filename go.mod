@@ -6,7 +6,7 @@ toolchain go1.26.0
 
 require (
 	flamingo.me/dingo v0.3.0
-	flamingo.me/flamingo/v3 v3.17.1
+	flamingo.me/flamingo/v3 v3.17.2
 	flamingo.me/form v1.1.3
 	flamingo.me/graphql v1.12.1
 	flamingo.me/pugtemplate v1.3.2
