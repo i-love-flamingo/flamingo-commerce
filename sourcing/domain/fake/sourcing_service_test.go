@@ -87,7 +87,7 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 		assert.Equal(t, expectedItemAllocations, resultAllocations)
 	})
 
-	t.Run("empty result when there are no item ids", func(t *testing.T) {
+	t.Run("empty result when there are no item IDs", func(t *testing.T) {
 		t.Parallel()
 
 		service := &fake.SourcingService{}
@@ -167,7 +167,7 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		assert.Equal(t, expectedSources, resultSources)
 	})
 
-	t.Run("success when product id was not found but delivery code correct", func(t *testing.T) {
+	t.Run("success when product id is not found but delivery code is correct", func(t *testing.T) {
 		t.Parallel()
 
 		service := &fake.SourcingService{}
