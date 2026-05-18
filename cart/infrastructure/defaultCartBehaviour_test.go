@@ -1106,6 +1106,92 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 		assert.Equal(t, "fake_bundle", got.Deliveries[0].Cartitems[1].MarketplaceCode)
 		assert.Equal(t, "simple_option2", got.Deliveries[0].Cartitems[1].BundleConfig["identifier1"].MarketplaceCode)
 	})
+
+	t.Run("adding the same product with different passenger_id creates a separate item", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{Code: "delivery"},
+					Cartitems: []domaincart.Item{
+						{
+							MarketplaceCode: "fake_fixed_simple_without_discounts",
+							Qty:             1,
+							AdditionalData:  map[string]string{"passenger_id": "PAX1"},
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.AddToCart(context.Background(), cart, "delivery", domaincart.AddRequest{
+			MarketplaceCode: "fake_fixed_simple_without_discounts",
+			Qty:             1,
+			AdditionalData:  map[string]string{"passenger_id": "PAX2"},
+		})
+
+		assert.NoError(t, err)
+		assert.Equal(t, 2, len(got.Deliveries[0].Cartitems), "different passenger_id should create a separate cart item")
+		assert.Equal(t, "PAX1", got.Deliveries[0].Cartitems[0].AdditionalData["passenger_id"])
+		assert.Equal(t, 1, got.Deliveries[0].Cartitems[0].Qty)
+		assert.Equal(t, "PAX2", got.Deliveries[0].Cartitems[1].AdditionalData["passenger_id"])
+		assert.Equal(t, 1, got.Deliveries[0].Cartitems[1].Qty)
+	})
+
+	t.Run("adding the same product with the same passenger_id merges qty", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{Code: "delivery"},
+					Cartitems: []domaincart.Item{
+						{
+							MarketplaceCode: "fake_fixed_simple_without_discounts",
+							Qty:             1,
+							AdditionalData:  map[string]string{"passenger_id": "PAX1"},
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.AddToCart(context.Background(), cart, "delivery", domaincart.AddRequest{
+			MarketplaceCode: "fake_fixed_simple_without_discounts",
+			Qty:             1,
+			AdditionalData:  map[string]string{"passenger_id": "PAX1"},
+		})
+
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(got.Deliveries[0].Cartitems), "same passenger_id should merge qty")
+		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].Qty)
+		assert.Equal(t, "PAX1", got.Deliveries[0].Cartitems[0].AdditionalData["passenger_id"])
+	})
 }
 
 func TestDefaultCartBehaviour_UpdatePurchaser(t *testing.T) {

@@ -376,6 +376,15 @@ func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *do
 			continue
 		}
 
+		// If the add request carries a passengerId, treat items with a
+		// different passengerId as separate cart lines (do not merge qty).
+		// When no passengerId is present, fall back to default behaviour.
+		if newPassengerID, ok := addRequest.AdditionalData["passenger_id"]; ok {
+			if item.AdditionalData["passenger_id"] != newPassengerID {
+				continue
+			}
+		}
+
 		addRequest.Qty += item.Qty
 
 		if addRequest.AdditionalData == nil && len(item.AdditionalData) > 0 {
