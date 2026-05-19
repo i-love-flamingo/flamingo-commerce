@@ -1135,7 +1135,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 		assert.Equal(t, "simple_option2", got.Deliveries[0].Cartitems[1].BundleConfig["identifier1"].MarketplaceCode)
 	})
 
-	t.Run("adding the same product with different passenger_id creates a separate item", func(t *testing.T) {
+	t.Run("adding the same product with different passenger_id merges qty", func(t *testing.T) {
 		t.Parallel()
 
 		cob := &DefaultCartBehaviour{}
@@ -1173,11 +1173,8 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 		})
 
 		assert.NoError(t, err)
-		assert.Equal(t, 2, len(got.Deliveries[0].Cartitems), "different passenger_id should create a separate cart item")
-		assert.Equal(t, "PAX1", got.Deliveries[0].Cartitems[0].AdditionalData["passenger_id"])
-		assert.Equal(t, 1, got.Deliveries[0].Cartitems[0].Qty)
-		assert.Equal(t, "PAX2", got.Deliveries[0].Cartitems[1].AdditionalData["passenger_id"])
-		assert.Equal(t, 1, got.Deliveries[0].Cartitems[1].Qty)
+		assert.Equal(t, 1, len(got.Deliveries[0].Cartitems), "different passenger_id should merge qty")
+		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].Qty)
 	})
 
 	t.Run("adding the same product with the same passenger_id merges qty", func(t *testing.T) {
