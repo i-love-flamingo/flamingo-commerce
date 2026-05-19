@@ -31,6 +31,7 @@ func TestDefaultCartBehaviour_CleanCart(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart := &domaincart.Cart{
@@ -65,6 +66,7 @@ func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -105,6 +107,7 @@ func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -159,6 +162,7 @@ func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 			voucherHandler,
 			nil,
 			nil,
+			nil,
 		)
 
 		got, _, err := cob.ApplyVoucher(context.Background(), &domaincart.Cart{ID: "test"}, "voucher")
@@ -180,6 +184,7 @@ func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 			nil,
 			flamingo.NullLogger{},
 			voucherHandler,
+			nil,
 			nil,
 			nil,
 		)
@@ -209,6 +214,7 @@ func TestDefaultCartBehaviour_RemoveVoucher(t *testing.T) {
 			voucherHandler,
 			nil,
 			nil,
+			nil,
 		)
 
 		got, _, err := cob.RemoveVoucher(context.Background(), &domaincart.Cart{ID: "test"}, "voucher")
@@ -230,6 +236,7 @@ func TestDefaultCartBehaviour_RemoveVoucher(t *testing.T) {
 			nil,
 			flamingo.NullLogger{},
 			voucherHandler,
+			nil,
 			nil,
 			nil,
 		)
@@ -259,6 +266,7 @@ func TestDefaultCartBehaviour_ApplyGiftCard(t *testing.T) {
 			nil,
 			giftCardHandler,
 			nil,
+			nil,
 		)
 
 		got, _, err := cob.ApplyGiftCard(context.Background(), &domaincart.Cart{ID: "test"}, "giftCard")
@@ -281,6 +289,7 @@ func TestDefaultCartBehaviour_ApplyGiftCard(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			giftCardHandler,
+			nil,
 			nil,
 		)
 
@@ -309,6 +318,7 @@ func TestDefaultCartBehaviour_RemoveGiftCard(t *testing.T) {
 			nil,
 			giftCardHandler,
 			nil,
+			nil,
 		)
 
 		got, _, err := cob.RemoveGiftCard(context.Background(), &domaincart.Cart{ID: "test"}, "giftCard")
@@ -332,6 +342,7 @@ func TestDefaultCartBehaviour_RemoveGiftCard(t *testing.T) {
 			nil,
 			giftCardHandler,
 			nil,
+			nil,
 		)
 
 		got, _, err := cob.RemoveGiftCard(context.Background(), &domaincart.Cart{ID: "test"}, "giftCard")
@@ -352,6 +363,7 @@ func TestDefaultCartBehaviour_Complete(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -382,6 +394,7 @@ func TestDefaultCartBehaviour_Restore(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 		cart := &domaincart.Cart{ID: "1234"}
 
@@ -404,6 +417,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -437,6 +451,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -483,6 +498,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -523,6 +539,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -569,6 +586,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -609,6 +627,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart := &domaincart.Cart{
@@ -642,6 +661,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -666,6 +686,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -727,6 +748,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -765,6 +787,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -852,6 +875,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -925,6 +949,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -953,6 +978,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1006,6 +1032,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -1049,6 +1076,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1118,6 +1146,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
@@ -1159,6 +1188,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			newInMemoryStorage(),
 			&fake.ProductService{},
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1205,6 +1235,7 @@ func TestDefaultCartBehaviour_UpdatePurchaser(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1260,6 +1291,7 @@ func TestDefaultCartBehaviour_UpdateBillingAddress(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
@@ -1280,6 +1312,7 @@ func TestDefaultCartBehaviour_UpdateBillingAddress(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1315,6 +1348,7 @@ func TestDefaultCartBehaviour_UpdateAdditionalData(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
@@ -1337,6 +1371,7 @@ func TestDefaultCartBehaviour_UpdateAdditionalData(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1375,6 +1410,7 @@ func TestDefaultCartBehaviour_UpdatePaymentSelection(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
@@ -1395,6 +1431,7 @@ func TestDefaultCartBehaviour_UpdatePaymentSelection(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1430,6 +1467,7 @@ func TestDefaultCartBehaviour_UpdateDeliveryInfo(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
 		)
 
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
@@ -1453,6 +1491,7 @@ func TestDefaultCartBehaviour_UpdateDeliveryInfo(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
+			nil,
 			nil,
 			nil,
 			nil,
@@ -1495,7 +1534,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 		t.Parallel()
 
 		cob := DefaultCartBehaviour{}
-		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, nil, &struct {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
@@ -1522,7 +1561,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 		t.Parallel()
 
 		cob := DefaultCartBehaviour{}
-		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, nil, &struct {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`

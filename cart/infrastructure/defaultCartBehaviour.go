@@ -30,6 +30,7 @@ type (
 		logger          flamingo.Logger
 		giftCardHandler GiftCardHandler
 		voucherHandler  VoucherHandler
+		cartItemMatcher CartItemMatcher
 		defaultTaxRate  float64
 		grossPricing    bool
 		defaultCurrency string
@@ -81,6 +82,7 @@ func (cob *DefaultCartBehaviour) Inject(
 	logger flamingo.Logger,
 	voucherHandler VoucherHandler,
 	giftCardHandler GiftCardHandler,
+	cartItemMatcher CartItemMatcher,
 	config *struct {
 		DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 		ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
@@ -92,6 +94,7 @@ func (cob *DefaultCartBehaviour) Inject(
 	cob.logger = logger
 	cob.voucherHandler = voucherHandler
 	cob.giftCardHandler = giftCardHandler
+	cob.cartItemMatcher = cartItemMatcher
 
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
@@ -101,6 +104,15 @@ func (cob *DefaultCartBehaviour) Inject(
 			cob.grossPricing = true
 		}
 	}
+}
+
+// matcher returns the configured CartItemMatcher, falling back to the
+// default implementation when no matcher was injected (e.g. in unit tests).
+func (cob *DefaultCartBehaviour) matcher() CartItemMatcher {
+	if cob.cartItemMatcher == nil {
+		return DefaultCartItemMatcher{}
+	}
+	return cob.cartItemMatcher
 }
 
 // Complete a cart and remove from storage
@@ -363,26 +375,10 @@ func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *do
 	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/addToDelivery")
 	defer span.End()
 
+	matcher := cob.matcher()
 	for index, item := range delivery.Cartitems {
-		if item.MarketplaceCode != addRequest.MarketplaceCode {
+		if !matcher.Matches(item, addRequest) {
 			continue
-		}
-
-		if item.VariantMarketPlaceCode != addRequest.VariantMarketplaceCode {
-			continue
-		}
-
-		if !item.BundleConfig.Equals(addRequest.BundleConfiguration) {
-			continue
-		}
-
-		// If the add request carries a passengerId, treat items with a
-		// different passengerId as separate cart lines (do not merge qty).
-		// When no passengerId is present, fall back to default behaviour.
-		if newPassengerID, ok := addRequest.AdditionalData["passenger_id"]; ok {
-			if item.AdditionalData["passenger_id"] != newPassengerID {
-				continue
-			}
 		}
 
 		addRequest.Qty += item.Qty
