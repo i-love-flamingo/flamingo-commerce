@@ -27,5 +27,9 @@ func (DefaultCartItemMatcher) Matches(item domaincart.Item, addRequest domaincar
 		return false
 	}
 
+	if item.AdditionalData[passengerIDKey] != addRequest.AdditionalData[passengerIDKey] {
+		return false
+	}
+
 	return true
 }

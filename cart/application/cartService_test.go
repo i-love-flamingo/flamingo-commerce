@@ -772,6 +772,7 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 		nil,
 		nil,
 		nil,
+		nil,
 	)
 
 	return cob, nil
