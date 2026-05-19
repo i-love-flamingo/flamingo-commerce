@@ -11,8 +11,6 @@ type DefaultCartItemMatcher struct{}
 
 var _ CartItemMatcher = (*DefaultCartItemMatcher)(nil)
 
-const passengerIDKey = "passenger_id"
-
 // Matches implements CartItemMatcher.
 func (DefaultCartItemMatcher) Matches(item domaincart.Item, addRequest domaincart.AddRequest) bool {
 	if item.MarketplaceCode != addRequest.MarketplaceCode {
@@ -24,10 +22,6 @@ func (DefaultCartItemMatcher) Matches(item domaincart.Item, addRequest domaincar
 	}
 
 	if !item.BundleConfig.Equals(addRequest.BundleConfiguration) {
-		return false
-	}
-
-	if item.AdditionalData[passengerIDKey] != addRequest.AdditionalData[passengerIDKey] {
 		return false
 	}
 
