@@ -106,15 +106,6 @@ func (cob *DefaultCartBehaviour) Inject(
 	}
 }
 
-// matcher returns the configured CartItemMatcher, falling back to the
-// default implementation when no matcher was injected (e.g. in unit tests).
-func (cob *DefaultCartBehaviour) matcher() CartItemMatcher {
-	if cob.cartItemMatcher == nil {
-		return DefaultCartItemMatcher{}
-	}
-	return cob.cartItemMatcher
-}
-
 // Complete a cart and remove from storage
 func (cob *DefaultCartBehaviour) Complete(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/Complete")
@@ -375,9 +366,8 @@ func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *do
 	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/addToDelivery")
 	defer span.End()
 
-	matcher := cob.matcher()
 	for index, item := range delivery.Cartitems {
-		if !matcher.Matches(item, addRequest) {
+		if !cob.cartItemMatcher.Matches(item, addRequest) {
 			continue
 		}
 

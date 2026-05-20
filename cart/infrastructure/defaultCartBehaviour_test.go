@@ -30,7 +30,7 @@ func TestDefaultCartBehaviour_CleanCart(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -68,7 +68,7 @@ func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -109,7 +109,7 @@ func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -161,7 +161,7 @@ func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 			flamingo.NullLogger{},
 			voucherHandler,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -185,7 +185,7 @@ func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 			flamingo.NullLogger{},
 			voucherHandler,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -213,7 +213,7 @@ func TestDefaultCartBehaviour_RemoveVoucher(t *testing.T) {
 			flamingo.NullLogger{},
 			voucherHandler,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -237,7 +237,7 @@ func TestDefaultCartBehaviour_RemoveVoucher(t *testing.T) {
 			flamingo.NullLogger{},
 			voucherHandler,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -365,7 +365,7 @@ func TestDefaultCartBehaviour_Complete(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "test-id"})
@@ -393,7 +393,7 @@ func TestDefaultCartBehaviour_Restore(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 		cart := &domaincart.Cart{ID: "1234"}
@@ -419,7 +419,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -453,7 +453,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -497,7 +497,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -541,7 +541,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -585,7 +585,7 @@ func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -626,7 +626,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -660,7 +660,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -688,7 +688,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -747,7 +747,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -789,7 +789,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -874,7 +874,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -948,7 +948,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -980,7 +980,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1031,7 +1031,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1078,7 +1078,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1145,7 +1145,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1187,7 +1187,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1234,7 +1234,7 @@ func TestDefaultCartBehaviour_UpdatePurchaser(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1287,7 +1287,7 @@ func TestDefaultCartBehaviour_UpdateBillingAddress(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1311,7 +1311,7 @@ func TestDefaultCartBehaviour_UpdateBillingAddress(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1344,7 +1344,7 @@ func TestDefaultCartBehaviour_UpdateAdditionalData(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1370,7 +1370,7 @@ func TestDefaultCartBehaviour_UpdateAdditionalData(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1406,7 +1406,7 @@ func TestDefaultCartBehaviour_UpdatePaymentSelection(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1430,7 +1430,7 @@ func TestDefaultCartBehaviour_UpdatePaymentSelection(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1463,7 +1463,7 @@ func TestDefaultCartBehaviour_UpdateDeliveryInfo(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1490,7 +1490,7 @@ func TestDefaultCartBehaviour_UpdateDeliveryInfo(t *testing.T) {
 			flamingo.NullLogger{},
 			nil,
 			nil,
-			nil,
+			DefaultCartItemMatcher{},
 			nil,
 		)
 
@@ -1531,7 +1531,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 		t.Parallel()
 
 		cob := DefaultCartBehaviour{}
-		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, nil, &struct {
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, DefaultCartItemMatcher{}, &struct {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
@@ -1558,7 +1558,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 		t.Parallel()
 
 		cob := DefaultCartBehaviour{}
-		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, nil, &struct {
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, DefaultCartItemMatcher{}, &struct {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
