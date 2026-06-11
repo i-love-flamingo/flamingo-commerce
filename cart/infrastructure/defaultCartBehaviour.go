@@ -30,6 +30,7 @@ type (
 		logger          flamingo.Logger
 		giftCardHandler GiftCardHandler
 		voucherHandler  VoucherHandler
+		cartItemMatcher CartItemMatcher
 		defaultTaxRate  float64
 		grossPricing    bool
 		defaultCurrency string
@@ -81,6 +82,7 @@ func (cob *DefaultCartBehaviour) Inject(
 	logger flamingo.Logger,
 	voucherHandler VoucherHandler,
 	giftCardHandler GiftCardHandler,
+	cartItemMatcher CartItemMatcher,
 	config *struct {
 		DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
 		ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
@@ -92,6 +94,7 @@ func (cob *DefaultCartBehaviour) Inject(
 	cob.logger = logger
 	cob.voucherHandler = voucherHandler
 	cob.giftCardHandler = giftCardHandler
+	cob.cartItemMatcher = cartItemMatcher
 
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
@@ -364,15 +367,7 @@ func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *do
 	defer span.End()
 
 	for index, item := range delivery.Cartitems {
-		if item.MarketplaceCode != addRequest.MarketplaceCode {
-			continue
-		}
-
-		if item.VariantMarketPlaceCode != addRequest.VariantMarketplaceCode {
-			continue
-		}
-
-		if !item.BundleConfig.Equals(addRequest.BundleConfiguration) {
+		if !cob.cartItemMatcher.Matches(item, addRequest) {
 			continue
 		}
 

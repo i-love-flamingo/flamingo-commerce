@@ -60,6 +60,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*infrastructure.VoucherHandler)(nil)).To(infrastructure.DefaultVoucherHandler{})
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.DefaultGuestCartService{})
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.DefaultCustomerCartService{})
+		injector.Bind(new(infrastructure.CartItemMatcher)).To(new(infrastructure.DefaultCartItemMatcher))
 	}
 
 	if m.enablePlaceOrderLoggerAdapter {

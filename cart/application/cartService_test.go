@@ -771,6 +771,7 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 		flamingo.NullLogger{},
 		nil,
 		nil,
+		infrastructure.DefaultCartItemMatcher{},
 		nil,
 	)
 
