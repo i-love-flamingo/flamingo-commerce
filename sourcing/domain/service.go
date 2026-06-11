@@ -18,51 +18,53 @@ const MaxSourceQty = math.MaxInt64
 type (
 	// SourcingService describes the main port used by the sourcing logic.
 	SourcingService interface {
-		// AllocateItems returns Sources for the given item in the given cart
-		// e.g. use this during place order to know
-		// throws ErrInsufficientSourceQty if not enough stock is available for the number of items in the cart
-		// throws ErrNoSourceAvailable if no source is available at all for one of the items
-		// throws ErrNeedMoreDetailsSourceCannotBeDetected if information on the cart (or delivery is missing)
+		// AllocateItems returns sources for the given items in the given cart.
+		// E.g. use this when placing an order to determine where items are sourced from.
+		// Returns ErrInsufficientSourceQty if not enough stock is available for the number of items in the cart.
+		// Returns ErrNoSourceAvailable if no source is available at all for one of the items.
+		// Returns ErrNeedMoreDetailsSourceCannotBeDetected if information on the cart or delivery is missing.
 		AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error)
 
-		// GetAvailableSources returns possible Sources for the product and the desired delivery.
-		// Optionally, the existing cart can be passed so that existing items in the cart can be evaluated also (e.g. deduct stock)
-		// e.g., use this before a product should be placed in the cart to know if and from where an item can be sourced
-		// throws ErrNeedMoreDetailsSourceCannotBeDetected
-		// throws ErrNoSourceAvailable if no source is available for the product and the given delivery
+		// GetAvailableSources returns possible sources for the product and the desired delivery.
+		// Optionally, the existing cart can be passed so that items already in the cart are also taken into account (e.g. to deduct stock).
+		// E.g. use this before placing a product in the cart to know whether and from where an item can be sourced.
+		// Returns ErrNeedMoreDetailsSourceCannotBeDetected if information on the cart or delivery is missing.
+		// Returns ErrNoSourceAvailable if no source is available for the product and the given delivery.
 		GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSourcesPerProduct, error)
 	}
 
-	// ItemID string alias
+	// ItemID is a string alias identifying a cart item.
 	ItemID string
 
-	// ItemAllocations represents the allocated Qtys per itemID
+	// ItemAllocations represents the allocated qtys per ItemID.
 	ItemAllocations map[ItemID]ItemAllocation
 
-	// ItemAllocation info
+	// ItemAllocation holds allocation information for a cart item.
 	ItemAllocation struct {
 		AllocatedQtys map[ProductID]AllocatedQtys
 		Error         error
 	}
 
+	// ProductID is a string alias identifying a product.
 	ProductID string
 
+	// AvailableSourcesPerProduct maps a product to its available sources.
 	AvailableSourcesPerProduct map[ProductID]AvailableSources
 
-	// AllocatedQtys represents the allocated Qty per source
+	// AllocatedQtys represents the allocated qty per source.
 	AllocatedQtys map[Source]int
 
-	// Source descriptor for a single location
+	// Source is the descriptor for a single location.
 	Source struct {
-		// LocationCode identifies the warehouse or stock location
+		// LocationCode identifies the warehouse or stock location.
 		LocationCode string
-		// ExternalLocationCode identifies the source location in an external system
+		// ExternalLocationCode identifies the source location in an external system.
 		ExternalLocationCode string
 		// SuppliedBy identifies the location that supplies this stock location.
 		SuppliedBy string
 	}
 
-	// AvailableSources is the result value object containing the available Qty per Source
+	// AvailableSources is the result value object containing the available qty per Source.
 	AvailableSources map[Source]int
 
 	// DefaultSourcingService provides a default implementation of the SourcingService interface.
@@ -87,31 +89,31 @@ type (
 var (
 	_ SourcingService = new(DefaultSourcingService)
 
-	// ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
+	// ErrInsufficientSourceQty indicates that the requested qty exceeds the available qty.
 	ErrInsufficientSourceQty = errors.New("available Source Qty insufficient")
 
-	// ErrNoSourceAvailable - use to indicate that no source for an item is available at all
+	// ErrNoSourceAvailable indicates that no source is available for an item.
 	ErrNoSourceAvailable = errors.New("no Available Source Qty")
 
-	// ErrNeedMoreDetailsSourceCannotBeDetected - use to indicate that information is missing to determine a source
+	// ErrNeedMoreDetailsSourceCannotBeDetected indicates that information is missing to determine a source.
 	ErrNeedMoreDetailsSourceCannotBeDetected = errors.New("source cannot be detected")
 
-	// ErrUnsupportedProductType return when the service does not support a product type
+	// ErrUnsupportedProductType is returned when the service does not support a product type.
 	ErrUnsupportedProductType = errors.New("unsupported product type")
 
-	// ErrEmptyProductIdentifier return when product id is missing
+	// ErrEmptyProductIdentifier is returned when the product ID is missing.
 	ErrEmptyProductIdentifier = errors.New("product identifier is empty")
 
-	// ErrProductIsNil returned when nil product is received
-	ErrProductIsNil = errors.New("received product in nil")
+	// ErrProductIsNil is returned when a nil product is received.
+	ErrProductIsNil = errors.New("received product is nil")
 
-	// ErrStockProviderNotFound returned stock provider is nil
+	// ErrStockProviderNotFound is returned when the stock provider is nil.
 	ErrStockProviderNotFound = errors.New("no Stock Provider bound")
 
-	// ErrSourceProviderNotFound returned source provider is nil
+	// ErrSourceProviderNotFound is returned when the source provider is nil.
 	ErrSourceProviderNotFound = errors.New("no Source Provider bound")
 
-	// ErrCartNotProvided cart not provided
+	// ErrCartNotProvided is returned when the cart is not provided.
 	ErrCartNotProvided = errors.New("cart not provided")
 )
 
@@ -133,7 +135,7 @@ func (d *DefaultSourcingService) Inject(
 	return d
 }
 
-// GetAvailableSources - see description in Interface
+// GetAvailableSources - see description in the interface
 //
 //nolint:cyclop // more readable this way
 func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSourcesPerProduct, error) {
@@ -203,7 +205,7 @@ func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx contex
 		}
 	}
 
-	// if a cart is given, we need to deduct the possible allocated items in the cart
+	// if a cart is given, we need to deduct the items already allocated in the cart
 	if decoratedCart != nil {
 		allocatedSources, err := d.AllocateItems(ctx, decoratedCart)
 		if err != nil {
@@ -264,7 +266,7 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 	return result
 }
 
-// AllocateItems - see description in Interface
+// AllocateItems - see description in the interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
 	if err := d.checkConfiguration(); err != nil {
 		return nil, err
@@ -427,7 +429,7 @@ func (d *DefaultSourcingService) allocateFromSources(
 		stockToAllocate := min(qtyToAllocate-allocatedQty, sourceStock)
 		productSourcestock[productID][source] -= stockToAllocate
 		allocatedQty += stockToAllocate
-		allocatedQtys[source] = stockToAllocate // Added this line to update the allocatedQtys map
+		allocatedQtys[source] = stockToAllocate
 	}
 
 	return allocatedQty
@@ -452,11 +454,11 @@ func (d *DefaultSourcingService) getSourceStock(
 	return remainingSourcestock[product.GetIdentifier()][source], nil
 }
 
-// QtySum returns the sum of all sourced items
+// QtySum returns the sum of all sourced items.
 func (s AvailableSources) QtySum() int {
 	qty := 0
 	for _, sqty := range s {
-		// check against max int 32 to avoid overflowing int
+		// check against max int32 to avoid overflowing int
 		if sqty == MaxSourceQty || qty > math.MaxInt32 {
 			return MaxSourceQty
 		}
@@ -466,7 +468,7 @@ func (s AvailableSources) QtySum() int {
 	return qty
 }
 
-// Reduce returns new AvailableSources reduced by the given AvailableSources
+// Reduce returns a new AvailableSources reduced by the given AllocatedQtys.
 func (s AvailableSources) Reduce(reducedBy AllocatedQtys) AvailableSources {
 	newAvailableSources := make(AvailableSources)
 	for source, availableQty := range s {
@@ -492,6 +494,7 @@ func formatSources(sources []Source) string {
 	return checkedSources
 }
 
+// FindSourcesWithLeastAvailableQty returns the AvailableSources whose qty sum is the lowest across all products.
 func (as AvailableSourcesPerProduct) FindSourcesWithLeastAvailableQty() AvailableSources {
 	var minAvailableSources AvailableSources
 

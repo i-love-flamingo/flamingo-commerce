@@ -31,7 +31,7 @@ func (s *SourcingService) Inject(
 	},
 ) {
 	if cfg.FakeSourceData == "" {
-		panic("fake sourcing service enabled but jsonPath was not set")
+		panic("fake sourcing service is enabled but jsonPath is not set")
 	}
 
 	fileBytes, err := os.ReadFile(cfg.FakeSourceData)

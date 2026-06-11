@@ -43,7 +43,8 @@ func TestRestrictor_Restrict(t *testing.T) {
 
 	fixtureCart := &cart.Cart{}
 
-	t.Run("error handing on error fetching available sources", func(t *testing.T) {
+	t.Run("error handling on error fetching available sources", func(t *testing.T) {
+		t.Parallel()
 		want := &validation.RestrictionResult{
 			IsRestricted:        false,
 			MaxAllowed:          0,

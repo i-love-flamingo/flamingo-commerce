@@ -21,7 +21,7 @@ type (
 		GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error)
 	}
 
-	// Service to access the sourcing based on current cart
+	// Service provides access to sourcing based on the current cart
 	Service struct {
 		logger              flamingo.Logger
 		sourcingService     domain.SourcingService
@@ -50,10 +50,10 @@ func (s *Service) Inject(
 	return s
 }
 
-// GetAvailableSourcesDeductedByCurrentCart fetches available sources minus those already allocated to the cart
+// GetAvailableSourcesDeductedByCurrentCart fetches the available sources minus those already allocated to the cart.
 func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error) {
 	if product == nil {
-		s.logger.WithContext(ctx).Error("No product given for GetAvailableSourcesDeductedByCurrentCart")
+		s.logger.WithContext(ctx).Error("no product given for GetAvailableSourcesDeductedByCurrentCart")
 		return nil, errors.New("no product given for GetAvailableSourcesDeductedByCurrentCart")
 	}
 
@@ -65,10 +65,10 @@ func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, 
 	return s.sourcingService.GetAvailableSources(ctx, product, deliveryInfo, decoratedCart)
 }
 
-// GetAvailableSources without evaluating current cart items
+// GetAvailableSources returns the available sources without evaluating current cart items.
 func (s *Service) GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error) {
 	if product == nil {
-		s.logger.WithContext(ctx).Error("No product given for GetAvailableSources")
+		s.logger.WithContext(ctx).Error("no product given for GetAvailableSources")
 		return nil, errors.New("no product given for GetAvailableSources")
 	}
 

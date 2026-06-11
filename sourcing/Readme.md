@@ -1,40 +1,40 @@
 # Sourcing Package
 
-## What do we mean by sourcing
+## What do we mean by sourcing?
 
-Sourcing is about finding the "best" possible location,
-where a product or an ordered item should be fulfilled from.
-A sourcing logic is therefore also used to allocate your ordered items to the best source locations.
+Sourcing is about finding the "best" possible location
+from which a product or an ordered item should be fulfilled.
+Sourcing logic is therefore also used to allocate ordered items to the best source locations.
 
-Different things can play a role while figuring out the correct source location(s):
+Different factors can play a role when determining the correct source location(s):
 
 - available stock (or replenished stock)
-- cost of delivery (e.g. pick warehouses close to delivery location)
+- cost of delivery (e.g. picking warehouses close to the delivery location)
 - synergies regarding the complete order  
-  (e.g. source the order from a warehouse where most of the items are available)
-- delivery time (if time is more important than cost -
-  then picking the source location that can deliver the fastest)
-...
+  (e.g. sourcing the order from a warehouse where most of the items are available)
+- delivery time (if time is more important than cost,
+  pick the source location that can deliver the fastest)
+- ...
 
-## Typical Use cases in e-commerce
+## Typical use cases in e-commerce
 
-For your shop it is helpful to have access to the Sourcing logic for advanced use cases like:
+For your shop, it is helpful to have access to the sourcing logic for advanced use cases such as:
 
 - On PDP:
-  - you might restrict the allowed qty based on available source qty (e.g. QtyRestrictor that access Sourcing logic)
+  - you might restrict the allowed qty based on the available source qty (e.g. a QtyRestrictor that accesses the sourcing logic)
   - you might want to indicate delivery times based on source locations
 
-- During Checkout or Place Order you can access the item allocation for:
+- During checkout or place order you can access the item allocation to:
   - make sure that a cart can always be sourced (e.g. as part of your CartValidator)
-  - you might want to show potential packages and delivery time
-  - you want to make sure that only carts can be placed that can be Sourced completly
-  - you might want to attach the source locations for every item to your backend system (e.g. access the Sourcng logic in your PlaceOrder Adapter)
+  - show potential packages and delivery times
+  - make sure that only carts which can be sourced completely are allowed to be placed
+  - attach the source locations for every item to your backend system (e.g. by accessing the sourcing logic in your PlaceOrder adapter)
 
 ## About this package
 
-Provides Port for Sourcing logic, that can be implemented according to your project needs.
+Provides a port for sourcing logic that can be implemented according to your project's needs.
 
-The main Port is the "SourcingService" interface that you can provide a custom adapter and have all possible freedom to design your sourcing logic.
+The main port is the `SourcingService` interface, for which you can provide a custom adapter, giving you full freedom to design your sourcing logic.
 
 ### Configurations
 
@@ -47,13 +47,13 @@ The main Port is the "SourcingService" interface that you can provide a custom a
 
 ### DefaultSourcingService
 
-The package also offers a "DefaultSourcingService" that does sourcing based on two inputs:
+The package also offers a `DefaultSourcingService` that performs sourcing based on two inputs:
 
-1. The theoretical available or possible sourcelocations for a given delivery
-2. The available stock for a specific sourcelocations
+1. The theoretically available or possible source locations for a given delivery
+2. The available stock for specific source locations
 
-For this two inputs the DefaultSourcingService offers also Ports where you can provide individual adapters.
-Based on this the DefaultSourcingService fetches the possible sourcelocations and will source items based on the available stock on that locations (starting from the first sourcelocation retrieved).
+For these two inputs, the `DefaultSourcingService` also offers ports where you can provide individual adapters.
+Based on this, the `DefaultSourcingService` fetches the possible source locations and sources items based on the available stock at those locations (starting from the first source location retrieved).
 
 ### Fake SourcingService
 
@@ -65,7 +65,7 @@ commerce:
       enable: true
 ```
 
-When enabled overrides other fake services and user should provide fake data json by
+When enabled, it overrides other fake services, and the user has to provide a fake data JSON file via:
 ```yaml
 commerce:
   sourcing:

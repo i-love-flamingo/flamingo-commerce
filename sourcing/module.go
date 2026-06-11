@@ -13,7 +13,7 @@ import (
 )
 
 type (
-	// Module registers sourcing module
+	// Module registers the sourcing module
 	Module struct {
 		useDefaultSourcingService bool
 		enableQtyRestrictor       bool
@@ -54,7 +54,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.Bind(new(application.SourcingApplication)).To(application.Service{})
 }
 
-// Depends on other modules
+// Depends declares the modules this module depends on.
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(cart.Module),

@@ -16,7 +16,7 @@ import (
 )
 
 type (
-	// Restrictor restricts qty based on available stock
+	// Restrictor restricts quantity based on available stock
 	Restrictor struct {
 		logger          flamingo.Logger
 		sourcingService application.SourcingApplication
@@ -36,12 +36,12 @@ func (r *Restrictor) Inject(
 	return r
 }
 
-// Name returns the code of the restrictor
+// Name returns the name of the restrictor.
 func (r *Restrictor) Name() string {
 	return "SourceAvailableRestrictor"
 }
 
-// Restrict qty based on product data
+// Restrict limits the quantity based on the product's available sources.
 func (r *Restrictor) Restrict(ctx context.Context, session *web.Session, product productDomain.BasicProduct, _ *cart.Cart, deliveryCode string) *validation.RestrictionResult {
 	ctx, span := trace.StartSpan(ctx, "sourcing/restrictors/SourceAvailableRestrictor")
 	defer span.End()

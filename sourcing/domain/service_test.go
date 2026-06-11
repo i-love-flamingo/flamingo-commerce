@@ -65,7 +65,8 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		assert.EqualError(t, err, "no Stock Provider bound", "received error if stock provider is not set")
 	})
 
-	t.Run("error handing on error fetching available sources", func(t *testing.T) {
+	t.Run("error handling on error fetching available sources", func(t *testing.T) {
+		t.Parallel()
 		sourcingService := domain.DefaultSourcingService{}
 		sourcingService.Inject(flamingo.NullLogger{}, &struct {
 			AvailableSourcesProvider domain.AvailableSourcesProvider `inject:",optional"`
@@ -163,7 +164,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		assert.ErrorIs(t, err, domain.ErrNoSourceAvailable)
 	})
 
-	t.Run("get sources for bundle product, cart is nil, sources shouldn't be allocated", func(t *testing.T) {
+	t.Run("get sources for bundle product, cart is nil, sources should not be allocated", func(t *testing.T) {
 		t.Parallel()
 
 		simpleInBundle1 := productDomain.SimpleProduct{Identifier: "product1"}
@@ -211,7 +212,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		assert.Equal(t, 5, availableSources[domain.ProductID(simpleInBundle2.GetIdentifier())].QtySum())
 	})
 
-	t.Run("get sources for simple product, cart is nil, sources shouldn't be allocated", func(t *testing.T) {
+	t.Run("get sources for simple product, cart is nil, sources should not be allocated", func(t *testing.T) {
 		t.Parallel()
 
 		simpleProduct := productDomain.SimpleProduct{
@@ -559,7 +560,7 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 			itemAllocation[domain.ItemID("item2")].AllocatedQtys[domain.ProductID(simple2.GetIdentifier())][source1])
 	})
 
-	t.Run("if too many products are allocated to a bundle, they won't be available for the next item", func(t *testing.T) {
+	t.Run("if too many products are allocated to a bundle, they will not be available for the next item", func(t *testing.T) {
 		t.Parallel()
 
 		simpleInBundle1 := productDomain.SimpleProduct{Identifier: "product1"}
@@ -629,7 +630,7 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 			itemAllocation[domain.ItemID("item1")].AllocatedQtys["product2"][source1])
 	})
 
-	t.Run("if an item from a bundle is purchased separately and insufficient quantity remains, it won't be available for the bundle", func(t *testing.T) {
+	t.Run("if an item from a bundle is purchased separately and insufficient quantity remains, it will not be available for the bundle", func(t *testing.T) {
 		t.Parallel()
 
 		simpleInBundle1 := productDomain.SimpleProduct{Identifier: "product1"}
