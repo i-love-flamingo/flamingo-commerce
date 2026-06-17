@@ -22088,7 +22088,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_from(ctx context.Cont
 			return obj.From, nil
 		},
 		nil,
-		ec.marshalNString2string,
+		ec.marshalNTime2timeᚐTime,
 		true,
 		true,
 	)
@@ -22101,7 +22101,7 @@ func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_from(_ co
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -22117,7 +22117,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_to(ctx context.Contex
 			return obj.To, nil
 		},
 		nil,
-		ec.marshalNString2string,
+		ec.marshalNTime2timeᚐTime,
 		true,
 		true,
 	)
@@ -22130,7 +22130,7 @@ func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_to(_ cont
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -38958,6 +38958,22 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 	}
 
 	return ret
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

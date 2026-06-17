@@ -144,8 +144,8 @@ type (
 		CustomerGroup string
 		ChannelCode   string
 		Locale        string
-		From          string
-		To            string
+		From          time.Time
+		To            time.Time
 	}
 
 	// TeaserData is the teaser-information for product previews
