@@ -87,9 +87,9 @@ func (h *Handler) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 }
 
 // CancelPlaceOrder handles order cancellation, is blocking
-func (h *Handler) CancelPlaceOrder(ctx context.Context, _ CancelPlaceOrderCommand) error {
+func (h *Handler) CancelPlaceOrder(ctx context.Context, cmd CancelPlaceOrderCommand) error {
 	ctx, span := trace.StartSpan(ctx, "checkout/Handler/CancelPlaceOrder")
 	defer span.End()
 
-	return h.coordinator.Cancel(ctx)
+	return h.coordinator.Cancel(ctx, cmd.Reason)
 }
