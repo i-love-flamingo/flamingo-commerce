@@ -109,8 +109,10 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 }
 
 // CommerceCheckoutCancelPlaceOrder cancels a running place order
-func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error) {
-	err := r.placeorderHandler.CancelPlaceOrder(ctx, placeorder.CancelPlaceOrderCommand{})
+func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx context.Context, reason *dto.PaymentCancellationReason) (bool, error) {
+	err := r.placeorderHandler.CancelPlaceOrder(ctx, placeorder.CancelPlaceOrderCommand{
+		Reason: dto.MapPaymentCancellationReason(reason),
+	})
 
 	return err == nil, err
 }

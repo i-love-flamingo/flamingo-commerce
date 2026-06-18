@@ -136,11 +136,16 @@ extend type Query {
     Commerce_Checkout_CurrentContext: Commerce_Checkout_PlaceOrderContext!
 }
 
+enum Commerce_Checkout_PaymentCancellationReason {
+    UNSPECIFIED
+    ABORTED_BY_CUSTOMER
+}
+
 extend type Mutation {
     # Starts a new process and will replace existing ones
     Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
     # Cancels to current running place order process, possible if state is not final
-    Commerce_Checkout_CancelPlaceOrder: Boolean!
+    Commerce_Checkout_CancelPlaceOrder(reason: Commerce_Checkout_PaymentCancellationReason): Boolean!
     # Clears the last stored place order process
     Commerce_Checkout_ClearPlaceOrder: Boolean!
     # Gets the last stored place order state and ensures that the state machine proceeds, non blocking

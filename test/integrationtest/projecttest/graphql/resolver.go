@@ -237,7 +237,7 @@ type rootResolverMutation struct {
 	resolveCommerceCartUpdateAdditionalData           func(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error)
 	resolveCommerceCartUpdateDeliveriesAdditionalData func(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
 	resolveCommerceCheckoutStartPlaceOrder            func(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
-	resolveCommerceCheckoutCancelPlaceOrder           func(ctx context.Context) (bool, error)
+	resolveCommerceCheckoutCancelPlaceOrder           func(ctx context.Context, reason *dto1.PaymentCancellationReason) (bool, error)
 	resolveCommerceCheckoutClearPlaceOrder            func(ctx context.Context) (bool, error)
 	resolveCommerceCheckoutRefreshPlaceOrder          func(ctx context.Context) (*dto1.PlaceOrderContext, error)
 	resolveCommerceCheckoutRefreshPlaceOrderBlocking  func(ctx context.Context) (*dto1.PlaceOrderContext, error)
@@ -345,8 +345,8 @@ func (r *rootResolverMutation) CommerceCartUpdateDeliveriesAdditionalData(ctx co
 func (r *rootResolverMutation) CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error) {
 	return r.resolveCommerceCheckoutStartPlaceOrder(ctx, returnURL)
 }
-func (r *rootResolverMutation) CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error) {
-	return r.resolveCommerceCheckoutCancelPlaceOrder(ctx)
+func (r *rootResolverMutation) CommerceCheckoutCancelPlaceOrder(ctx context.Context, reason *dto1.PaymentCancellationReason) (bool, error) {
+	return r.resolveCommerceCheckoutCancelPlaceOrder(ctx, reason)
 }
 func (r *rootResolverMutation) CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error) {
 	return r.resolveCommerceCheckoutClearPlaceOrder(ctx)

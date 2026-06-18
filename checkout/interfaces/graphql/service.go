@@ -48,6 +48,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError", process.CartValidationErrorReason{})
 	types.Map("Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer", process.CanceledByCustomerReason{})
 	types.Map("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer", process.PaymentCanceledByCustomerReason{})
+	types.Map("Commerce_Checkout_PaymentCancellationReason", new(dto.PaymentCancellationReason))
 
 	types.Resolve("Query", "Commerce_Checkout_ActivePlaceOrder", CommerceCheckoutQueryResolver{}, "CommerceCheckoutActivePlaceOrder")
 	types.Resolve("Query", "Commerce_Checkout_CurrentContext", CommerceCheckoutQueryResolver{}, "CommerceCheckoutCurrentContext")
