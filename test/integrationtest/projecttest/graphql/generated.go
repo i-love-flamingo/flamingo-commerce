@@ -5138,7 +5138,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		args, err := ec.field_Mutation_Commerce_Checkout_CancelPlaceOrder_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_Commerce_Checkout_CancelPlaceOrder_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
@@ -39235,15 +39235,6 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalOCommerce_Checkout_PaymentCancellationReason2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentCancellationReason(ctx context.Context, v any) (*dto1.PaymentCancellationReason, error) {
-	if v == nil {
-		return nil, nil
-	}
-	tmp, err := graphql.UnmarshalString(v)
-	res := dto1.PaymentCancellationReason(tmp)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v any) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -40309,6 +40300,25 @@ func (ec *executionContext) marshalOCommerce_Category_SearchResult2ᚖflamingo�
 		return graphql.Null
 	}
 	return ec._Commerce_Category_SearchResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOCommerce_Checkout_PaymentCancellationReason2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentCancellationReason(ctx context.Context, v any) (*dto1.PaymentCancellationReason, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := dto1.PaymentCancellationReason(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOCommerce_Checkout_PaymentCancellationReason2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentCancellationReason(ctx context.Context, sel ast.SelectionSet, v *dto1.PaymentCancellationReason) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalString(string(*v))
+	return res
 }
 
 func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderPaymentInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋapplicationᚐPlaceOrderPaymentInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []application.PlaceOrderPaymentInfo) graphql.Marshaler {
