@@ -122,6 +122,6 @@ func (o *OfflineWebCartPaymentGateway) OrderPaymentFromFlow(ctx context.Context,
 }
 
 // CancelOrderPayment nothing to cancel for offline payment
-func (o *OfflineWebCartPaymentGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment) error {
+func (o *OfflineWebCartPaymentGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment, _ domain.CancellationReason) error {
 	return nil
 }
