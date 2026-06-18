@@ -223,6 +223,8 @@ func (p *Process) CurrentState() (State, error) {
 }
 
 func (p *Process) rollback(ctx context.Context) error {
+	ctx = ContextWithCancellationReason(ctx, p.context.CancelReason)
+
 	for i := len(p.context.RollbackReferences) - 1; i >= 0; i-- {
 		rollbackRef := p.context.RollbackReferences[i]
 		state, ok := p.allStates[rollbackRef.StateName]

@@ -6,6 +6,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
+	paymentdomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 )
 
 type (
@@ -19,6 +20,7 @@ type (
 		ReturnURL          *url.URL
 		RollbackReferences []RollbackReference
 		FailedReason       FailedReason
+		CancelReason       paymentdomain.CancellationReason
 	}
 	// StateData holding state relevant data
 	StateData interface{}
