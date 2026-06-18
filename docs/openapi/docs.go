@@ -2321,7 +2321,13 @@ const docTemplate = `{
                 "DeliveryCode": {
                     "type": "string"
                 },
+                "From": {
+                    "type": "string"
+                },
                 "Locale": {
+                    "type": "string"
+                },
+                "To": {
                     "type": "string"
                 }
             }

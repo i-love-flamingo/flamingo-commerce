@@ -238,6 +238,8 @@ type Commerce_Product_PriceContext {
     deliveryCode: String!
     channelCode: String!
     locale: String!
+    from: Time!
+    to: Time!
 }
 
 type Commerce_Product_Media {

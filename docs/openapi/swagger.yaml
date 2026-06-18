@@ -830,7 +830,11 @@ definitions:
         type: string
       DeliveryCode:
         type: string
+      From:
+        type: string
       Locale:
+        type: string
+      To:
         type: string
     type: object
   domain.PriceInfo:

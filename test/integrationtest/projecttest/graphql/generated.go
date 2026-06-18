@@ -843,7 +843,9 @@ type ComplexityRoot struct {
 		ChannelCode   func(childComplexity int) int
 		CustomerGroup func(childComplexity int) int
 		DeliveryCode  func(childComplexity int) int
+		From          func(childComplexity int) int
 		Locale        func(childComplexity int) int
+		To            func(childComplexity int) int
 	}
 
 	Commerce_Product_PriceInfo struct {
@@ -4217,12 +4219,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Commerce_Product_PriceContext.DeliveryCode(childComplexity), true
+	case "Commerce_Product_PriceContext.from":
+		if e.complexity.Commerce_Product_PriceContext.From == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_PriceContext.From(childComplexity), true
 	case "Commerce_Product_PriceContext.locale":
 		if e.complexity.Commerce_Product_PriceContext.Locale == nil {
 			break
 		}
 
 		return e.complexity.Commerce_Product_PriceContext.Locale(childComplexity), true
+	case "Commerce_Product_PriceContext.to":
+		if e.complexity.Commerce_Product_PriceContext.To == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_PriceContext.To(childComplexity), true
 
 	case "Commerce_Product_PriceInfo.activeBase":
 		if e.complexity.Commerce_Product_PriceInfo.ActiveBase == nil {
@@ -21611,6 +21625,10 @@ func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_cont
 				return ec.fieldContext_Commerce_Product_PriceContext_channelCode(ctx, field)
 			case "locale":
 				return ec.fieldContext_Commerce_Product_PriceContext_locale(ctx, field)
+			case "from":
+				return ec.fieldContext_Commerce_Product_PriceContext_from(ctx, field)
+			case "to":
+				return ec.fieldContext_Commerce_Product_PriceContext_to(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_PriceContext", field.Name)
 		},
@@ -22060,6 +22078,64 @@ func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_locale(_ 
 	return fc, nil
 }
 
+func (ec *executionContext) _Commerce_Product_PriceContext_from(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Product_PriceContext_from,
+		func(ctx context.Context) (any, error) {
+			return obj.From, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_from(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_PriceContext",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_PriceContext_to(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Product_PriceContext_to,
+		func(ctx context.Context) (any, error) {
+			return obj.To, nil
+		},
+		nil,
+		ec.marshalNTime2timeᚐTime,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_to(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_PriceContext",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Commerce_Product_PriceInfo_default(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -22371,6 +22447,10 @@ func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_context(_ co
 				return ec.fieldContext_Commerce_Product_PriceContext_channelCode(ctx, field)
 			case "locale":
 				return ec.fieldContext_Commerce_Product_PriceContext_locale(ctx, field)
+			case "from":
+				return ec.fieldContext_Commerce_Product_PriceContext_from(ctx, field)
+			case "to":
+				return ec.fieldContext_Commerce_Product_PriceContext_to(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_PriceContext", field.Name)
 		},
@@ -35194,6 +35274,16 @@ func (ec *executionContext) _Commerce_Product_PriceContext(ctx context.Context, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "from":
+			out.Values[i] = ec._Commerce_Product_PriceContext_from(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "to":
+			out.Values[i] = ec._Commerce_Product_PriceContext_to(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -38868,6 +38958,22 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 	}
 
 	return ret
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	_ = sel
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
