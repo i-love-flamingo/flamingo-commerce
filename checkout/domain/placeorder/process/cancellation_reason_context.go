@@ -26,5 +26,6 @@ func CancellationReasonFromContext(ctx context.Context) paymentdomain.Cancellati
 	if reason, ok := ctx.Value(cancellationReasonContextKey{}).(paymentdomain.CancellationReason); ok {
 		return reason
 	}
+
 	return paymentdomain.CancellationReasonUnspecified
 }

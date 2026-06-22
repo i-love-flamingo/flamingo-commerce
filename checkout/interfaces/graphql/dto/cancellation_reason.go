@@ -23,6 +23,8 @@ func MapPaymentCancellationReason(r *PaymentCancellationReason) paymentdomain.Ca
 	}
 
 	switch *r {
+	case PaymentCancellationReasonUnspecified:
+		return paymentdomain.CancellationReasonUnspecified
 	case PaymentCancellationReasonAbortedByCustomer:
 		return paymentdomain.CancellationReasonAbortedByCustomer
 	default:

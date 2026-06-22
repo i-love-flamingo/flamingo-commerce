@@ -164,6 +164,8 @@ func TestCreatePayment_IsFinal(t *testing.T) {
 
 func TestCreatePayment_Rollback(t *testing.T) {
 	t.Run("happy path forwards reason from context", func(t *testing.T) {
+		t.Parallel()
+
 		state := states.CreatePayment{}
 
 		payment := &placeorder.Payment{
@@ -193,6 +195,8 @@ func TestCreatePayment_Rollback(t *testing.T) {
 	})
 
 	t.Run("defaults to Unspecified when ctx has no reason", func(t *testing.T) {
+		t.Parallel()
+
 		state := states.CreatePayment{}
 
 		payment := &placeorder.Payment{

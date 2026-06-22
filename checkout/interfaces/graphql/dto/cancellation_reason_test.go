@@ -10,6 +10,8 @@ import (
 )
 
 func TestMapPaymentCancellationReason(t *testing.T) {
+	t.Parallel()
+
 	aborted := dto.PaymentCancellationReasonAbortedByCustomer
 	unspecified := dto.PaymentCancellationReasonUnspecified
 	unknown := dto.PaymentCancellationReason("SOMETHING_ELSE")

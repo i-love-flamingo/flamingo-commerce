@@ -16,12 +16,18 @@ import (
 )
 
 func TestCancellationReasonContext_RoundTrip(t *testing.T) {
+	t.Parallel()
+
 	t.Run("absent key defaults to Unspecified", func(t *testing.T) {
+		t.Parallel()
+
 		got := process.CancellationReasonFromContext(context.Background())
 		assert.Equal(t, paymentdomain.CancellationReasonUnspecified, got)
 	})
 
 	t.Run("value round-trips", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := process.ContextWithCancellationReason(context.Background(), paymentdomain.CancellationReasonAbortedByCustomer)
 		got := process.CancellationReasonFromContext(ctx)
 		assert.Equal(t, paymentdomain.CancellationReasonAbortedByCustomer, got)
@@ -29,7 +35,11 @@ func TestCancellationReasonContext_RoundTrip(t *testing.T) {
 }
 
 func TestProcessContext_GobRoundTrip(t *testing.T) {
+	t.Parallel()
+
 	t.Run("with CancelReason set", func(t *testing.T) {
+		t.Parallel()
+
 		in := process.Context{UUID: "abc", CancelReason: paymentdomain.CancellationReasonAbortedByCustomer}
 
 		var buf bytes.Buffer
@@ -41,6 +51,8 @@ func TestProcessContext_GobRoundTrip(t *testing.T) {
 	})
 
 	t.Run("legacy bytes without reason decode to Unspecified", func(t *testing.T) {
+		t.Parallel()
+
 		in := process.Context{UUID: "abc"} // CancelReason left zero
 
 		var buf bytes.Buffer
@@ -66,6 +78,7 @@ func (s *recordingState) IsFinal() bool { return false }
 func (s *recordingState) Rollback(ctx context.Context, _ process.RollbackData) error {
 	s.gotReason = process.CancellationReasonFromContext(ctx)
 	s.rolledBack = true
+
 	return nil
 }
 
@@ -80,6 +93,8 @@ func (stubFinalState) IsFinal() bool                                        { re
 func (stubFinalState) Rollback(context.Context, process.RollbackData) error { return nil }
 
 func TestProcess_SetCancelReason_FlowsToRollback(t *testing.T) {
+	t.Parallel()
+
 	rec := &recordingState{}
 
 	factory := &process.Factory{}
