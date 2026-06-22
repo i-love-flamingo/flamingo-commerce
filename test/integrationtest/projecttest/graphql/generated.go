@@ -22088,9 +22088,9 @@ func (ec *executionContext) _Commerce_Product_PriceContext_from(ctx context.Cont
 			return obj.From, nil
 		},
 		nil,
-		ec.marshalNTime2timeᚐTime,
+		ec.marshalOTime2timeᚐTime,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -22117,9 +22117,9 @@ func (ec *executionContext) _Commerce_Product_PriceContext_to(ctx context.Contex
 			return obj.To, nil
 		},
 		nil,
-		ec.marshalNTime2timeᚐTime,
+		ec.marshalOTime2timeᚐTime,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -35276,14 +35276,8 @@ func (ec *executionContext) _Commerce_Product_PriceContext(ctx context.Context, 
 			}
 		case "from":
 			out.Values[i] = ec._Commerce_Product_PriceContext_from(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "to":
 			out.Values[i] = ec._Commerce_Product_PriceContext_to(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -38958,22 +38952,6 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 	}
 
 	return ret
-}
-
-func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v any) (time.Time, error) {
-	res, err := graphql.UnmarshalTime(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
-	_ = sel
-	res := graphql.MarshalTime(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
