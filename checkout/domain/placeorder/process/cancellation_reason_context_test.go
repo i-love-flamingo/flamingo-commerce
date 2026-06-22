@@ -92,7 +92,7 @@ func (stubFinalState) Run(context.Context, *process.Process) process.RunResult {
 func (stubFinalState) IsFinal() bool                                        { return true }
 func (stubFinalState) Rollback(context.Context, process.RollbackData) error { return nil }
 
-func TestProcess_SetCancelReason_FlowsToRollback(t *testing.T) {
+func TestProcess_FailedWithReason_FlowsToRollback(t *testing.T) {
 	t.Parallel()
 
 	rec := &recordingState{}
@@ -121,12 +121,11 @@ func TestProcess_SetCancelReason_FlowsToRollback(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// This mirrors exactly what Coordinator.Cancel does (Task A4): set the
-	// reason, then trigger rollback via Failed.
-	p.SetCancelReason(paymentdomain.CancellationReasonAbortedByCustomer)
-	p.Failed(context.Background(), process.CanceledByCustomerReason{})
+	// This mirrors exactly what Coordinator.Cancel does: pass the reason via Failed.
+	p.Failed(context.Background(), process.CanceledByCustomerReason{PaymentCancellationReason: paymentdomain.CancellationReasonAbortedByCustomer})
 
 	assert.True(t, rec.rolledBack)
 	assert.Equal(t, paymentdomain.CancellationReasonAbortedByCustomer, rec.gotReason)
 	assert.Equal(t, paymentdomain.CancellationReasonAbortedByCustomer, p.Context().CancelReason)
+	assert.Equal(t, paymentdomain.CancellationReasonAbortedByCustomer, p.Context().FailedReason.(process.CanceledByCustomerReason).PaymentCancellationReason)
 }

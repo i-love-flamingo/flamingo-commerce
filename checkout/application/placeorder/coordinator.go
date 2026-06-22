@@ -280,8 +280,7 @@ func (c *Coordinator) Cancel(ctx context.Context, reason paymentdomain.Cancellat
 			return
 		}
 
-		p.SetCancelReason(reason)
-		p.Failed(ctx, process.CanceledByCustomerReason{})
+		p.Failed(ctx, process.CanceledByCustomerReason{PaymentCancellationReason: reason})
 		err = c.storeProcessContext(ctx, p.Context())
 		if err != nil {
 			returnErr = err

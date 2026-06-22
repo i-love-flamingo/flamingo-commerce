@@ -8,12 +8,6 @@ import (
 
 type cancellationReasonContextKey struct{}
 
-// SetCancelReason stores the cancellation reason on the process context.
-// MUST be called before Process.Failed so rollback can read it.
-func (p *Process) SetCancelReason(reason paymentdomain.CancellationReason) {
-	p.context.CancelReason = reason
-}
-
 // ContextWithCancellationReason returns a context carrying the cancellation
 // reason for the single rollback -> state.Rollback hop.
 func ContextWithCancellationReason(ctx context.Context, reason paymentdomain.CancellationReason) context.Context {
