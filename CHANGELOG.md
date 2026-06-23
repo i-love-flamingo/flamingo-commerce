@@ -11,6 +11,11 @@
 
 **checkout**
 * Added support for login, password and tls to the redis client
+* Enhanced the cancellation flow with detailed reasons threading through the place-order process
+* GraphQL: Added an optional `reason` argument to the `Commerce_Checkout_CancelPlaceOrder` mutation
+
+**payment**
+* **Breaking:** `WebCartPaymentGateway.CancelOrderPayment` now requires a `CancellationReason` argument. Added the `CancellationReason` type to the domain.
 
 **search**
 * Added `FacetMapper` interface and `BindMulti` registry to allow custom facet types in GraphQL. Built-in facet types (ListFacet, TreeFacet, RangeFacet) are now registered as mappers.
