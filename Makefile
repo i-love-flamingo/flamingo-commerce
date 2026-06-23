@@ -45,4 +45,3 @@ lint:
 	@echo "FIRST_COMMIT is now $(FIRST_COMMIT)"
 	$(eval REV=$(shell git rev-parse $(FIRST_COMMIT)^1))
 	golangci-lint run --new-from-rev=$(REV)
-

@@ -18,6 +18,9 @@
 **sourcing**
 * Extended Source model with SuppliedBy attribute
 
+**prices**
+* Extended Price Context with fields `From` and `To`, meaning that this price is valid of the defined time frame.
+
 ## v3.12.0
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
