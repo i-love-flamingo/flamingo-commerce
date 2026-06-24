@@ -268,6 +268,8 @@ func TestIsSaleableNow(t *testing.T) {
 }
 
 func TestIsSaleableBetween(t *testing.T) {
+	t.Parallel()
+
 	checkTime := time.Unix(10, 0)
 
 	s := Saleable{}
