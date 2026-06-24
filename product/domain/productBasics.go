@@ -417,8 +417,23 @@ func (p Saleable) IsSaleableNow() bool {
 	}
 
 	// For some reasons IsZero does not always work - thats why we check for 1970
-	if (p.SaleableFrom.IsZero() || p.SaleableFrom.Year() == 1970 || p.SaleableFrom.Before(time.Now())) &&
-		(p.SaleableTo.IsZero() || p.SaleableTo.Year() == 1970 || p.SaleableTo.After(time.Now())) {
+	if (p.SaleableFrom.IsZero() || p.SaleableFrom.UnixMilli() == 0 || p.SaleableFrom.Before(time.Now())) &&
+		(p.SaleableTo.IsZero() || p.SaleableTo.UnixMilli() == 0 || p.SaleableTo.After(time.Now())) {
+		return true
+	}
+
+	return false
+}
+
+// IsSaleableBetween checks flag and time for the given range
+func (p Saleable) IsSaleableBetween(from time.Time, to time.Time) bool {
+	if !p.IsSaleable {
+		return false
+	}
+
+	// For some reasons IsZero does not always work - thats why we check for 1970
+	if (p.SaleableFrom.IsZero() || p.SaleableFrom.UnixMilli() == 0 || p.SaleableFrom.Before(to)) &&
+		(p.SaleableTo.IsZero() || p.SaleableTo.UnixMilli() == 0 || p.SaleableTo.After(from)) {
 		return true
 	}
 

@@ -267,6 +267,56 @@ func TestIsSaleableNow(t *testing.T) {
 	assert.True(t, s.IsSaleableNow(), "saleable now if saleable to is in the future")
 }
 
+func TestIsSaleableBetween(t *testing.T) {
+	checkTime := time.Unix(10, 0)
+
+	s := Saleable{}
+	assert.False(t, s.IsSaleableBetween(checkTime, checkTime), "not saleable if nothing is set")
+
+	s = Saleable{
+		IsSaleable: true,
+	}
+	assert.True(t, s.IsSaleableBetween(checkTime, checkTime), "saleable if just saleable")
+
+	s = Saleable{
+		SaleableFrom: checkTime,
+		IsSaleable:   true,
+	}
+	assert.False(t, s.IsSaleableBetween(checkTime.Add(-2*time.Second), checkTime.Add(-1*time.Second)), "not saleable if saleable from is in future")
+
+	s = Saleable{
+		SaleableFrom: checkTime,
+		IsSaleable:   true,
+	}
+	assert.True(t, s.IsSaleableBetween(checkTime.Add(1*time.Second), checkTime.Add(2*time.Second)), "saleable if saleable from is in the past")
+
+	s = Saleable{
+		SaleableTo: checkTime,
+		IsSaleable: true,
+	}
+	assert.False(t, s.IsSaleableBetween(checkTime.Add(1*time.Second), checkTime.Add(2*time.Second)), "not saleable if saleable to is in the past")
+
+	s = Saleable{
+		SaleableTo: checkTime,
+		IsSaleable: true,
+	}
+	assert.True(t, s.IsSaleableBetween(checkTime.Add(-2*time.Second), checkTime.Add(-1*time.Second)), "saleable if saleable to is in the future")
+
+	s = Saleable{
+		SaleableFrom: checkTime.Add(-2 * time.Second),
+		SaleableTo:   checkTime.Add(2 * time.Second),
+		IsSaleable:   true,
+	}
+	assert.True(t, s.IsSaleableBetween(checkTime, checkTime), "saleable if target between saleable limits")
+
+	s = Saleable{
+		SaleableFrom: checkTime.Add(-2 * time.Second),
+		SaleableTo:   checkTime.Add(2 * time.Second),
+		IsSaleable:   true,
+	}
+	assert.True(t, s.IsSaleableBetween(checkTime.Add(-3*time.Second), checkTime.Add(3*time.Second)), "saleable if between saleable target limits")
+}
+
 func TestSaleable_GetLoyaltyChargeSplit(t *testing.T) {
 	t.Parallel()
 
