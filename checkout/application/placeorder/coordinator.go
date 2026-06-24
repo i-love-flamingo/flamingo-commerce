@@ -19,6 +19,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	paymentdomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
@@ -230,7 +231,7 @@ func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error)
 
 // Cancel the process if it exists (blocking)
 // be aware that all rollback callbacks are executed
-func (c *Coordinator) Cancel(ctx context.Context) error {
+func (c *Coordinator) Cancel(ctx context.Context, reason paymentdomain.CancellationReason) error {
 	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/Cancel")
 	defer span.End()
 
@@ -279,7 +280,7 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 			return
 		}
 
-		p.Failed(ctx, process.CanceledByCustomerReason{})
+		p.Failed(ctx, process.CanceledByCustomerReason{PaymentCancellationReason: reason})
 		err = c.storeProcessContext(ctx, p.Context())
 		if err != nil {
 			returnErr = err

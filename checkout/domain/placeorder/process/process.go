@@ -19,6 +19,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
+	paymentdomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 )
 
 type (
@@ -50,7 +51,7 @@ type (
 	// RollbackData needed for rollback of a state
 	RollbackData interface{}
 
-	// FailedReason gives a human readable reason for a state failure
+	// FailedReason gives a human-readable reason for a state failure
 	FailedReason interface {
 		Reason() string
 	}
@@ -60,16 +61,20 @@ type (
 		Error string
 	}
 
-	// CanceledByCustomerReason is used when customer cancels order
-	CanceledByCustomerReason struct{}
+	// CanceledByCustomerReason is used when a customer cancels an order
+	CanceledByCustomerReason struct {
+		PaymentCancellationReason paymentdomain.CancellationReason
+	}
 
 	// PaymentErrorOccurredReason is used for errors during payment
 	PaymentErrorOccurredReason struct {
 		Error string
 	}
 
-	// PaymentCanceledByCustomerReason is used to signal that payment was canceled by customer
-	PaymentCanceledByCustomerReason struct{}
+	// PaymentCanceledByCustomerReason is used to signal that a payment was canceled by a customer
+	PaymentCanceledByCustomerReason struct {
+		PaymentCancellationReason paymentdomain.CancellationReason
+	}
 
 	// CartValidationErrorReason contains the ValidationResult
 	CartValidationErrorReason struct {
@@ -116,9 +121,19 @@ func (e PaymentCanceledByCustomerReason) Reason() string {
 	return "Payment canceled by customer"
 }
 
+// CancellationReason returns the payment cancellation reason
+func (e PaymentCanceledByCustomerReason) CancellationReason() paymentdomain.CancellationReason {
+	return e.PaymentCancellationReason
+}
+
 // Reason for the error occurred
 func (e CanceledByCustomerReason) Reason() string {
 	return "Place order canceled by customer"
+}
+
+// CancellationReason returns the payment cancellation reason
+func (e CanceledByCustomerReason) CancellationReason() paymentdomain.CancellationReason {
+	return e.PaymentCancellationReason
 }
 
 // Reason for failing
@@ -223,6 +238,8 @@ func (p *Process) CurrentState() (State, error) {
 }
 
 func (p *Process) rollback(ctx context.Context) error {
+	ctx = ContextWithCancellationReason(ctx, p.context.CancelReason)
+
 	for i := len(p.context.RollbackReferences) - 1; i >= 0; i-- {
 		rollbackRef := p.context.RollbackReferences[i]
 		state, ok := p.allStates[rollbackRef.StateName]
@@ -267,6 +284,12 @@ func (p *Process) UpdateOrderInfo(info *application.PlaceOrderInfo) {
 
 // Failed performs all collected rollbacks and switches to FailedState
 func (p *Process) Failed(ctx context.Context, reason FailedReason) {
+	if r, ok := reason.(interface {
+		CancellationReason() paymentdomain.CancellationReason
+	}); ok {
+		p.context.CancelReason = r.CancellationReason()
+	}
+
 	err := p.rollback(ctx)
 	if err != nil {
 		p.logger.WithContext(ctx).Error("fatal rollback error: ", err)

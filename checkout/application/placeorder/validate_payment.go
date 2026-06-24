@@ -113,7 +113,7 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 		}
 	case paymentDomain.PaymentFlowStatusAborted:
 		return process.RunResult{
-			Failed: process.PaymentCanceledByCustomerReason{},
+			Failed: process.PaymentCanceledByCustomerReason{PaymentCancellationReason: paymentDomain.CancellationReasonAbortedByCustomer},
 		}
 	case paymentDomain.PaymentFlowWaitingForCustomer:
 		// payment pending, waiting for customer doing async stuff like finishing is payment in mobile app

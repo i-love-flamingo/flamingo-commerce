@@ -233,6 +233,6 @@ func (g *FakeGateway) OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart,
 }
 
 // CancelOrderPayment does nothing
-func (g *FakeGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment) error {
+func (g *FakeGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment, _ domain.CancellationReason) error {
 	return nil
 }

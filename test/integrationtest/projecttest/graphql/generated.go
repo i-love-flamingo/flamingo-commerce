@@ -1065,7 +1065,7 @@ type ComplexityRoot struct {
 		CommerceCartUpdateItemQty                  func(childComplexity int, itemID string, deliveryCode string, qty int) int
 		CommerceCartUpdatePersonalData             func(childComplexity int, personalData *forms.DefaultPersonalDataForm) int
 		CommerceCartUpdateSelectedPayment          func(childComplexity int, gateway string, method string) int
-		CommerceCheckoutCancelPlaceOrder           func(childComplexity int) int
+		CommerceCheckoutCancelPlaceOrder           func(childComplexity int, reason *dto1.PaymentCancellationReason) int
 		CommerceCheckoutClearPlaceOrder            func(childComplexity int) int
 		CommerceCheckoutRefreshPlaceOrder          func(childComplexity int) int
 		CommerceCheckoutRefreshPlaceOrderBlocking  func(childComplexity int) int
@@ -1132,7 +1132,7 @@ type MutationResolver interface {
 	CommerceCartUpdateAdditionalData(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error)
 	CommerceCartUpdateDeliveriesAdditionalData(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
-	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
+	CommerceCheckoutCancelPlaceOrder(ctx context.Context, reason *dto1.PaymentCancellationReason) (bool, error)
 	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto1.PlaceOrderContext, error)
 	CommerceCheckoutRefreshPlaceOrderBlocking(ctx context.Context) (*dto1.PlaceOrderContext, error)
@@ -5138,7 +5138,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			break
 		}
 
-		return e.complexity.Mutation.CommerceCheckoutCancelPlaceOrder(childComplexity), true
+		args, err := ec.field_Mutation_Commerce_Checkout_CancelPlaceOrder_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCheckoutCancelPlaceOrder(childComplexity, args["reason"].(*dto1.PaymentCancellationReason)), true
 	case "Mutation.Commerce_Checkout_ClearPlaceOrder":
 		if e.complexity.Mutation.CommerceCheckoutClearPlaceOrder == nil {
 			break
@@ -5905,6 +5910,17 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_a
 		return nil, err
 	}
 	args["method"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Checkout_CancelPlaceOrder_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "reason", ec.unmarshalOCommerce_Checkout_PaymentCancellationReason2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentCancellationReason)
+	if err != nil {
+		return nil, err
+	}
+	args["reason"] = arg0
 	return args, nil
 }
 
@@ -26691,7 +26707,8 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx con
 		field,
 		ec.fieldContext_Mutation_Commerce_Checkout_CancelPlaceOrder,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Mutation().CommerceCheckoutCancelPlaceOrder(ctx)
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().CommerceCheckoutCancelPlaceOrder(ctx, fc.Args["reason"].(*dto1.PaymentCancellationReason))
 		},
 		nil,
 		ec.marshalNBoolean2bool,
@@ -26700,7 +26717,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx con
 	)
 }
 
-func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_CancelPlaceOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_CancelPlaceOrder(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -26709,6 +26726,17 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_CancelPlaceO
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_Commerce_Checkout_CancelPlaceOrder_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -40272,6 +40300,25 @@ func (ec *executionContext) marshalOCommerce_Category_SearchResult2ᚖflamingo�
 		return graphql.Null
 	}
 	return ec._Commerce_Category_SearchResult(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOCommerce_Checkout_PaymentCancellationReason2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentCancellationReason(ctx context.Context, v any) (*dto1.PaymentCancellationReason, error) {
+	if v == nil {
+		return nil, nil
+	}
+	tmp, err := graphql.UnmarshalString(v)
+	res := dto1.PaymentCancellationReason(tmp)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOCommerce_Checkout_PaymentCancellationReason2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentCancellationReason(ctx context.Context, sel ast.SelectionSet, v *dto1.PaymentCancellationReason) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalString(string(*v))
+	return res
 }
 
 func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderPaymentInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋapplicationᚐPlaceOrderPaymentInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []application.PlaceOrderPaymentInfo) graphql.Marshaler {

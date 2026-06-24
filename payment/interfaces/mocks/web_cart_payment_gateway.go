@@ -27,17 +27,17 @@ func (_m *WebCartPaymentGateway) EXPECT() *WebCartPaymentGateway_Expecter {
 	return &WebCartPaymentGateway_Expecter{mock: &_m.Mock}
 }
 
-// CancelOrderPayment provides a mock function with given fields: ctx, cartPayment
-func (_m *WebCartPaymentGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment) error {
-	ret := _m.Called(ctx, cartPayment)
+// CancelOrderPayment provides a mock function with given fields: ctx, cartPayment, reason
+func (_m *WebCartPaymentGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment, reason domain.CancellationReason) error {
+	ret := _m.Called(ctx, cartPayment, reason)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CancelOrderPayment")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *placeorder.Payment) error); ok {
-		r0 = rf(ctx, cartPayment)
+	if rf, ok := ret.Get(0).(func(context.Context, *placeorder.Payment, domain.CancellationReason) error); ok {
+		r0 = rf(ctx, cartPayment, reason)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -53,13 +53,14 @@ type WebCartPaymentGateway_CancelOrderPayment_Call struct {
 // CancelOrderPayment is a helper method to define mock.On call
 //   - ctx context.Context
 //   - cartPayment *placeorder.Payment
-func (_e *WebCartPaymentGateway_Expecter) CancelOrderPayment(ctx interface{}, cartPayment interface{}) *WebCartPaymentGateway_CancelOrderPayment_Call {
-	return &WebCartPaymentGateway_CancelOrderPayment_Call{Call: _e.mock.On("CancelOrderPayment", ctx, cartPayment)}
+//   - reason domain.CancellationReason
+func (_e *WebCartPaymentGateway_Expecter) CancelOrderPayment(ctx interface{}, cartPayment interface{}, reason interface{}) *WebCartPaymentGateway_CancelOrderPayment_Call {
+	return &WebCartPaymentGateway_CancelOrderPayment_Call{Call: _e.mock.On("CancelOrderPayment", ctx, cartPayment, reason)}
 }
 
-func (_c *WebCartPaymentGateway_CancelOrderPayment_Call) Run(run func(ctx context.Context, cartPayment *placeorder.Payment)) *WebCartPaymentGateway_CancelOrderPayment_Call {
+func (_c *WebCartPaymentGateway_CancelOrderPayment_Call) Run(run func(ctx context.Context, cartPayment *placeorder.Payment, reason domain.CancellationReason)) *WebCartPaymentGateway_CancelOrderPayment_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*placeorder.Payment))
+		run(args[0].(context.Context), args[1].(*placeorder.Payment), args[2].(domain.CancellationReason))
 	})
 	return _c
 }
@@ -69,7 +70,7 @@ func (_c *WebCartPaymentGateway_CancelOrderPayment_Call) Return(_a0 error) *WebC
 	return _c
 }
 
-func (_c *WebCartPaymentGateway_CancelOrderPayment_Call) RunAndReturn(run func(context.Context, *placeorder.Payment) error) *WebCartPaymentGateway_CancelOrderPayment_Call {
+func (_c *WebCartPaymentGateway_CancelOrderPayment_Call) RunAndReturn(run func(context.Context, *placeorder.Payment, domain.CancellationReason) error) *WebCartPaymentGateway_CancelOrderPayment_Call {
 	_c.Call.Return(run)
 	return _c
 }

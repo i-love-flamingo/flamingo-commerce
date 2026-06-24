@@ -97,6 +97,8 @@ func (c CreatePayment) Rollback(ctx context.Context, data process.RollbackData) 
 		return err
 	}
 
+	reason := process.CancellationReasonFromContext(ctx)
+
 	err = paymentGateway.CancelOrderPayment(
 		ctx,
 		&placeorder.Payment{
@@ -104,6 +106,7 @@ func (c CreatePayment) Rollback(ctx context.Context, data process.RollbackData) 
 			PaymentID:          rollbackData.PaymentID,
 			RawTransactionData: rollbackData.RawTransactionData,
 		},
+		reason,
 	)
 	if err != nil {
 		return err
