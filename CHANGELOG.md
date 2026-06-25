@@ -8,6 +8,7 @@
 
 **product**
 * GraphQL: Expose product specifications via `specifications` field on all product types (SimpleProduct, ConfigurableProduct, ActiveVariantProduct, BundleProduct)
+* Added Saleable model method to check saleability against a given time frame.
 
 **checkout**
 * Added support for login, password and tls to the redis client
