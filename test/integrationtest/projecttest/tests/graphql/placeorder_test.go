@@ -46,7 +46,7 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 				"__typename": "Commerce_Checkout_PlaceOrderState_State_Failed",
 				"reason": map[string]interface{}{
 					"__typename": "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
-					"reason":     "",
+					"reason":     "payment process cancelled",
 				},
 			},
 		},
@@ -66,7 +66,7 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 				"__typename": "Commerce_Checkout_PlaceOrderState_State_Failed",
 				"reason": map[string]interface{}{
 					"__typename": "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
-					"reason":     "",
+					"reason":     "payment process failed",
 				},
 			},
 		},
@@ -178,7 +178,7 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 			"__typename": "Commerce_Checkout_PlaceOrderState_State_Failed",
 			"reason": map[string]interface{}{
 				"__typename": "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
-				"reason":     "",
+				"reason":     "payment process failed",
 			},
 		}
 		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
@@ -384,7 +384,7 @@ func Test_RestartStartPlaceOrder(t *testing.T) {
 	// payment selection should still be set, so we get the payment error (not PaymentSelection not set)
 	reason := state.Object().Value("reason").Object()
 	reason.Value("__typename").IsEqual("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError")
-	reason.Value("reason").IsEqual("")
+	reason.Value("reason").IsEqual("payment process failed")
 
 	// update payment selection
 	helper.GraphQlRequest(t, e, loadGraphQL(t, "update_payment_selection", map[string]string{"PAYMENT_METHOD": domain.PaymentFlowStatusCompleted})).Expect().Status(http.StatusOK)
