@@ -378,7 +378,7 @@ func TestPaymentValidator(t *testing.T) {
 				},
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{}},
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorStatusCancelled}},
 				state:     states.New{}.Name(),
 			},
 		},
@@ -403,7 +403,7 @@ func TestPaymentValidator(t *testing.T) {
 				},
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{}},
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorStatusFailed}},
 				state:     states.New{}.Name(),
 			},
 		},
