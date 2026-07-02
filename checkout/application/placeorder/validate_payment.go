@@ -19,6 +19,10 @@ const (
 	ValidatePaymentErrorNoWalletDetails = "no wallet details set for action"
 	// ValidatePaymentErrorNoActionDisplayData used for errors when the needed DisplayData/HTML is missing from the ActionData struct
 	ValidatePaymentErrorNoActionDisplayData = "no display data / html set for action"
+	// ValidatePaymentErrorStatusFailed used for errors when the payment status is failed
+	ValidatePaymentErrorStatusFailed = "payment process failed"
+	// ValidatePaymentErrorStatusCancelled used for errors when the payment status is cancelled
+	ValidatePaymentErrorStatusCancelled = "payment process cancelled"
 )
 
 // PaymentValidator to decide over the next state
@@ -103,13 +107,13 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 	case paymentDomain.PaymentFlowStatusCompleted:
 		// payment is done and confirmed, place order if not already placed
 		p.UpdateState(states.Success{}.Name(), nil)
-	case paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
-		err := ""
-		if flowStatus.Error != nil {
-			err = flowStatus.Error.Error()
-		}
+	case paymentDomain.PaymentFlowStatusFailed:
 		return process.RunResult{
-			Failed: process.PaymentErrorOccurredReason{Error: err},
+			Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorStatusFailed},
+		}
+	case paymentDomain.PaymentFlowStatusCancelled:
+		return process.RunResult{
+			Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorStatusCancelled},
 		}
 	case paymentDomain.PaymentFlowStatusAborted:
 		return process.RunResult{

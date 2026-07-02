@@ -378,7 +378,20 @@ func TestPaymentValidator(t *testing.T) {
 				},
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{}},
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorStatusCancelled}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: cancelled with error details",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusCancelled,
+					Error:  &domain.Error{ErrorMessage: "this flow has been cancelled", ErrorCode: "cancelledcode"},
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorStatusCancelled}},
 				state:     states.New{}.Name(),
 			},
 		},
@@ -390,7 +403,20 @@ func TestPaymentValidator(t *testing.T) {
 				},
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{}},
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorStatusFailed}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: failed with error details",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusFailed,
+					Error:  &domain.Error{ErrorMessage: "this flow failed", ErrorCode: "failedcode"},
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorStatusFailed}},
 				state:     states.New{}.Name(),
 			},
 		},
