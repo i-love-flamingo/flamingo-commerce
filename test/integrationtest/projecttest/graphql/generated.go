@@ -301,22 +301,29 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Cart_Item struct {
-		AdditionalDataKeys     func(childComplexity int) int
-		AdditionalDataValues   func(childComplexity int) int
-		AppliedDiscounts       func(childComplexity int) int
-		ExternalReference      func(childComplexity int) int
-		GetAdditionalData      func(childComplexity int, key string) int
-		HasAdditionalDataKey   func(childComplexity int, key string) int
-		ID                     func(childComplexity int) int
-		MarketplaceCode        func(childComplexity int) int
-		ProductName            func(childComplexity int) int
-		Qty                    func(childComplexity int) int
-		RowPriceGross          func(childComplexity int) int
-		RowPriceNet            func(childComplexity int) int
-		SinglePriceGross       func(childComplexity int) int
-		SinglePriceNet         func(childComplexity int) int
-		SourceID               func(childComplexity int) int
-		VariantMarketPlaceCode func(childComplexity int) int
+		AdditionalDataKeys                   func(childComplexity int) int
+		AdditionalDataValues                 func(childComplexity int) int
+		AppliedDiscounts                     func(childComplexity int) int
+		ExternalReference                    func(childComplexity int) int
+		GetAdditionalData                    func(childComplexity int, key string) int
+		HasAdditionalDataKey                 func(childComplexity int, key string) int
+		ID                                   func(childComplexity int) int
+		ItemRelatedDiscountAmount            func(childComplexity int) int
+		MarketplaceCode                      func(childComplexity int) int
+		NonItemRelatedDiscountAmount         func(childComplexity int) int
+		ProductName                          func(childComplexity int) int
+		Qty                                  func(childComplexity int) int
+		RowPriceGross                        func(childComplexity int) int
+		RowPriceGrossWithDiscount            func(childComplexity int) int
+		RowPriceGrossWithItemRelatedDiscount func(childComplexity int) int
+		RowPriceNet                          func(childComplexity int) int
+		RowPriceNetWithDiscount              func(childComplexity int) int
+		RowPriceNetWithItemRelatedDiscount   func(childComplexity int) int
+		SinglePriceGross                     func(childComplexity int) int
+		SinglePriceNet                       func(childComplexity int) int
+		SourceID                             func(childComplexity int) int
+		TotalDiscountAmount                  func(childComplexity int) int
+		VariantMarketPlaceCode               func(childComplexity int) int
 	}
 
 	Commerce_Cart_ItemValidationError struct {
@@ -2248,12 +2255,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Commerce_Cart_Item.ID(childComplexity), true
+	case "Commerce_Cart_Item.itemRelatedDiscountAmount":
+		if e.complexity.Commerce_Cart_Item.ItemRelatedDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.ItemRelatedDiscountAmount(childComplexity), true
 	case "Commerce_Cart_Item.marketplaceCode":
 		if e.complexity.Commerce_Cart_Item.MarketplaceCode == nil {
 			break
 		}
 
 		return e.complexity.Commerce_Cart_Item.MarketplaceCode(childComplexity), true
+	case "Commerce_Cart_Item.nonItemRelatedDiscountAmount":
+		if e.complexity.Commerce_Cart_Item.NonItemRelatedDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.NonItemRelatedDiscountAmount(childComplexity), true
 	case "Commerce_Cart_Item.productName":
 		if e.complexity.Commerce_Cart_Item.ProductName == nil {
 			break
@@ -2272,12 +2291,36 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Commerce_Cart_Item.RowPriceGross(childComplexity), true
+	case "Commerce_Cart_Item.rowPriceGrossWithDiscount":
+		if e.complexity.Commerce_Cart_Item.RowPriceGrossWithDiscount == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.RowPriceGrossWithDiscount(childComplexity), true
+	case "Commerce_Cart_Item.rowPriceGrossWithItemRelatedDiscount":
+		if e.complexity.Commerce_Cart_Item.RowPriceGrossWithItemRelatedDiscount == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.RowPriceGrossWithItemRelatedDiscount(childComplexity), true
 	case "Commerce_Cart_Item.rowPriceNet":
 		if e.complexity.Commerce_Cart_Item.RowPriceNet == nil {
 			break
 		}
 
 		return e.complexity.Commerce_Cart_Item.RowPriceNet(childComplexity), true
+	case "Commerce_Cart_Item.rowPriceNetWithDiscount":
+		if e.complexity.Commerce_Cart_Item.RowPriceNetWithDiscount == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.RowPriceNetWithDiscount(childComplexity), true
+	case "Commerce_Cart_Item.rowPriceNetWithItemRelatedDiscount":
+		if e.complexity.Commerce_Cart_Item.RowPriceNetWithItemRelatedDiscount == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.RowPriceNetWithItemRelatedDiscount(childComplexity), true
 	case "Commerce_Cart_Item.singlePriceGross":
 		if e.complexity.Commerce_Cart_Item.SinglePriceGross == nil {
 			break
@@ -2296,6 +2339,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Commerce_Cart_Item.SourceID(childComplexity), true
+	case "Commerce_Cart_Item.totalDiscountAmount":
+		if e.complexity.Commerce_Cart_Item.TotalDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.TotalDiscountAmount(childComplexity), true
 	case "Commerce_Cart_Item.variantMarketPlaceCode":
 		if e.complexity.Commerce_Cart_Item.VariantMarketPlaceCode == nil {
 			break
@@ -8820,6 +8869,20 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getByItemID(ctx cont
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceGross(ctx, field)
 			case "rowPriceNet":
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
+			case "rowPriceGrossWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithDiscount(ctx, field)
+			case "rowPriceNetWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithDiscount(ctx, field)
+			case "rowPriceGrossWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount(ctx, field)
+			case "rowPriceNetWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount(ctx, field)
+			case "totalDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_totalDiscountAmount(ctx, field)
+			case "itemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_itemRelatedDiscountAmount(ctx, field)
+			case "nonItemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_nonItemRelatedDiscountAmount(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
 			}
@@ -8936,6 +8999,20 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getByExternalReferen
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceGross(ctx, field)
 			case "rowPriceNet":
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
+			case "rowPriceGrossWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithDiscount(ctx, field)
+			case "rowPriceNetWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithDiscount(ctx, field)
+			case "rowPriceGrossWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount(ctx, field)
+			case "rowPriceNetWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount(ctx, field)
+			case "totalDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_totalDiscountAmount(ctx, field)
+			case "itemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_itemRelatedDiscountAmount(ctx, field)
+			case "nonItemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_nonItemRelatedDiscountAmount(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
 			}
@@ -10161,6 +10238,20 @@ func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedItem_item(_ cont
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceGross(ctx, field)
 			case "rowPriceNet":
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
+			case "rowPriceGrossWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithDiscount(ctx, field)
+			case "rowPriceNetWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithDiscount(ctx, field)
+			case "rowPriceGrossWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount(ctx, field)
+			case "rowPriceNetWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount(ctx, field)
+			case "totalDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_totalDiscountAmount(ctx, field)
+			case "itemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_itemRelatedDiscountAmount(ctx, field)
+			case "nonItemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_nonItemRelatedDiscountAmount(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
 			}
@@ -10397,6 +10488,20 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_cartitems(_ cont
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceGross(ctx, field)
 			case "rowPriceNet":
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
+			case "rowPriceGrossWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithDiscount(ctx, field)
+			case "rowPriceNetWithDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithDiscount(ctx, field)
+			case "rowPriceGrossWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount(ctx, field)
+			case "rowPriceNetWithItemRelatedDiscount":
+				return ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount(ctx, field)
+			case "totalDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_totalDiscountAmount(ctx, field)
+			case "itemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_itemRelatedDiscountAmount(ctx, field)
+			case "nonItemRelatedDiscountAmount":
+				return ec.fieldContext_Commerce_Cart_Item_nonItemRelatedDiscountAmount(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
 			}
@@ -12155,6 +12260,251 @@ func (ec *executionContext) _Commerce_Cart_Item_rowPriceNet(ctx context.Context,
 }
 
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceNet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_rowPriceGrossWithDiscount(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithDiscount,
+		func(ctx context.Context) (any, error) {
+			return obj.RowPriceGrossWithDiscount, nil
+		},
+		nil,
+		ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceGrossWithDiscount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_rowPriceNetWithDiscount(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithDiscount,
+		func(ctx context.Context) (any, error) {
+			return obj.RowPriceNetWithDiscount, nil
+		},
+		nil,
+		ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceNetWithDiscount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount,
+		func(ctx context.Context) (any, error) {
+			return obj.RowPriceGrossWithItemRelatedDiscount, nil
+		},
+		nil,
+		ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount,
+		func(ctx context.Context) (any, error) {
+			return obj.RowPriceNetWithItemRelatedDiscount, nil
+		},
+		nil,
+		ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_totalDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_Item_totalDiscountAmount,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalDiscountAmount, nil
+		},
+		nil,
+		ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_totalDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_itemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_Item_itemRelatedDiscountAmount,
+		func(ctx context.Context) (any, error) {
+			return obj.ItemRelatedDiscountAmount, nil
+		},
+		nil,
+		ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_itemRelatedDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "amount":
+				return ec.fieldContext_Commerce_Price_amount(ctx, field)
+			case "currency":
+				return ec.fieldContext_Commerce_Price_currency(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Price", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_nonItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Commerce_Cart_Item_nonItemRelatedDiscountAmount,
+		func(ctx context.Context) (any, error) {
+			return obj.NonItemRelatedDiscountAmount, nil
+		},
+		nil,
+		ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_nonItemRelatedDiscountAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Cart_Item",
 		Field:      field,
@@ -31377,6 +31727,41 @@ func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.Sel
 			}
 		case "rowPriceNet":
 			out.Values[i] = ec._Commerce_Cart_Item_rowPriceNet(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "rowPriceGrossWithDiscount":
+			out.Values[i] = ec._Commerce_Cart_Item_rowPriceGrossWithDiscount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "rowPriceNetWithDiscount":
+			out.Values[i] = ec._Commerce_Cart_Item_rowPriceNetWithDiscount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "rowPriceGrossWithItemRelatedDiscount":
+			out.Values[i] = ec._Commerce_Cart_Item_rowPriceGrossWithItemRelatedDiscount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "rowPriceNetWithItemRelatedDiscount":
+			out.Values[i] = ec._Commerce_Cart_Item_rowPriceNetWithItemRelatedDiscount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "totalDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Item_totalDiscountAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "itemRelatedDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Item_itemRelatedDiscountAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "nonItemRelatedDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Item_nonItemRelatedDiscountAmount(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

@@ -223,6 +223,13 @@ type Commerce_Cart_Item {
     singlePriceNet: Commerce_Price!
     rowPriceGross: Commerce_Price!
     rowPriceNet: Commerce_Price!
+    rowPriceGrossWithDiscount: Commerce_Price!
+    rowPriceNetWithDiscount: Commerce_Price!
+    rowPriceGrossWithItemRelatedDiscount: Commerce_Price!
+    rowPriceNetWithItemRelatedDiscount: Commerce_Price!
+    totalDiscountAmount: Commerce_Price!
+    itemRelatedDiscountAmount: Commerce_Price!
+    nonItemRelatedDiscountAmount: Commerce_Price!
     appliedDiscounts: Commerce_Cart_AppliedDiscounts!
     #    rowTaxes: Commerce_Taxes!
 }
