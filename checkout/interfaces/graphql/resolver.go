@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"errors"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
@@ -48,6 +49,11 @@ func (r *CommerceCheckoutQueryResolver) CommerceCheckoutActivePlaceOrder(ctx con
 func (r *CommerceCheckoutQueryResolver) CommerceCheckoutCurrentContext(ctx context.Context) (*dto.PlaceOrderContext, error) {
 	pctx, err := r.placeOrderHandler.CurrentContext(ctx)
 	if err != nil {
+		// keep existing external error contract for expected process states
+		if errors.Is(err, placeorder.ErrNoPlaceOrderProcess) {
+			return nil, interfaces.ErrNoPlaceOrderProcess
+		}
+
 		r.logger.Error("Failed to get current place order context", err)
 		return nil, interfaces.ErrCheckoutGeneral
 	}
