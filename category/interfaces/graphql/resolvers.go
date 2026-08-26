@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces"
 	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/categorydto"
@@ -19,6 +21,7 @@ type CommerceCategoryQueryResolver struct {
 	categoryService     domain.CategoryService
 	searchService       *productApplication.ProductSearchService
 	searchResultFactory *productGraphql.SearchResultDTOFactory
+	logger              flamingo.Logger
 }
 
 // Inject dependencies
@@ -26,16 +29,24 @@ func (r *CommerceCategoryQueryResolver) Inject(
 	service domain.CategoryService,
 	searchService *productApplication.ProductSearchService,
 	searchResultFactory *productGraphql.SearchResultDTOFactory,
+	logger flamingo.Logger,
 ) *CommerceCategoryQueryResolver {
 	r.categoryService = service
 	r.searchService = searchService
 	r.searchResultFactory = searchResultFactory
+	r.logger = logger.WithField(flamingo.LogKeyModule, "category").WithField(flamingo.LogKeyCategory, "graphql")
 	return r
 }
 
 // CommerceCategoryTree returns a Tree with the given activeCategoryCode from categoryService
 func (r *CommerceCategoryQueryResolver) CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain.Tree, error) {
-	return r.categoryService.Tree(ctx, activeCategoryCode)
+	tree, err := r.categoryService.Tree(ctx, activeCategoryCode)
+	if err != nil {
+		r.logger.Error("Failed to get category tree", err)
+		return nil, interfaces.ErrCategoryGeneral
+	}
+
+	return tree, nil
 }
 
 // CommerceCategory returns product search result with the given categoryCode from searchService
@@ -50,6 +61,7 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 			return nil, interfaces.ErrCategoryNotFound
 		}
 
+		r.logger.Error("Failed to get category", err)
 		return nil, interfaces.ErrCategoryGeneral
 	}
 
@@ -73,6 +85,7 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 	result, err := r.searchService.Find(ctx, searchRequest)
 
 	if err != nil {
+		r.logger.Error("Failed to search products for category", err)
 		return nil, interfaces.ErrCategoryGeneral
 	}
 
