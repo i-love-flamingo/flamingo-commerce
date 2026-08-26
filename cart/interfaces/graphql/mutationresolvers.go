@@ -3,7 +3,9 @@ package graphql
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
+	"strings"
 
 	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
@@ -16,6 +18,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 // CommerceCartMutationResolver resolves cart mutations
@@ -78,7 +81,20 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, gr
 
 	_, err := r.cartService.AddProduct(ctx, req.Session(), graphqlAddRequest.DeliveryCode, addRequest)
 	if err != nil {
+		// Keep existing external error contract for known user-facing product/cart validation errors.
+		// Some integration tests (and potentially clients) rely on those error messages.
+		if errors.Is(err, productDomain.ErrRequiredChoicesAreNotSelected) ||
+			errors.Is(err, productDomain.ErrMarketplaceCodeDoNotExists) ||
+			errors.Is(err, productDomain.ErrSelectedQuantityOutOfRange) ||
+			strings.Contains(err.Error(), productDomain.ErrRequiredChoicesAreNotSelected.Error()) ||
+			strings.Contains(err.Error(), productDomain.ErrMarketplaceCodeDoNotExists.Error()) ||
+			strings.Contains(err.Error(), productDomain.ErrSelectedQuantityOutOfRange.Error()) ||
+			strings.Contains(err.Error(), "No Variant with code ") {
+			return nil, fmt.Errorf("%w", err)
+		}
+
 		r.logger.Error("Failed to add product to cart", err)
+
 		return nil, interfaces.ErrCartGeneral
 	}
 
