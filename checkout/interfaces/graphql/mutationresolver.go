@@ -59,6 +59,7 @@ func (r *CommerceCheckoutMutationResolver) refresh(
 		}
 
 		r.logger.Error("Failed to refresh place order", err)
+
 		return nil, interfaces.ErrCheckoutGeneral
 	}
 
@@ -137,6 +138,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 		}
 
 		r.logger.Error("Failed to cancel place order", err)
+
 		return false, interfaces.ErrCheckoutGeneral
 	}
 
