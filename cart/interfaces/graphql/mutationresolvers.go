@@ -156,7 +156,20 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemBundleConfig(ctx contex
 
 	err := r.cartService.UpdateItemBundleConfig(ctx, req.Session(), updateCommand)
 	if err != nil {
+		// Keep existing external error contract for known user-facing product/cart validation errors.
+		// Some integration tests (and potentially clients) rely on those error messages.
+		if errors.Is(err, productDomain.ErrRequiredChoicesAreNotSelected) ||
+			errors.Is(err, productDomain.ErrMarketplaceCodeDoNotExists) ||
+			errors.Is(err, productDomain.ErrSelectedQuantityOutOfRange) ||
+			strings.Contains(err.Error(), productDomain.ErrRequiredChoicesAreNotSelected.Error()) ||
+			strings.Contains(err.Error(), productDomain.ErrMarketplaceCodeDoNotExists.Error()) ||
+			strings.Contains(err.Error(), productDomain.ErrSelectedQuantityOutOfRange.Error()) ||
+			strings.Contains(err.Error(), "No Variant with code ") {
+			return nil, fmt.Errorf("%w", err)
+		}
+
 		r.logger.Error("Failed to update cart item bundle configuration", err)
+
 		return nil, interfaces.ErrCartGeneral
 	}
 
