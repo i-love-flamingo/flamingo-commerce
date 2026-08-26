@@ -8,13 +8,14 @@ import (
 	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
 
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
-
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 )
 
 // CommerceCartMutationResolver resolves cart mutations
@@ -27,6 +28,7 @@ type CommerceCartMutationResolver struct {
 	deliveryFormController       *forms.DeliveryFormController
 	simplePaymentFormController  *forms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
+	logger                       flamingo.Logger
 }
 
 var (
@@ -43,7 +45,9 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	personalDataFormController *forms.PersonalDataFormController,
 	simplePaymentFormController *forms.SimplePaymentFormController,
 	cartService *application.CartService,
-	cartReceiverService *application.CartReceiverService) *CommerceCartMutationResolver {
+	cartReceiverService *application.CartReceiverService,
+	logger flamingo.Logger,
+) *CommerceCartMutationResolver {
 	r.q = q
 	r.billingAddressFormController = billingAddressFormController
 	r.deliveryFormController = deliveryFormController
@@ -52,6 +56,7 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	r.personalDataFormController = personalDataFormController
 	r.cartService = cartService
 	r.cartReceiverService = cartReceiverService
+	r.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "graphql")
 	return r
 }
 
@@ -73,7 +78,8 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, gr
 
 	_, err := r.cartService.AddProduct(ctx, req.Session(), graphqlAddRequest.DeliveryCode, addRequest)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to add product to cart", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -86,7 +92,8 @@ func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, i
 	err := r.cartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
 
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to delete cart item", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -97,7 +104,8 @@ func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Co
 	req := web.RequestFromContext(ctx)
 	_, err := r.cartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to delete cart delivery", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 	return r.q.CommerceCart(ctx)
 }
@@ -107,7 +115,8 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	req := web.RequestFromContext(ctx)
 	err := r.cartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to update cart item qty", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 	return r.q.CommerceCart(ctx)
 }
@@ -131,7 +140,8 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemBundleConfig(ctx contex
 
 	err := r.cartService.UpdateItemBundleConfig(ctx, req.Session(), updateCommand)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to update cart item bundle configuration", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -142,13 +152,15 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx cont
 	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
 	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx, address)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to encode billing address form", err)
+		return nil, ErrFormEncode
 	}
 	newRequest.Request().Form = v
 
 	form, success, err := r.billingAddressFormController.HandleFormAction(ctx, newRequest)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to submit billing address form", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 	return mapCommerceBillingAddressForm(form, success)
 }
@@ -182,7 +194,8 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateSelectedPayment(ctx con
 
 	form, success, err := r.simplePaymentFormController.HandleFormAction(ctx, newRequest)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to submit simple payment form", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return &dto.SelectedPaymentResult{
@@ -202,7 +215,8 @@ func (r *CommerceCartMutationResolver) CommerceCartApplyCouponCodeOrGiftCard(ctx
 	_, err := r.cartService.ApplyAny(ctx, req.Session(), code)
 
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to apply coupon code or gift card", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -215,7 +229,8 @@ func (r *CommerceCartMutationResolver) CommerceCartRemoveCouponCode(ctx context.
 	_, err := r.cartService.RemoveVoucher(ctx, req.Session(), couponCode)
 
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to remove coupon code", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -228,7 +243,8 @@ func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Co
 	_, err := r.cartService.RemoveGiftCard(ctx, req.Session(), giftCardCode)
 
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to remove gift card", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -241,18 +257,26 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx c
 	for _, deliveryForm := range deliveryForms {
 		encodedForm, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx, deliveryForm)
 		if err != nil {
-			return nil, err
+			r.logger.Error("Failed to encode delivery address form", err)
+			return nil, ErrFormEncode
 		}
 		request.Request().Form = encodedForm
 		request.Params["deliveryCode"] = deliveryForm.LocationCode
 		form, success, err := r.deliveryFormController.HandleFormAction(ctx, request)
 		if err != nil {
-			return nil, err
+			r.logger.Error("Failed to submit delivery address form", err)
+			return nil, interfaces.ErrCartGeneral
 		}
 
 		deliveryAddressForm, err := mapCommerceDeliveryAddressForm(form, success)
 		if err != nil {
-			return nil, err
+			if errors.Is(err, ErrFormData) {
+				return nil, ErrFormData
+			}
+
+			r.logger.Error("Failed to map delivery address form", err)
+
+			return nil, interfaces.ErrCartGeneral
 		}
 
 		result = append(result, &deliveryAddressForm)
@@ -266,7 +290,8 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 	session := web.SessionFromContext(ctx)
 	cart, err := r.cartReceiverService.ViewCart(ctx, session)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to view cart for updating shipping options", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	for _, shippingOption := range shippingOptions {
@@ -281,7 +306,8 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 
 		err = r.cartService.UpdateDeliveryInfo(ctx, session, shippingOption.DeliveryCode, cartDomain.CreateDeliveryInfoUpdateCommand(deliveryInfo))
 		if err != nil {
-			return nil, err
+			r.logger.Error("Failed to update delivery info", err)
+			return nil, interfaces.ErrCartGeneral
 		}
 	}
 
@@ -292,7 +318,8 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 func (r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, error) {
 	err := r.cartService.Clean(ctx, web.SessionFromContext(ctx))
 	if err != nil {
-		return false, err
+		r.logger.Error("Failed to clean cart", err)
+		return false, interfaces.ErrCartGeneral
 	}
 
 	return true, nil
@@ -308,7 +335,8 @@ func (r *CommerceCartMutationResolver) UpdateAdditionalData(ctx context.Context,
 
 	_, err := r.cartService.UpdateAdditionalData(ctx, session, additionalDataMap)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to update cart additional data", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -325,7 +353,8 @@ func (r *CommerceCartMutationResolver) UpdateDeliveriesAdditionalData(ctx contex
 
 		_, err := r.cartService.UpdateDeliveryAdditionalData(ctx, session, additionalData.DeliveryCode, additionalDataMap)
 		if err != nil {
-			return nil, err
+			r.logger.Error("Failed to update delivery additional data", err)
+			return nil, interfaces.ErrCartGeneral
 		}
 	}
 

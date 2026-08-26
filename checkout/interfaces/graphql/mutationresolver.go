@@ -12,6 +12,7 @@ import (
 	graphqlDto "flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 )
 
@@ -51,14 +52,16 @@ func (r *CommerceCheckoutMutationResolver) refresh(
 
 	poctx, err := refreshFnc(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to refresh place order", err)
+		return nil, interfaces.ErrCheckoutGeneral
 	}
 
 	dc := graphqlDto.NewDecoratedCart(r.decoratedCartFactory.Create(ctx, poctx.Cart))
 
 	graphQLState, err := r.stateMapper.Map(*poctx)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to map place order state", err)
+		return nil, interfaces.ErrCheckoutGeneral
 	}
 
 	var orderInfos *dto.PlacedOrderInfos
@@ -89,19 +92,22 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 	session := web.SessionFromContext(ctx)
 	cart, err := r.cartService.GetCartReceiverService().ViewCart(ctx, session)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to view cart for starting place order", err)
+		return nil, interfaces.ErrCheckoutGeneral
 	}
 	var returnURL *url.URL
 	if returnURLRaw != "" {
 		returnURL, err = url.Parse(returnURLRaw)
 		if err != nil {
-			return nil, err
+			r.logger.Error("Failed to parse return url", err)
+			return nil, interfaces.ErrCheckoutGeneral
 		}
 	}
 	startPlaceOrderCommand := placeorder.StartPlaceOrderCommand{Cart: *cart, ReturnURL: returnURL}
 	pctx, err := r.placeorderHandler.StartPlaceOrder(ctx, startPlaceOrderCommand)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to start place order", err)
+		return nil, interfaces.ErrCheckoutGeneral
 	}
 	return &dto.StartPlaceOrderResult{
 		UUID: pctx.UUID,
@@ -114,12 +120,22 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 		Reason: dto.MapPaymentCancellationReason(reason),
 	})
 
-	return err == nil, err
+	if err != nil {
+		r.logger.Error("Failed to cancel place order", err)
+		return false, interfaces.ErrCheckoutGeneral
+	}
+
+	return true, nil
 }
 
 // CommerceCheckoutClearPlaceOrder clears the last place order if in final state
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error) {
 	err := r.placeorderHandler.ClearPlaceOrder(ctx)
 
-	return err == nil, err
+	if err != nil {
+		r.logger.Error("Failed to clear place order", err)
+		return false, interfaces.ErrCheckoutGeneral
+	}
+
+	return true, nil
 }
