@@ -55,6 +55,7 @@ func (r *CommerceCheckoutQueryResolver) CommerceCheckoutCurrentContext(ctx conte
 		}
 
 		r.logger.Error("Failed to get current place order context", err)
+
 		return nil, interfaces.ErrCheckoutGeneral
 	}
 
