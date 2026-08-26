@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"errors"
 	"net/url"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -52,6 +53,11 @@ func (r *CommerceCheckoutMutationResolver) refresh(
 
 	poctx, err := refreshFnc(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
+		// keep existing external error contract for expected process states
+		if errors.Is(err, placeorder.ErrNoPlaceOrderProcess) {
+			return nil, interfaces.ErrNoPlaceOrderProcess
+		}
+
 		r.logger.Error("Failed to refresh place order", err)
 		return nil, interfaces.ErrCheckoutGeneral
 	}
@@ -121,6 +127,15 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 	})
 
 	if err != nil {
+		// keep existing external error contract for expected process states
+		if errors.Is(err, placeorder.ErrNoPlaceOrderProcess) {
+			return false, interfaces.ErrNoPlaceOrderProcess
+		}
+
+		if err.Error() == interfaces.ErrCancelNotPossibleFinalState.Error() {
+			return false, interfaces.ErrCancelNotPossibleFinalState
+		}
+
 		r.logger.Error("Failed to cancel place order", err)
 		return false, interfaces.ErrCheckoutGeneral
 	}
