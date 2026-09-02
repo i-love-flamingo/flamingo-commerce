@@ -1,11 +1,11 @@
 module flamingo.me/flamingo-commerce/v3
 
-go 1.25.0
+go 1.25.8
 
 toolchain go1.26.0
 
 require (
-	flamingo.me/dingo v0.3.0
+	flamingo.me/dingo v0.4.1
 	flamingo.me/flamingo/v3 v3.17.3
 	flamingo.me/form v1.1.3
 	flamingo.me/graphql v1.12.1
@@ -21,7 +21,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/leekchan/accounting v0.3.1
 	github.com/spf13/cobra v1.10.2
-	github.com/stretchr/testify v1.11.1
+	github.com/stretchr/testify v1.12.1
 	github.com/stvp/tempredis v0.0.0-20231107154819-8a695b693b9c
 	github.com/swaggo/swag v1.16.6
 	github.com/testcontainers/testcontainers-go v0.43.0
@@ -167,6 +167,7 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.27.1 // indirect
+	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.52.0 // indirect
 	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
@@ -174,6 +175,7 @@ require (
 	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/tools v0.45.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
+	gonum.org/v1/gonum v0.17.0 // indirect
 	google.golang.org/api v0.152.0 // indirect
 	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
