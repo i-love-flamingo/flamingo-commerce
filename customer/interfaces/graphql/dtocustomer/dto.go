@@ -6,6 +6,10 @@ import (
 	"flamingo.me/flamingo-commerce/v3/customer/domain"
 )
 
+var (
+	ErrAddressNotFound = errors.New("address not found")
+)
+
 type (
 	// CustomerStatusResult is a dto
 	CustomerStatusResult struct {
@@ -30,5 +34,6 @@ func (cr *CustomerResult) GetAddress(ID string) (*domain.Address, error) {
 			return &address, nil
 		}
 	}
-	return nil, errors.New("address not found")
+
+	return nil, ErrAddressNotFound
 }

@@ -13,24 +13,36 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
-    env:
-#      finds your first commit ahead from master, then finds revision before your first commit to be used as a starting point for linter
-      REV: $(FIRST_COMMIT=$(git rev-list --topo-order origin/master..HEAD | tail -1); if [[ $FIRST_COMMIT == '' ]]; then echo $(git rev-parse origin/master^1); else echo $(git rev-parse $FIRST_COMMIT^1); fi)
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: '0'
+
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.x'
+          # NOTE: we intentionally pin this job to a stable Go version because golangci-lint
+          # (and some of its analyzers) may lag behind the latest Go syntax.
+          go-version: '1.26'
           check-latest: true
-      - name: Echo start commit
+
+      - name: Determine start revision for lint
+        id: rev
+        shell: bash
         run: |
-          rev=${{ env.REV }}
-          if [[ $rev == '' ]]; then echo 'revision not found'; else echo used revision number: $rev; fi
+          # finds your first commit ahead from master, then finds revision before your first commit
+          # to be used as a starting point for the linter
+          FIRST_COMMIT=$(git rev-list --topo-order origin/master..HEAD | tail -1)
+          if [ -z "$FIRST_COMMIT" ]; then
+            REV=$(git rev-parse origin/master^1)
+          else
+            REV=$(git rev-parse "$FIRST_COMMIT"^1)
+          fi
+          echo "used revision number: $REV"
+          echo "rev=$REV" >> "$GITHUB_OUTPUT"
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
           version: 'v2.12.2'
-          args: $(rev=${{ env.REV }}; if [[ $rev != '' ]]; then echo --new-from-rev=$rev; fi)
+          args: --new-from-rev=${{ steps.rev.outputs.rev }}
 
