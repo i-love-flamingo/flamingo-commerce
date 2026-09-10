@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strings"
 
 	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
@@ -86,10 +85,7 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, gr
 		if errors.Is(err, productDomain.ErrRequiredChoicesAreNotSelected) ||
 			errors.Is(err, productDomain.ErrMarketplaceCodeDoNotExists) ||
 			errors.Is(err, productDomain.ErrSelectedQuantityOutOfRange) ||
-			strings.Contains(err.Error(), productDomain.ErrRequiredChoicesAreNotSelected.Error()) ||
-			strings.Contains(err.Error(), productDomain.ErrMarketplaceCodeDoNotExists.Error()) ||
-			strings.Contains(err.Error(), productDomain.ErrSelectedQuantityOutOfRange.Error()) ||
-			strings.Contains(err.Error(), "No Variant with code ") {
+			errors.Is(err, productDomain.ErrVariantNotFound) {
 			return nil, fmt.Errorf("%w", err)
 		}
 
@@ -161,10 +157,7 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemBundleConfig(ctx contex
 		if errors.Is(err, productDomain.ErrRequiredChoicesAreNotSelected) ||
 			errors.Is(err, productDomain.ErrMarketplaceCodeDoNotExists) ||
 			errors.Is(err, productDomain.ErrSelectedQuantityOutOfRange) ||
-			strings.Contains(err.Error(), productDomain.ErrRequiredChoicesAreNotSelected.Error()) ||
-			strings.Contains(err.Error(), productDomain.ErrMarketplaceCodeDoNotExists.Error()) ||
-			strings.Contains(err.Error(), productDomain.ErrSelectedQuantityOutOfRange.Error()) ||
-			strings.Contains(err.Error(), "No Variant with code ") {
+			errors.Is(err, productDomain.ErrVariantNotFound) {
 			return nil, fmt.Errorf("%w", err)
 		}
 

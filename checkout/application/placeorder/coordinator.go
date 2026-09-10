@@ -64,6 +64,8 @@ var (
 	ErrNoPlaceOrderProcess = errors.New("ErrNoPlaceOrderProcess")
 	// ErrAnotherPlaceOrderProcessRunning if a process runs
 	ErrAnotherPlaceOrderProcessRunning = errors.New("ErrAnotherPlaceOrderProcessRunning")
+	// ErrCancelNotPossibleFinalState if a cancel is attempted for a process already in a final state
+	ErrCancelNotPossibleFinalState = errors.New("process already in final state, cancel not possible")
 
 	maxLockDuration = 2 * time.Minute
 
@@ -275,7 +277,7 @@ func (c *Coordinator) Cancel(ctx context.Context, reason paymentdomain.Cancellat
 		}
 
 		if currentState.IsFinal() {
-			err = errors.New("process already in final state, cancel not possible")
+			err = ErrCancelNotPossibleFinalState
 			returnErr = err
 			return
 		}

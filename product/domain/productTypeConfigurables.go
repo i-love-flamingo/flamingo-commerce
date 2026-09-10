@@ -2,7 +2,11 @@ package domain
 
 import (
 	"errors"
+	"fmt"
 )
+
+// ErrVariantNotFound is returned when a variant marketplace code does not match any variant of a configurable product.
+var ErrVariantNotFound = errors.New("variant not found")
 
 const (
 	// TypeConfigurable denotes configurable products
@@ -110,7 +114,9 @@ func (p ConfigurableProduct) Variant(variantMarketplaceCode string) (*Variant, e
 			return &variant, nil
 		}
 	}
-	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
+
+	//nolint:staticcheck // keep existing capitalized message, external clients match on it
+	return nil, fmt.Errorf("No Variant with code %s found : %w", variantMarketplaceCode, ErrVariantNotFound)
 }
 
 // GetDefaultVariant getter
@@ -192,7 +198,9 @@ func (p ConfigurableProductWithActiveVariant) Variant(variantMarketplaceCode str
 			return &variant, nil
 		}
 	}
-	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
+
+	//nolint:staticcheck // keep existing capitalized message, external clients match on it
+	return nil, fmt.Errorf("No Variant with code %s found : %w", variantMarketplaceCode, ErrVariantNotFound)
 }
 
 // GetDefaultVariant getter
