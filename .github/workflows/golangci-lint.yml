@@ -22,7 +22,7 @@ jobs:
         with:
           # NOTE: we intentionally pin this job to a stable Go version because golangci-lint
           # (and some of its analyzers) may lag behind the latest Go syntax.
-          go-version: '1.26'
+          go-version: '1.27'
           check-latest: true
 
       - name: Determine start revision for lint
