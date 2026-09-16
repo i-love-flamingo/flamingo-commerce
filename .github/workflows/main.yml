@@ -40,7 +40,7 @@ jobs:
         with:
           # NOTE: keep in sync with the version used by tooling like mockery/goimports.
           # Using the latest Go version can break code generators before they catch up.
-          go-version: '1.26'
+          go-version: '1.27'
           check-latest: true
       - name: Goimports
         run: |
@@ -60,7 +60,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.26'
+          go-version: '1.27'
           check-latest: true
       - name: Generate GraphQL
         run: |
