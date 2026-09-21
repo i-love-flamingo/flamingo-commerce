@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/customer/application"
+	"flamingo.me/flamingo-commerce/v3/customer/interfaces"
 	"flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql/dtocustomer"
 )
 
@@ -14,14 +16,17 @@ type (
 	// CustomerResolver graphql resolver
 	CustomerResolver struct {
 		service *application.Service
+		logger  flamingo.Logger
 	}
 )
 
 // Inject dependencies
 func (r *CustomerResolver) Inject(
 	service *application.Service,
+	logger flamingo.Logger,
 ) *CustomerResolver {
 	r.service = service
+	r.logger = logger.WithField(flamingo.LogKeyModule, "customer").WithField(flamingo.LogKeyCategory, "graphql")
 
 	return r
 }
@@ -35,7 +40,8 @@ func (r *CustomerResolver) CommerceCustomerStatus(ctx context.Context) (*dtocust
 	}
 
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to get customer status", err)
+		return nil, interfaces.ErrCustomerGeneral
 	}
 
 	return &dtocustomer.CustomerStatusResult{
@@ -52,7 +58,8 @@ func (r *CustomerResolver) CommerceCustomer(ctx context.Context) (*dtocustomer.C
 	}
 
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to get customer", err)
+		return nil, interfaces.ErrCustomerGeneral
 	}
 
 	result := &dtocustomer.CustomerResult{
