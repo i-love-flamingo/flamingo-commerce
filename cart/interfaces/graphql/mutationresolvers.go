@@ -40,6 +40,25 @@ var (
 	ErrPersonalDataFormData = errors.New("failed to submit personal data")
 )
 
+var knownCartStateErrorSubstrings = []string{
+	"item not found for itemID ",
+	"delivery not found",
+	"Can't update item quantity, product max quantity of",
+}
+
+func (r *CommerceCartMutationResolver) preserveKnownCartStateError(err error, logMessage string) error {
+	msg := err.Error()
+	for _, substr := range knownCartStateErrorSubstrings {
+		if strings.Contains(msg, substr) {
+			return fmt.Errorf("%w", err)
+		}
+	}
+
+	r.logger.Error(logMessage, err)
+
+	return interfaces.ErrCartGeneral
+}
+
 // Inject dependencies
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	billingAddressFormController *forms.BillingAddressFormController,
@@ -108,8 +127,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, i
 	err := r.cartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
 
 	if err != nil {
-		r.logger.Error("Failed to delete cart item", err)
-		return nil, interfaces.ErrCartGeneral
+		return nil, r.preserveKnownCartStateError(err, "Failed to delete cart item")
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -120,8 +138,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Co
 	req := web.RequestFromContext(ctx)
 	_, err := r.cartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
 	if err != nil {
-		r.logger.Error("Failed to delete cart delivery", err)
-		return nil, interfaces.ErrCartGeneral
+		return nil, r.preserveKnownCartStateError(err, "Failed to delete cart delivery")
 	}
 	return r.q.CommerceCart(ctx)
 }
@@ -131,8 +148,7 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	req := web.RequestFromContext(ctx)
 	err := r.cartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
 	if err != nil {
-		r.logger.Error("Failed to update cart item qty", err)
-		return nil, interfaces.ErrCartGeneral
+		return nil, r.preserveKnownCartStateError(err, "Failed to update cart item qty")
 	}
 	return r.q.CommerceCart(ctx)
 }
