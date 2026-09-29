@@ -35,8 +35,6 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v7
         with:
-          # NOTE: use the go.mod version, the latest Go can break code generators
-          # (mockery, goimports) before they catch up.
           go-version-file: go.mod
           check-latest: true
       - name: Goimports

@@ -20,8 +20,6 @@ jobs:
 
       - uses: actions/setup-go@v7
         with:
-          # NOTE: use the go.mod version, golangci-lint (and some of its analyzers)
-          # may lag behind the latest Go syntax.
           go-version-file: go.mod
           check-latest: true
 
