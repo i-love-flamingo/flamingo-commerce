@@ -3,11 +3,13 @@ package graphql
 import (
 	"context"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
@@ -18,6 +20,7 @@ type CommerceCartQueryResolver struct {
 	applicationCartService         *application.CartService
 	restrictionService             *validation.RestrictionService
 	productService                 domain.ProductService
+	logger                         flamingo.Logger
 }
 
 // Inject dependencies
@@ -26,11 +29,13 @@ func (r *CommerceCartQueryResolver) Inject(
 	cartService *application.CartService,
 	restrictionService *validation.RestrictionService,
 	productService domain.ProductService,
+	logger flamingo.Logger,
 ) {
 	r.applicationCartReceiverService = applicationCartReceiverService
 	r.applicationCartService = cartService
 	r.restrictionService = restrictionService
 	r.productService = productService
+	r.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "graphql")
 }
 
 // CommerceCart getter for queries
@@ -38,7 +43,8 @@ func (r *CommerceCartQueryResolver) CommerceCart(ctx context.Context) (*dto.Deco
 	req := web.RequestFromContext(ctx)
 	dc, err := r.applicationCartReceiverService.ViewDecoratedCart(ctx, req.Session())
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to view decorated cart", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	return dto.NewDecoratedCart(dc), nil
@@ -50,7 +56,8 @@ func (r *CommerceCartQueryResolver) CommerceCartValidator(ctx context.Context) (
 
 	decoratedCart, err := r.applicationCartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to view decorated cart for validation", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 
 	result := r.applicationCartService.ValidateCart(ctx, session, decoratedCart)
@@ -64,20 +71,23 @@ func (r *CommerceCartQueryResolver) CommerceCartQtyRestriction(ctx context.Conte
 
 	product, err := r.productService.Get(ctx, marketplaceCode)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to get product for qty restriction", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 	if variantCode != nil {
 		if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
 			product, err = configurableProduct.GetConfigurableWithActiveVariant(*variantCode)
 			if err != nil {
-				return nil, err
+				r.logger.Error("Failed to get active variant product for qty restriction", err)
+				return nil, interfaces.ErrCartGeneral
 			}
 		}
 	}
 
 	cart, err := r.applicationCartReceiverService.ViewCart(ctx, session)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to view cart for qty restriction", err)
+		return nil, interfaces.ErrCartGeneral
 	}
 	result := r.restrictionService.RestrictQty(ctx, session, product, cart, deliveryCode)
 	return result, nil

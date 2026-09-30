@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -19,6 +21,7 @@ type CommerceProductQueryResolver struct {
 	productService      domain.ProductService
 	searchService       *productApplication.ProductSearchService
 	searchResultFactory *SearchResultDTOFactory
+	logger              flamingo.Logger
 }
 
 // Inject dependencies
@@ -26,10 +29,12 @@ func (r *CommerceProductQueryResolver) Inject(
 	productService domain.ProductService,
 	searchService *productApplication.ProductSearchService,
 	searchResultFactory *SearchResultDTOFactory,
+	logger flamingo.Logger,
 ) *CommerceProductQueryResolver {
 	r.productService = productService
 	r.searchService = searchService
 	r.searchResultFactory = searchResultFactory
+	r.logger = logger.WithField(flamingo.LogKeyModule, "product").WithField(flamingo.LogKeyCategory, "graphql")
 	return r
 }
 
@@ -45,6 +50,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context,
 			return nil, interfaces.ErrProductNotFound
 		}
 
+		r.logger.Error("Failed to get product", err)
 		return nil, interfaces.ErrProductGeneral
 	}
 
@@ -70,6 +76,7 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 	})
 
 	if err != nil {
+		r.logger.Error("Failed to search products", err)
 		return nil, interfaces.ErrProductGeneral
 	}
 

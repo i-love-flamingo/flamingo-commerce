@@ -1,5 +1,48 @@
-inpackage: false
-testonly: false
-with-expecter: true
-keeptree: false
-disable-version-string: true
+dir: "{{.InterfaceDirRelative}}/mocks"
+filename: "{{.InterfaceName | snakecase}}.go"
+pkgname: mocks
+structname: "{{.InterfaceName}}"
+formatter: goimports
+force-file-write: true
+packages:
+  flamingo.me/flamingo-commerce/v3/cart/application:
+    interfaces:
+      CartCache:
+      CartMerger:
+      Receiver:
+        config:
+          structname: CartReceiver
+      Service:
+        config:
+          structname: CartService
+  flamingo.me/flamingo-commerce/v3/cart/domain/cart:
+    interfaces:
+      CompleteBehaviour:
+      CustomerCartService:
+      GiftCardAndVoucherBehaviour:
+      GiftCardBehaviour:
+      GuestCartService:
+      ModifyBehaviour:
+  flamingo.me/flamingo-commerce/v3/cart/domain/validation:
+    interfaces:
+      ItemValidator:
+  flamingo.me/flamingo-commerce/v3/cart/infrastructure:
+    interfaces:
+      GiftCardHandler:
+      VoucherHandler:
+  flamingo.me/flamingo-commerce/v3/category/domain:
+    interfaces:
+      CategoryService:
+  flamingo.me/flamingo-commerce/v3/category/interfaces/controller:
+    interfaces:
+      ProductSearchService:
+  flamingo.me/flamingo-commerce/v3/customer/domain:
+    interfaces:
+      Customer:
+      CustomerIdentityService:
+  flamingo.me/flamingo-commerce/v3/payment/interfaces:
+    interfaces:
+      WebCartPaymentGateway:
+  flamingo.me/flamingo-commerce/v3/product/domain:
+    interfaces:
+      ProductService:

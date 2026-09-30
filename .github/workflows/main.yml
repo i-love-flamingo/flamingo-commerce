@@ -9,37 +9,38 @@ on:
       - master
 
 jobs:
-  run-tests:
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.24', '1.25', '1.x' ]
-    name: With Go ${{ matrix.go }}
+        go: [ 'go.mod', '1.*' ]
+    name: Tests
     steps:
       - uses: actions/checkout@v7
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
-          go-version: ${{ matrix.go }}
+          go-version: ${{ matrix.go != 'go.mod' && matrix.go || '' }}
+          go-version-file: ${{ matrix.go == 'go.mod' && 'go.mod' || '' }}
           check-latest: true
-      - name: Get dependencies
-        env:
-          GOTOOLCHAIN: 'go1.24.9+auto'
-        run: go get -v -t -d ./...
       - name: Test
-        env:
-          GOTOOLCHAIN: 'go1.24.9+auto'
-        run: go test -race ./...
-  generate-checks:
+        run: CGO_ENABLED=1 go test -race ./...
+  static-checks:
     runs-on: ubuntu-latest
-    name: Generate check
+    name: Static checks
     steps:
       - uses: actions/checkout@v7
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
-          go-version: '1.x'
+          go-version: '1.*'
           check-latest: true
+      - name: Go Vet
+        run: go vet ./...
+      - name: Go Fmt
+        run: |
+          fmt=$(gofmt -l .)
+          test -z $fmt || (echo "please run gofmt" ; echo $fmt ; exit 1)
       - name: Goimports
         run: |
           go run golang.org/x/tools/cmd/goimports@latest -w .
@@ -56,9 +57,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
-          go-version: '1.x'
+          go-version: '1.*'
           check-latest: true
       - name: Generate GraphQL
         run: |
