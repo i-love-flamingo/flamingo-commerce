@@ -5,6 +5,7 @@ on:
       - v*
     branches:
       - master
+      - main
   pull_request:
 permissions:
   contents: read
@@ -17,30 +18,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: '0'
-
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
           check-latest: true
-
-      - name: Determine start revision for lint
-        id: rev
-        shell: bash
-        run: |
-          # finds your first commit ahead from master, then finds revision before your first commit
-          # to be used as a starting point for the linter
-          FIRST_COMMIT=$(git rev-list --topo-order origin/master..HEAD | tail -1)
-          if [ -z "$FIRST_COMMIT" ]; then
-            REV=$(git rev-parse origin/master^1)
-          else
-            REV=$(git rev-parse "$FIRST_COMMIT"^1)
-          fi
-          echo "used revision number: $REV"
-          echo "rev=$REV" >> "$GITHUB_OUTPUT"
-
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: 'v2.14.0'
-          args: --new-from-rev=${{ steps.rev.outputs.rev }}
-
+          version: v2.14.0
+          only-new-issues: true
