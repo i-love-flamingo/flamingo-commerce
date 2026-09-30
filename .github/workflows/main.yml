@@ -53,13 +53,17 @@ jobs:
           git diff --quiet -- . ":(exclude)docs" || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff -- . ":(exclude)docs"; exit 1)
   integration-tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [ 'go.mod', '1.*' ]
     name: Integration
     steps:
       - uses: actions/checkout@v7
       - name: Setup Go
         uses: actions/setup-go@v7
         with:
-          go-version: '1.*'
+          go-version: ${{ matrix.go != 'go.mod' && matrix.go || '' }}
+          go-version-file: ${{ matrix.go == 'go.mod' && 'go.mod' || '' }}
           check-latest: true
       - name: Generate GraphQL
         run: |
