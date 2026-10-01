@@ -1,9 +1,10 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
     ":semanticCommitTypeAll(chore)"
   ],
-  "prHourlyLimit": 0,
+  "constraintsFiltering": "strict",
   "customManagers": [
     {
       "customType": "regex",
