@@ -6,7 +6,7 @@ require (
 	flamingo.me/dingo v0.4.1
 	flamingo.me/flamingo/v3 v3.17.4
 	flamingo.me/form v1.1.3
-	flamingo.me/graphql v1.12.1
+	flamingo.me/graphql v1.13.0
 	flamingo.me/pugtemplate v1.3.2
 	github.com/99designs/gqlgen v0.17.95
 	github.com/Rhymond/go-money v1.0.15
