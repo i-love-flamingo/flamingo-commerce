@@ -1,10 +1,13 @@
 # Changelog
 
-## v3.12.1 [upcoming]
+## v3.12.2 [upcoming]
+
+## v3.12.1
 **cart**
 * Fixed hiccups in cart merge strategies caused by the addition of payment selection from guest cart, when some items were not added to customer's cart due to errors.
 * Add effective payment method to transactions
 * GraphQL: Expose `PersonalDataForm` in query and mutation 
+* GraphQL: Exposed all prices on the line item level
 
 **product**
 * GraphQL: Expose product specifications via `specifications` field on all product types (SimpleProduct, ConfigurableProduct, ActiveVariantProduct, BundleProduct)
@@ -14,6 +17,10 @@
 * Added support for login, password and tls to the redis client
 * Enhanced the cancellation flow with detailed reasons threading through the place-order process
 * GraphQL: Added an optional `reason` argument to the `Commerce_Checkout_CancelPlaceOrder` mutation
+* Wrapped payment validation failures in a dedicated error with explicit failed/cancelled reasons (`PaymentErrorOccurredReason`)
+
+**graphql**
+* Sanitized GraphQL error responses across checkout, customer and product to avoid leaking internals; the checkout error contract is preserved
 
 **payment**
 * **Breaking:** `WebCartPaymentGateway.CancelOrderPayment` now requires a `CancellationReason` argument. Added the `CancellationReason` type to the domain.
@@ -26,6 +33,9 @@
 
 **prices**
 * Extended Price Context with fields `From` and `To`, meaning that this price is valid of the defined time frame.
+
+**dependencies**
+* Updated flamingo.me/graphql to v1.13.0, gqlgen to v0.17.95 and gqlparser to v2.5.59
 
 ## v3.12.0
 **product**
