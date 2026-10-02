@@ -1,25 +1,37 @@
 # Changelog
 
-## v3.12.1 [upcoming]
+## v3.13.1 [upcoming]
+
+## v3.13.0
 **cart**
 * Fixed hiccups in cart merge strategies caused by the addition of payment selection from guest cart, when some items were not added to customer's cart due to errors.
 * Add effective payment method to transactions
-* GraphQL: Expose `PersonalDataForm` in query and mutation 
+* GraphQL: Added the `Commerce_Cart_UpdatePersonalData` mutation to update the personal data of the cart
+* GraphQL: Exposed all prices on the line item level
+* Added the `CartItemMatcher` extension point to decide whether an add to cart request merges into an existing cart item
+* Added `CustomAttributes` to `AppliedDiscount`
 
 **product**
 * GraphQL: Expose product specifications via `specifications` field on all product types (SimpleProduct, ConfigurableProduct, ActiveVariantProduct, BundleProduct)
 * Added Saleable model method to check saleability against a given time frame.
 
 **checkout**
-* Added support for login, password and tls to the redis client
+* Added optional `username`, `password` and `useTLS` settings to the redis place order lock and context store
 * Enhanced the cancellation flow with detailed reasons threading through the place-order process
 * GraphQL: Added an optional `reason` argument to the `Commerce_Checkout_CancelPlaceOrder` mutation
+* **Breaking:** `placeorder.Coordinator.Cancel` now requires a `CancellationReason` argument
+* Failed and cancelled payments now fail the place order process with the fixed reasons `payment process failed` and `payment process cancelled` instead of the payment provider's error text
+
+**graphql**
+* Resolvers for cart, category, checkout and customer return generic errors such as `cart_general_error` instead of internal errors and log the original error. Known messages stay the same, for example item not found, delivery not found, max quantity on item update, product validation errors on add to cart and `ErrNoPlaceOrderProcess`.
 
 **payment**
 * **Breaking:** `WebCartPaymentGateway.CancelOrderPayment` now requires a `CancellationReason` argument. Added the `CancellationReason` type to the domain.
 
 **search**
 * Added `FacetMapper` interface and `BindMulti` registry to allow custom facet types in GraphQL. Built-in facet types (ListFacet, TreeFacet, RangeFacet) are now registered as mappers.
+* **Breaking:** Removed `SearchResultDTO.Inject`. Deprecated `WrapSearchResult`, use `SearchResultDTOFactory.NewSearchResultDTO` instead.
+* `SearchResult` of the search application service now contains the `Actions` returned by the search service
 
 **sourcing**
 * Extended Source model with SuppliedBy attribute
@@ -27,8 +39,11 @@
 **prices**
 * Extended Price Context with fields `From` and `To`, meaning that this price is valid of the defined time frame.
 
-**general**
-* GraphQL: Resolvers return generic errors like `cart_general_error` instead of internal errors and log the original error. Known messages such as item not found, delivery not found and max quantity stay the same.
+**dependencies**
+* **Breaking:** Go 1.26 or newer is required (was 1.23)
+* **Breaking:** Projects with generated GraphQL code must regenerate it with gqlgen v0.17.95
+* Updated flamingo.me/graphql to v1.13.0, gqlgen to v0.17.95 and gqlparser to v2.5.59
+* Updated flamingo.me/flamingo/v3 to v3.17.4 and flamingo.me/dingo to v0.4.1. Dingo now fails at startup if modules depend on each other in a cycle.
 
 ## v3.12.0
 **product**
