@@ -27,6 +27,9 @@
 **prices**
 * Extended Price Context with fields `From` and `To`, meaning that this price is valid of the defined time frame.
 
+**general**
+* GraphQL: Resolvers return generic errors like `cart_general_error` instead of internal errors and log the original error. Known messages such as item not found, delivery not found and max quantity stay the same.
+
 ## v3.12.0
 **product**
 * Added exported method BundleConfiguration to the GraphQL DTO for the bundle product
