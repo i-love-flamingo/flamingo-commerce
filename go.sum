@@ -55,6 +55,8 @@ flamingo.me/graphql v1.13.0 h1:npdGwZXWaXY9CKWQJBzKAvkgTM2XyMSnflOT2IzPphw=
 flamingo.me/graphql v1.13.0/go.mod h1:7ZhQB6hs7MqLZueunASCrftkAyufPU3O5xNIwpCjDgM=
 flamingo.me/pugtemplate v1.3.2 h1:4xcXScdPGka0IKtzW8QxIPCljlyHB5MZLneQsVS+n44=
 flamingo.me/pugtemplate v1.3.2/go.mod h1:eeVWu+eWPe8XfMUseRVLUkSrYRVzC7k8tPXs0wxjODA=
+flamingo.me/pugtemplate v1.3.3 h1:5d+GVtzRzancnQvTiztYRKyjnY6V6VzGgYJXD7pti04=
+flamingo.me/pugtemplate v1.3.3/go.mod h1:fUbCkdsONCm2esToMQWZZp2Qn36RUN9FhA5Rk2uUXuU=
 github.com/99designs/gqlgen v0.17.95 h1:882h7F5iJImgtyUVttc4MOK2NbzbMYc2oyNeHqkjpP4=
 github.com/99designs/gqlgen v0.17.95/go.mod h1:kHYPrpwOXDU1OQyxIg3Z7nVXSnlUoHVWBY7CMJCAM4M=
 github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6 h1:He8afgbRMd7mFxO99hRNu+6tazq8nFF9lIwo9JFroBk=
@@ -727,6 +729,8 @@ golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd/go.mod h1:CfG3xpIq0wQ8r1q4Su
 golang.org/x/net v0.0.0-20220225172249-27dd8689420f/go.mod h1:CfG3xpIq0wQ8r1q4Su4UZFWDARRcnwPjda9FqA0JpMk=
 golang.org/x/net v0.58.0 h1:ynWG7rqYi4ccpTEuPZ2QGWHktVEM9DMCj9yzDE0Q7To=
 golang.org/x/net v0.58.0/go.mod h1:YwCddHnFlT7eLQqVprV19OnhLGtc5xOKgE0RyqgfWAU=
+golang.org/x/net v0.59.0 h1:5zfYln+w5XCxwrnMMJPufRgNoXEaGxl0wo5GqPXyues=
+golang.org/x/net v0.59.0/go.mod h1:2DA/G1UfVbCpQPeWTmMPGY7Cs2PkBkwu743bVX5PIVg=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
 golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=

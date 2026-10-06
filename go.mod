@@ -7,7 +7,7 @@ require (
 	flamingo.me/flamingo/v3 v3.17.4
 	flamingo.me/form v1.1.4
 	flamingo.me/graphql v1.13.0
-	flamingo.me/pugtemplate v1.3.2
+	flamingo.me/pugtemplate v1.3.3
 	github.com/99designs/gqlgen v0.17.95
 	github.com/Rhymond/go-money v1.0.15
 	github.com/gavv/httpexpect/v2 v2.17.0
@@ -162,7 +162,7 @@ require (
 	go.uber.org/zap v1.28.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.57.0 // indirect
-	golang.org/x/net v0.58.0 // indirect
+	golang.org/x/net v0.59.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
