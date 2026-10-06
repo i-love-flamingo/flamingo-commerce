@@ -3,9 +3,11 @@ package placeorder
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"sync"
+	"time"
 
 	"flamingo.me/flamingo/v3/core/auth"
 
@@ -18,6 +20,8 @@ const (
 	CustomAttributesKeyPlaceOrderError = "place-order-error"
 	// CustomAttributesKeyReserveOrderIDError can be used to force an error during reserve order id
 	CustomAttributesKeyReserveOrderIDError = "reserve-order-id-error"
+	// CustomAttributesKeyReserveOrderIDDelay can be used to delay reserve order id by a duration like "500ms"
+	CustomAttributesKeyReserveOrderIDDelay = "reserve-order-id-delay"
 )
 
 type (
@@ -79,6 +83,15 @@ func (f *FakeAdapter) placeCart(cart *cartDomain.Cart) (placeorder.PlacedOrderIn
 
 // ReserveOrderID returns the reserved order id
 func (f *FakeAdapter) ReserveOrderID(_ context.Context, cart *cartDomain.Cart) (string, error) {
+	if delay := cart.AdditionalData.CustomAttributes[CustomAttributesKeyReserveOrderIDDelay]; delay != "" {
+		duration, err := time.ParseDuration(delay)
+		if err != nil {
+			return "", fmt.Errorf("invalid %s %q: %w", CustomAttributesKeyReserveOrderIDDelay, delay, err)
+		}
+
+		time.Sleep(duration)
+	}
+
 	forcedError := cart.AdditionalData.CustomAttributes[CustomAttributesKeyReserveOrderIDError]
 	if forcedError != "" {
 		return "", errors.New(forcedError)
