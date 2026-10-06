@@ -123,6 +123,7 @@ func TestSearchResultDTO_Facets(t *testing.T) {
 				facets := dto.Facets()
 
 				assert.Len(t, facets, tt.wantCount)
+				assert.Len(t, productgraphql.WrapSearchResult(result).Facets(), tt.wantCount)
 			})
 		}
 	})

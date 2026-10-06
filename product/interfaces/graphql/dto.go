@@ -40,6 +40,12 @@ func (f *SearchResultDTOFactory) NewSearchResultDTO(res *application.SearchResul
 func WrapSearchResult(res *application.SearchResult) *SearchResultDTO {
 	return &SearchResultDTO{
 		result: res,
+		logger: flamingo.NullLogger{},
+		facetMappers: []searchdto.FacetMapper{
+			&searchdto.ListFacetMapper{},
+			&searchdto.TreeFacetMapper{},
+			&searchdto.RangeFacetMapper{},
+		},
 	}
 }
 
