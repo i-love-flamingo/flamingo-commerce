@@ -40,18 +40,13 @@ var (
 	ErrPersonalDataFormData = errors.New("failed to submit personal data")
 )
 
-var knownCartStateErrorSubstrings = []string{
-	"item not found for itemID ",
-	"delivery not found",
-	"Can't update item quantity, product max quantity of",
-}
-
+// preserveKnownCartStateError keeps errors that clients handle by message and hides all others.
 func (r *CommerceCartMutationResolver) preserveKnownCartStateError(err error, logMessage string) error {
-	msg := err.Error()
-	for _, substr := range knownCartStateErrorSubstrings {
-		if strings.Contains(msg, substr) {
-			return fmt.Errorf("%w", err)
-		}
+	var restrictionErr *application.RestrictionError
+	if errors.As(err, &restrictionErr) ||
+		errors.Is(err, cartDomain.ErrItemNotFound) ||
+		errors.Is(err, cartDomain.ErrDeliveryCodeNotFound) {
+		return err
 	}
 
 	r.logger.Error(logMessage, err)
