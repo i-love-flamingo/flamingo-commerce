@@ -802,7 +802,10 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 
 	delivery, found := cart.GetDeliveryByCode(deliveryCode)
 	if !found {
-		return nil, errors.New("delivery not found: " + deliveryCode)
+		err = fmt.Errorf("%w: %s", cartDomain.ErrDeliveryCodeNotFound, deliveryCode)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteDelivery").Info(err)
+
+		return nil, err
 	}
 	// we throw a qty changed event for every item in delivery// we throw a qty changed event for every item in delivery
 	for _, item := range delivery.Cartitems {

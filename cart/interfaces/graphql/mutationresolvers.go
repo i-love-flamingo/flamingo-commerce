@@ -40,6 +40,20 @@ var (
 	ErrPersonalDataFormData = errors.New("failed to submit personal data")
 )
 
+// preserveKnownCartStateError keeps errors that clients handle by message and hides all others.
+func (r *CommerceCartMutationResolver) preserveKnownCartStateError(err error, logMessage string) error {
+	var restrictionErr *application.RestrictionError
+	if errors.As(err, &restrictionErr) ||
+		errors.Is(err, cartDomain.ErrItemNotFound) ||
+		errors.Is(err, cartDomain.ErrDeliveryCodeNotFound) {
+		return err
+	}
+
+	r.logger.Error(logMessage, err)
+
+	return interfaces.ErrCartGeneral
+}
+
 // Inject dependencies
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	billingAddressFormController *forms.BillingAddressFormController,
@@ -108,8 +122,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, i
 	err := r.cartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
 
 	if err != nil {
-		r.logger.Error("Failed to delete cart item", err)
-		return nil, interfaces.ErrCartGeneral
+		return nil, r.preserveKnownCartStateError(err, "Failed to delete cart item")
 	}
 
 	return r.q.CommerceCart(ctx)
@@ -120,8 +133,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Co
 	req := web.RequestFromContext(ctx)
 	_, err := r.cartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
 	if err != nil {
-		r.logger.Error("Failed to delete cart delivery", err)
-		return nil, interfaces.ErrCartGeneral
+		return nil, r.preserveKnownCartStateError(err, "Failed to delete cart delivery")
 	}
 	return r.q.CommerceCart(ctx)
 }
@@ -131,8 +143,7 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	req := web.RequestFromContext(ctx)
 	err := r.cartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
 	if err != nil {
-		r.logger.Error("Failed to update cart item qty", err)
-		return nil, interfaces.ErrCartGeneral
+		return nil, r.preserveKnownCartStateError(err, "Failed to update cart item qty")
 	}
 	return r.q.CommerceCart(ctx)
 }

@@ -1,0 +1,7 @@
+mutation {
+    Commerce_Cart_DeleteItem(itemID: "###ITEM_ID###", deliveryCode: "###DELIVERY_CODE###") {
+        cart {
+            id
+        }
+    }
+}

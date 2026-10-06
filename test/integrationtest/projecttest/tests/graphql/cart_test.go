@@ -550,3 +550,60 @@ func TestUpdateBundleConfiguration(t *testing.T) {
 		}
 	})
 }
+
+func TestCartMutationErrorMessages(t *testing.T) {
+	t.Parallel()
+
+	errorMessage := func(response *httpexpect.Response) *httpexpect.String {
+		return response.Status(http.StatusOK).JSON().Object().Value("errors").Array().
+			Value(0).Object().Value("message").String()
+	}
+
+	t.Run("delete unknown item", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+		prepareCart(t, e)
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_delete_item", map[string]string{
+			"ITEM_ID":       "unknown",
+			"DELIVERY_CODE": "delivery",
+		})).Expect()
+
+		errorMessage(response).IsEqual(`item not found for itemID "unknown"`)
+	})
+
+	t.Run("delete unknown delivery", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+		prepareCart(t, e)
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_delete_delivery", map[string]string{
+			"DELIVERY_CODE": "unknown",
+		})).Expect()
+
+		errorMessage(response).IsEqual("delivery not found: unknown")
+	})
+
+	t.Run("update qty above max quantity", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+		itemID := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart_item_id", map[string]string{
+			"MARKETPLACE_CODE": "fake_simple",
+			"DELIVERY_CODE":    "delivery",
+		})).Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_AddToCart").Object().Value("decoratedDeliveries").Array().
+			Value(0).Object().Value("decoratedItems").Array().Value(0).Object().
+			Value("item").Object().Value("id").String().Raw()
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "update_item_quantity", map[string]string{
+			"ITEM_ID":       itemID,
+			"DELIVERY_CODE": "delivery",
+			"QTY":           "12",
+		})).Expect()
+
+		errorMessage(response).IsEqual("Can't update item quantity, product max quantity of 10 would be exceeded. Restrictor: Name")
+	})
+}
