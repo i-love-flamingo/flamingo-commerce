@@ -23,7 +23,7 @@
 * Failed and cancelled payments now fail the place order process with the fixed reasons `payment process failed` and `payment process cancelled` instead of the payment provider's error text
 
 **graphql**
-* Resolvers for cart, category, checkout and customer return generic errors such as `cart_general_error` instead of internal errors and log the original error. Known messages stay the same, for example item not found, delivery not found, max quantity on item update, product validation errors on add to cart and `ErrNoPlaceOrderProcess`.
+* **Breaking:** Resolvers for cart, category, checkout and customer return generic errors such as `cart_general_error` instead of the internal error text and log the original error. Clients that match other messages must be updated, for example `ErrAnotherPlaceOrderProcessRunning` on start place order or max quantity on add to cart. These messages stay: item not found, delivery not found and max quantity on delete item, delete delivery and update item qty, product validation errors on add to cart, `ErrNoPlaceOrderProcess`, the cancel final state error and `category_not_found`.
 
 **payment**
 * **Breaking:** `WebCartPaymentGateway.CancelOrderPayment` now requires a `CancellationReason` argument. Added the `CancellationReason` type to the domain.
