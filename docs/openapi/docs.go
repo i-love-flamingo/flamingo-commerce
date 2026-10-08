@@ -2132,8 +2132,16 @@ const docTemplate = `{
                 "Code": {
                     "type": "string"
                 },
+                "Color": {
+                    "description": "Color optional display color of the badge, e.g. a hex color like \"#E30613\"",
+                    "type": "string"
+                },
                 "Label": {
                     "type": "string"
+                },
+                "Priority": {
+                    "description": "Priority optional display priority of the badge, higher priorities should be displayed first",
+                    "type": "integer"
                 }
             }
         },

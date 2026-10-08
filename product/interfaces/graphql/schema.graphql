@@ -337,6 +337,10 @@ type Commerce_Product_Badges {
 type Commerce_Product_Badge {
     code:  String!
     label: String!
+    """Optional display color of the badge, e.g. a hex color like #E30613. Null if not configured"""
+    color: String
+    """Optional display priority of the badge, higher priorities should be displayed first. Null if not configured"""
+    priority: Int
 }
 
 type Commerce_Product_Choice {

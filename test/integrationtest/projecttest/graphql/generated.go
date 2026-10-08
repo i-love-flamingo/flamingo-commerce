@@ -724,8 +724,10 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Product_Badge struct {
-		Code  func(childComplexity int) int
-		Label func(childComplexity int) int
+		Code     func(childComplexity int) int
+		Color    func(childComplexity int) int
+		Label    func(childComplexity int) int
+		Priority func(childComplexity int) int
 	}
 
 	Commerce_Product_Badges struct {
@@ -3804,12 +3806,24 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Commerce_Product_Badge.Code(childComplexity), true
+	case "Commerce_Product_Badge.color":
+		if e.ComplexityRoot.Commerce_Product_Badge.Color == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Commerce_Product_Badge.Color(childComplexity), true
 	case "Commerce_Product_Badge.label":
 		if e.ComplexityRoot.Commerce_Product_Badge.Label == nil {
 			break
 		}
 
 		return e.ComplexityRoot.Commerce_Product_Badge.Label(childComplexity), true
+	case "Commerce_Product_Badge.priority":
+		if e.ComplexityRoot.Commerce_Product_Badge.Priority == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Commerce_Product_Badge.Priority(childComplexity), true
 
 	case "Commerce_Product_Badges.all":
 		if e.ComplexityRoot.Commerce_Product_Badges.All == nil {
@@ -6517,6 +6531,10 @@ func (ec *executionContext) childFields_Commerce_Product_Badge(ctx context.Conte
 		return ec.fieldContext_Commerce_Product_Badge_code(ctx, field)
 	case "label":
 		return ec.fieldContext_Commerce_Product_Badge_label(ctx, field)
+	case "color":
+		return ec.fieldContext_Commerce_Product_Badge_color(ctx, field)
+	case "priority":
+		return ec.fieldContext_Commerce_Product_Badge_priority(ctx, field)
 	}
 	return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Badge", field.Name)
 }
@@ -19037,6 +19055,52 @@ func (ec *executionContext) _Commerce_Product_Badge_label(ctx context.Context, f
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Badge_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Commerce_Product_Badge_color(ctx context.Context, field graphql.CollectedField, obj *domain1.Badge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Commerce_Product_Badge_color(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Color, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *string) graphql.Marshaler {
+			return ec.marshalOString2ᚖstring(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Commerce_Product_Badge_color(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _Commerce_Product_Badge_priority(ctx context.Context, field graphql.CollectedField, obj *domain1.Badge) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_Commerce_Product_Badge_priority(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Priority, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v *int) graphql.Marshaler {
+			return ec.marshalOInt2ᚖint(ctx, selections, v)
+		},
+		true,
+		false,
+	)
+}
+func (ec *executionContext) fieldContext_Commerce_Product_Badge_priority(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, errors.New("field of type Int does not have child fields"))
 }
 
 func (ec *executionContext) _Commerce_Product_Badges_all(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductBadges) (ret graphql.Marshaler) {
@@ -32536,6 +32600,16 @@ func (ec *executionContext) _Commerce_Product_Badge(ctx context.Context, sel ast
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "color":
+			out.Values[i] = ec._Commerce_Product_Badge_color(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
+		case "priority":
+			out.Values[i] = ec._Commerce_Product_Badge_priority(ctx, field, obj)
+			if out.Values[i] == graphql.RequiredNull {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -38211,6 +38285,24 @@ func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.Selecti
 	_ = sel
 	_ = ctx
 	res := graphql.MarshalInt(v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v any) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	_ = sel
+	_ = ctx
+	res := graphql.MarshalInt(*v)
 	return res
 }
 

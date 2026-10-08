@@ -2,6 +2,10 @@
 
 ## v3.13.1 [upcoming]
 
+**product**
+* Added optional `Color` and `Priority` to the product `Badge`
+* GraphQL: Expose the optional `color` and `priority` fields on `Commerce_Product_Badge`
+
 ## v3.13.0
 **cart**
 * Fixed hiccups in cart merge strategies caused by the addition of payment selection from guest cart, when some items were not added to customer's cart due to errors.
