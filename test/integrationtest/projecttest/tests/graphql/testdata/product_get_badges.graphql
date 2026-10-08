@@ -1,0 +1,23 @@
+query {
+    simple: Commerce_Product(marketPlaceCode: "fake_simple") {
+        badges {
+            all {
+                code
+                label
+                color
+                priority
+            }
+        }
+    }
+
+    active_variant: Commerce_Product(marketPlaceCode: "fake_configurable", variantMarketPlaceCode: "shirt-red-s") {
+        badges {
+            all {
+                code
+                label
+                color
+                priority
+            }
+        }
+    }
+}
