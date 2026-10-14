@@ -1,6 +1,8 @@
 # Changelog
 
-## v3.13.1 [upcoming]
+## v3.14.1 [upcoming]
+
+## v3.14.0
 
 **product**
 * Added optional `Color` and `Priority` to the product `Badge`
