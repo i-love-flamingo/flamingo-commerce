@@ -418,10 +418,14 @@ func (ps *ProductService) addBasicData(product *domain.BasicProductData) {
 		Name: "Configurable",
 		Code: "configurable",
 	}
+	badgeColor := "#E30613"
+	badgePriority := 100
 	badges := []domain.Badge{
 		{
-			Code:  "new",
-			Label: "New",
+			Code:     "new",
+			Label:    "New",
+			Color:    &badgeColor,
+			Priority: &badgePriority,
 		},
 	}
 	product.Categories = append(product.Categories, categoryTeaser1)

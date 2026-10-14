@@ -237,6 +237,10 @@ type (
 	Badge struct {
 		Code  string
 		Label string
+		// Color optional display color of the badge, e.g. a hex color like "#E30613"
+		Color *string
+		// Priority optional display priority of the badge, higher priorities should be displayed first
+		Priority *int
 	}
 
 	// Badges slice of Badge
