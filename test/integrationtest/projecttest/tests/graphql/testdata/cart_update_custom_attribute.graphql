@@ -1,0 +1,7 @@
+mutation {
+    Commerce_Cart_UpdateAdditionalData(additionalData: [{key: "###KEY###" value: "###VALUE###"}]) {
+        cart {
+            id
+        }
+    }
+}

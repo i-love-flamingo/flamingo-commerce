@@ -9,6 +9,10 @@ var (
 	// Keep the error message stable for existing GraphQL clients.
 	ErrNoPlaceOrderProcess = errors.New("ErrNoPlaceOrderProcess")
 
+	// ErrAnotherPlaceOrderProcessRunning is returned when a place order process is already running.
+	// Keep the error message stable for existing GraphQL clients.
+	ErrAnotherPlaceOrderProcessRunning = errors.New("ErrAnotherPlaceOrderProcessRunning")
+
 	// ErrCancelNotPossibleFinalState is returned when a cancel is attempted for a final state process.
 	// Keep the error message stable for existing GraphQL clients.
 	ErrCancelNotPossibleFinalState = errors.New("process already in final state, cancel not possible")

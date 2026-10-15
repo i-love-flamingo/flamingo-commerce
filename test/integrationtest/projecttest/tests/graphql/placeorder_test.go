@@ -253,6 +253,31 @@ func Test_StartPlaceOrder(t *testing.T) {
 		assert.NotEqual(t, firstUUID, secondUUID, "already running process should be replaced by a new one")
 	})
 
+	t.Run("process holds the cart lock", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, baseURL)
+		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusCompleted, nil)
+		helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_update_custom_attribute", map[string]string{
+			"KEY":   placeorder.CustomAttributesKeyReserveOrderIDDelay,
+			"VALUE": "2s",
+		})).Expect().Status(http.StatusOK)
+		assertStartPlaceOrderWithValidUUID(t, e)
+
+		// the process takes the cart lock asynchronously, so start again until it holds the lock
+		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
+			var response struct {
+				Errors []struct{ Message string }
+			}
+			helper.GraphQlRequest(t, e, loadGraphQL(t, "start", nil)).Expect().Status(http.StatusOK).JSON().Decode(&response)
+
+			if len(response.Errors) != 1 || response.Errors[0].Message != "ErrAnotherPlaceOrderProcessRunning" {
+				return fmt.Errorf("expected error ErrAnotherPlaceOrderProcessRunning, got %+v", response.Errors)
+			}
+
+			return nil
+		})
+	})
 }
 
 func Test_CancelPlaceOrder(t *testing.T) {
