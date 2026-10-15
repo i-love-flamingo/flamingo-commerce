@@ -12,6 +12,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/cart"
 )
 
 func Test_CartUpdateDeliveryAddresses(t *testing.T) {
@@ -605,5 +606,74 @@ func TestCartMutationErrorMessages(t *testing.T) {
 		})).Expect()
 
 		errorMessage(response).IsEqual("Can't update item quantity, product max quantity of 10 would be exceeded. Restrictor: Name")
+	})
+
+	t.Run("add above max quantity", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart_variant_qty", map[string]string{
+			"MARKETPLACE_CODE":         "fake_simple",
+			"VARIANT_MARKETPLACE_CODE": "",
+			"QTY":                      "12",
+			"DELIVERY_CODE":            "delivery",
+		})).Expect()
+
+		errorMessage(response).IsEqual("Can't update item quantity, product max quantity of 10 would be exceeded. Restrictor: Name")
+	})
+
+	t.Run("add product that is not allowed", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpectWithCookies(t, "http://"+FlamingoURL, map[string]string{cart.FakeItemValidatorCookie: ""})
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart", map[string]string{
+			"MARKETPLACE_CODE": "fake_simple",
+			"DELIVERY_CODE":    "delivery",
+		})).Expect()
+
+		errorMessage(response).IsEqual("Product is not allowed: fake item validator reason")
+	})
+
+	t.Run("add configurable product without variant", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart", map[string]string{
+			"MARKETPLACE_CODE": "fake_configurable",
+			"DELIVERY_CODE":    "delivery",
+		})).Expect()
+
+		errorMessage(response).IsEqual("no variant given for configurable product")
+	})
+
+	t.Run("add configurable product with unknown variant", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart_variant_qty", map[string]string{
+			"MARKETPLACE_CODE":         "fake_configurable",
+			"VARIANT_MARKETPLACE_CODE": "unknown",
+			"QTY":                      "1",
+			"DELIVERY_CODE":            "delivery",
+		})).Expect()
+
+		errorMessage(response).IsEqual("product has not the given variant")
+	})
+
+	t.Run("add bundle product without bundle configuration", func(t *testing.T) {
+		t.Parallel()
+
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart", map[string]string{
+			"MARKETPLACE_CODE": "fake_bundle",
+			"DELIVERY_CODE":    "delivery",
+		})).Expect()
+
+		errorMessage(response).IsEqual("no bundle configuration given for configurable product")
 	})
 }

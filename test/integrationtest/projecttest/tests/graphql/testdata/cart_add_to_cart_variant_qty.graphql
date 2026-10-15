@@ -1,0 +1,14 @@
+mutation {
+    Commerce_Cart_AddToCart(
+        addToCartInput: {
+            marketplaceCode: "###MARKETPLACE_CODE###"
+            variantMarketplaceCode: "###VARIANT_MARKETPLACE_CODE###"
+            qty: ###QTY###
+            deliveryCode: "###DELIVERY_CODE###"
+        }
+    ) {
+        cart {
+            id
+        }
+    }
+}
