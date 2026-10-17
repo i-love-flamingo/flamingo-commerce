@@ -107,12 +107,25 @@ func (c *Coordinator) Inject(
 	}
 }
 
-// New acquires lock if possible and creates new process with first run call blocking
+// New acquires lock if possible and creates new process with first run call non-blocking
 // returns error if already locked or error during run
 func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *url.URL) (*process.Context, error) {
 	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/New")
 	defer span.End()
 
+	pctx, err := c.createProcess(ctx, cart, returnURL)
+	if err != nil {
+		return pctx, err
+	}
+
+	// Run takes the same lock, so it must start after createProcess has released it
+	c.Run(ctx)
+
+	return pctx, nil
+}
+
+// createProcess creates and stores a new process while holding the lock for the cart
+func (c *Coordinator) createProcess(ctx context.Context, cart cartDomain.Cart, returnURL *url.URL) (*process.Context, error) {
 	unlock, err := c.locker.TryLock(ctx, determineLockKeyForCart(cart), maxLockDuration)
 	if err != nil {
 		if err == ErrLockTaken {
@@ -155,8 +168,6 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			c.logger.Error(err)
 			return
 		}
-
-		c.Run(ctx)
 	})
 
 	return runPCtx, runErr
