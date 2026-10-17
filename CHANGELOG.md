@@ -2,6 +2,9 @@
 
 ## v3.14.1 [upcoming]
 
+**checkout**
+* Fixed `Coordinator.New` sometimes skipping the first run of a new place order process, because the run found the lock still taken
+
 ## v3.14.0
 
 **product**
