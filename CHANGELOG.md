@@ -2,6 +2,9 @@
 
 ## v3.14.1 [upcoming]
 
+**category**
+* GraphQL: `Commerce_Category` returns `category_page_out_of_range` instead of `category_general_error` when the requested page is out of range
+
 ## v3.14.0
 
 **product**
