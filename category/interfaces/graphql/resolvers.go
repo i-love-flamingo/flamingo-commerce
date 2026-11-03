@@ -85,6 +85,11 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 	result, err := r.searchService.Find(ctx, searchRequest)
 
 	if err != nil {
+		// search returns not found when the requested page is out of range
+		if errors.Is(err, searchDomain.ErrNotFound) {
+			return nil, interfaces.ErrCategoryPageOutOfRange
+		}
+
 		r.logger.Error("Failed to search products for category", err)
 		return nil, interfaces.ErrCategoryGeneral
 	}
