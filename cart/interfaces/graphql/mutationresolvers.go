@@ -15,6 +15,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
@@ -42,10 +43,18 @@ var (
 
 // preserveKnownCartStateError keeps errors that clients handle by message and hides all others.
 func (r *CommerceCartMutationResolver) preserveKnownCartStateError(err error, logMessage string) error {
-	var restrictionErr *application.RestrictionError
+	var (
+		restrictionErr *application.RestrictionError
+		notAllowedErr  *validation.AddToCartNotAllowed
+	)
+
 	if errors.As(err, &restrictionErr) ||
+		errors.As(err, &notAllowedErr) ||
 		errors.Is(err, cartDomain.ErrItemNotFound) ||
-		errors.Is(err, cartDomain.ErrDeliveryCodeNotFound) {
+		errors.Is(err, cartDomain.ErrDeliveryCodeNotFound) ||
+		errors.Is(err, application.ErrNoBundleConfigurationGiven) ||
+		errors.Is(err, application.ErrNoVariantForConfigurable) ||
+		errors.Is(err, application.ErrVariantDoNotExist) {
 		return err
 	}
 
@@ -107,9 +116,7 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, gr
 			return nil, fmt.Errorf("%w", err)
 		}
 
-		r.logger.Error("Failed to add product to cart", err)
-
-		return nil, interfaces.ErrCartGeneral
+		return nil, r.preserveKnownCartStateError(err, "Failed to add product to cart")
 	}
 
 	return r.q.CommerceCart(ctx)
