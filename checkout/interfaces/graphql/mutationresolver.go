@@ -133,7 +133,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 			return false, interfaces.ErrNoPlaceOrderProcess
 		}
 
-		if err.Error() == interfaces.ErrCancelNotPossibleFinalState.Error() {
+		if errors.Is(err, placeorder.ErrCancelNotPossibleFinalState) {
 			return false, interfaces.ErrCancelNotPossibleFinalState
 		}
 
