@@ -5341,20 +5341,22 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
-		ec.unmarshalInputCommerce_Cart_AddToCartInput,
-		ec.unmarshalInputCommerce_Cart_AddressFormInput,
-		ec.unmarshalInputCommerce_Cart_ChoiceConfigurationInput,
-		ec.unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput,
-		ec.unmarshalInputCommerce_Cart_DeliveryAddressInput,
-		ec.unmarshalInputCommerce_Cart_DeliveryShippingOptionInput,
-		ec.unmarshalInputCommerce_Cart_KeyValueInput,
-		ec.unmarshalInputCommerce_Cart_PersonalDataInput,
-		ec.unmarshalInputCommerce_Price_ChargeQualifierInput,
-		ec.unmarshalInputCommerce_Product_ChoiceConfigurationInput,
-		ec.unmarshalInputCommerce_Search_KeyValueFilter,
-		ec.unmarshalInputCommerce_Search_Request,
-	)
+	inputUnmarshalers := func() *graphql.InputUnmarshalerIndex {
+		return graphql.NewInputUnmarshalerIndex(
+			graphql.NewInputUnmarshaler("Commerce_Cart_AddToCartInput", ec.unmarshalInputCommerce_Cart_AddToCartInput),
+			graphql.NewInputUnmarshaler("Commerce_Cart_AddressFormInput", ec.unmarshalInputCommerce_Cart_AddressFormInput),
+			graphql.NewInputUnmarshaler("Commerce_Cart_ChoiceConfigurationInput", ec.unmarshalInputCommerce_Cart_ChoiceConfigurationInput),
+			graphql.NewInputUnmarshaler("Commerce_Cart_DeliveryAdditionalDataInput", ec.unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput),
+			graphql.NewInputUnmarshaler("Commerce_Cart_DeliveryAddressInput", ec.unmarshalInputCommerce_Cart_DeliveryAddressInput),
+			graphql.NewInputUnmarshaler("Commerce_Cart_DeliveryShippingOptionInput", ec.unmarshalInputCommerce_Cart_DeliveryShippingOptionInput),
+			graphql.NewInputUnmarshaler("Commerce_Cart_KeyValueInput", ec.unmarshalInputCommerce_Cart_KeyValueInput),
+			graphql.NewInputUnmarshaler("Commerce_Cart_PersonalDataInput", ec.unmarshalInputCommerce_Cart_PersonalDataInput),
+			graphql.NewInputUnmarshaler("Commerce_Price_ChargeQualifierInput", ec.unmarshalInputCommerce_Price_ChargeQualifierInput),
+			graphql.NewInputUnmarshaler("Commerce_Product_ChoiceConfigurationInput", ec.unmarshalInputCommerce_Product_ChoiceConfigurationInput),
+			graphql.NewInputUnmarshaler("Commerce_Search_KeyValueFilter", ec.unmarshalInputCommerce_Search_KeyValueFilter),
+			graphql.NewInputUnmarshaler("Commerce_Search_Request", ec.unmarshalInputCommerce_Search_Request),
+		)
+	}
 	first := true
 
 	switch opCtx.Operation.Operation {
@@ -5364,7 +5366,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			var data graphql.Marshaler
 			if first {
 				first = false
-				ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
+				ctx = graphql.WithLazyInputUnmarshalerIndex(ctx, inputUnmarshalers)
 				data = ec._Query(ctx, opCtx.Operation.SelectionSet)
 			} else {
 				if atomic.LoadInt32(&ec.PendingDeferred) > 0 {
@@ -5394,7 +5396,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 				return nil
 			}
 			first = false
-			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
+			ctx = graphql.WithLazyInputUnmarshalerIndex(ctx, inputUnmarshalers)
 			data := ec._Mutation(ctx, opCtx.Operation.SelectionSet)
 			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
@@ -7921,8 +7923,8 @@ func (ec *executionContext) field___Directive_args_args(ctx context.Context, raw
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated",
-		func(ctx context.Context, v any) (*bool, error) {
-			return ec.unmarshalOBoolean2ᚖbool(ctx, v)
+		func(ctx context.Context, v any) (bool, error) {
+			return ec.unmarshalOBoolean2bool(ctx, v)
 		})
 	if err != nil {
 		return nil, err
@@ -7935,8 +7937,8 @@ func (ec *executionContext) field___Field_args_args(ctx context.Context, rawArgs
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated",
-		func(ctx context.Context, v any) (*bool, error) {
-			return ec.unmarshalOBoolean2ᚖbool(ctx, v)
+		func(ctx context.Context, v any) (bool, error) {
+			return ec.unmarshalOBoolean2bool(ctx, v)
 		})
 	if err != nil {
 		return nil, err
@@ -7960,6 +7962,20 @@ func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, ra
 }
 
 func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated",
+		func(ctx context.Context, v any) (bool, error) {
+			return ec.unmarshalOBoolean2bool(ctx, v)
+		})
+	if err != nil {
+		return nil, err
+	}
+	args["includeDeprecated"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field___Type_inputFields_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "includeDeprecated",
@@ -8029,7 +8045,7 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData_reservedOrderID(ctx co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AdditionalData_reservedOrderID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AdditionalData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AdditionalData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_vat(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8052,7 +8068,7 @@ func (ec *executionContext) _Commerce_Cart_Address_vat(ctx context.Context, fiel
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_vat(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_firstname(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8075,7 +8091,7 @@ func (ec *executionContext) _Commerce_Cart_Address_firstname(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_firstname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_lastname(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8098,7 +8114,7 @@ func (ec *executionContext) _Commerce_Cart_Address_lastname(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_lastname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_middleName(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8121,7 +8137,7 @@ func (ec *executionContext) _Commerce_Cart_Address_middleName(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_middleName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_title(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8144,7 +8160,7 @@ func (ec *executionContext) _Commerce_Cart_Address_title(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_salutation(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8167,7 +8183,7 @@ func (ec *executionContext) _Commerce_Cart_Address_salutation(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_salutation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_street(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8190,7 +8206,7 @@ func (ec *executionContext) _Commerce_Cart_Address_street(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_street(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_streetNr(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8213,7 +8229,7 @@ func (ec *executionContext) _Commerce_Cart_Address_streetNr(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_streetNr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_additionalAddressLines(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8236,7 +8252,7 @@ func (ec *executionContext) _Commerce_Cart_Address_additionalAddressLines(ctx co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_additionalAddressLines(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_company(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8259,7 +8275,7 @@ func (ec *executionContext) _Commerce_Cart_Address_company(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_company(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_city(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8282,7 +8298,7 @@ func (ec *executionContext) _Commerce_Cart_Address_city(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_city(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_postCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8305,7 +8321,7 @@ func (ec *executionContext) _Commerce_Cart_Address_postCode(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_postCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_state(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8328,7 +8344,7 @@ func (ec *executionContext) _Commerce_Cart_Address_state(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_regionCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8351,7 +8367,7 @@ func (ec *executionContext) _Commerce_Cart_Address_regionCode(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_regionCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_country(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8374,7 +8390,7 @@ func (ec *executionContext) _Commerce_Cart_Address_country(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_countryCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8397,7 +8413,7 @@ func (ec *executionContext) _Commerce_Cart_Address_countryCode(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_countryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_telephone(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8420,7 +8436,7 @@ func (ec *executionContext) _Commerce_Cart_Address_telephone(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_telephone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Address_email(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
@@ -8443,7 +8459,7 @@ func (ec *executionContext) _Commerce_Cart_Address_email(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Address_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_vat(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8466,7 +8482,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_vat(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_vat(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_firstname(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8489,7 +8505,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_firstname(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_firstname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_lastname(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8512,7 +8528,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_lastname(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_lastname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_middleName(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8535,7 +8551,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_middleName(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_middleName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_title(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8558,7 +8574,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_title(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_salutation(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8581,7 +8597,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_salutation(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_salutation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_street(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8604,7 +8620,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_street(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_street(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_streetNr(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8627,7 +8643,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_streetNr(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_streetNr(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine1(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8650,7 +8666,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine1(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_addressLine1(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine2(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8673,7 +8689,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine2(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_addressLine2(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_company(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8696,7 +8712,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_company(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_company(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_city(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8719,7 +8735,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_city(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_city(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_postCode(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8742,7 +8758,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_postCode(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_postCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_state(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8765,7 +8781,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_state(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_regionCode(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8788,7 +8804,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_regionCode(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_regionCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_country(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8811,7 +8827,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_country(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_countryCode(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8834,7 +8850,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_countryCode(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_countryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8857,7 +8873,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_phoneNumber(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_phoneNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AddressForm_email(ctx context.Context, field graphql.CollectedField, obj *forms.AddressForm) (ret graphql.Marshaler) {
@@ -8880,7 +8896,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_email(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AddressForm_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscount_campaignCode(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
@@ -8903,7 +8919,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_campaignCode(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_campaignCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscount_couponCode(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
@@ -8926,7 +8942,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_couponCode(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_couponCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscount_label(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
@@ -8949,7 +8965,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_label(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscount_applied(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
@@ -9004,7 +9020,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_type(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscount_isItemRelated(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
@@ -9027,7 +9043,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_isItemRelated(ctx con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_isItemRelated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscount_sortOrder(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
@@ -9050,7 +9066,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_sortOrder(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscount_sortOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedDiscount", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_items(ctx context.Context, field graphql.CollectedField, obj *dto.CartAppliedDiscounts) (ret graphql.Marshaler) {
@@ -9193,7 +9209,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_code(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedGiftCard", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedGiftCard", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_applied(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
@@ -9280,7 +9296,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_hasRemaining(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_AppliedGiftCard_hasRemaining(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedGiftCard", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_AppliedGiftCard", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_BillingAddressForm_formData(ctx context.Context, field graphql.CollectedField, obj *dto.BillingAddressForm) (ret graphql.Marshaler) {
@@ -9367,7 +9383,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_processed(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_BillingAddressForm_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_BillingAddressForm", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_BillingAddressForm", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_id(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9390,7 +9406,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_id(ctx context.Context, field gr
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, errors.New("field of type ID does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, "ID")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_entityID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9413,7 +9429,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_entityID(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_entityID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_billingAddress(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9596,7 +9612,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_belongsToAuthenticatedUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_authenticatedUserID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9619,7 +9635,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_authenticatedUserID(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_authenticatedUserID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_appliedCouponCodes(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9674,7 +9690,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_defaultCurrency(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_defaultCurrency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_totalitems(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9729,7 +9745,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_itemCount(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_itemCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_productCount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9752,7 +9768,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_productCount(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_productCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_isPaymentSelected(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9775,7 +9791,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_isPaymentSelected(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_isPaymentSelected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_grandTotal(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9970,7 +9986,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryCodes(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getDeliveryCodes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_getMainShippingEMail(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -9993,7 +10009,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getMainShippingEMail(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getMainShippingEMail(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_isEmpty(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -10016,7 +10032,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_isEmpty(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_isEmpty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_hasDeliveryForCode(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -10451,7 +10467,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasShippingCosts(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasShippingCosts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_allShippingTitles(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -10474,7 +10490,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_allShippingTitles(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_allShippingTitles(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_subTotalGross(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -10689,7 +10705,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedCouponCode(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasAppliedCouponCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_getPaymentReference(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -10712,7 +10728,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_getPaymentReference(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getPaymentReference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_getTotalItemsByType(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -10811,7 +10827,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedGiftCards(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasAppliedGiftCards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Cart_hasRemainingGiftCards(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
@@ -10834,7 +10850,7 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasRemainingGiftCards(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasRemainingGiftCards(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Cart", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_CouponCode_code(ctx context.Context, field graphql.CollectedField, obj *cart.CouponCode) (ret graphql.Marshaler) {
@@ -10857,7 +10873,7 @@ func (ec *executionContext) _Commerce_Cart_CouponCode_code(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_CouponCode_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_CouponCode", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_CouponCode", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_CustomAttributes_get(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributes) (ret graphql.Marshaler) {
@@ -11224,7 +11240,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_gateway(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DefaultPaymentSelection_gateway(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DefaultPaymentSelection", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DefaultPaymentSelection", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_totalValue(ctx context.Context, field graphql.CollectedField, obj *cart.DefaultPaymentSelection) (ret graphql.Marshaler) {
@@ -11695,7 +11711,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery_hasItems(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_hasItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Delivery", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Delivery", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -11718,7 +11734,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_deliveryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_formData(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -11773,7 +11789,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_useBillingAddress
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_useBillingAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_method(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -11796,7 +11812,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_method(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_carrier(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -11819,7 +11835,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_carrier(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_carrier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_desiredTime(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -11842,7 +11858,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_desiredTime(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_desiredTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, "Time")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_validationInfo(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -11897,7 +11913,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_processed(ctx con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryAddressForm_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryAddressForm", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryInfo_code(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
@@ -11920,7 +11936,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_code(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryInfo_workflow(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
@@ -11943,7 +11959,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_workflow(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_workflow(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryInfo_method(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
@@ -11966,7 +11982,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_method(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryInfo_carrier(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
@@ -11989,7 +12005,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_carrier(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_carrier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryInfo_deliveryLocation(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
@@ -12044,7 +12060,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_desiredTime(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryInfo_desiredTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryInfo", field, false, false, "Time")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryInfo_additionalData(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
@@ -12099,7 +12115,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_type(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryLocation", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryLocation", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryLocation_address(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
@@ -12154,7 +12170,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_useBillingAddress(ct
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_useBillingAddress(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryLocation", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryLocation", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryLocation_code(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
@@ -12177,7 +12193,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_code(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_DeliveryLocation_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryLocation", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_DeliveryLocation", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_ExistingCustomerData_id(ctx context.Context, field graphql.CollectedField, obj *cart.ExistingCustomerData) (ret graphql.Marshaler) {
@@ -12200,7 +12216,7 @@ func (ec *executionContext) _Commerce_Cart_ExistingCustomerData_id(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_ExistingCustomerData_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_ExistingCustomerData", field, false, false, errors.New("field of type ID does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_ExistingCustomerData", field, false, false, "ID")
 }
 
 func (ec *executionContext) _Commerce_Cart_Form_Error_messageKey(ctx context.Context, field graphql.CollectedField, obj *domain4.Error) (ret graphql.Marshaler) {
@@ -12223,7 +12239,7 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_messageKey(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Form_Error_messageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Form_Error", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Form_Error", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Form_Error_defaultLabel(ctx context.Context, field graphql.CollectedField, obj *domain4.Error) (ret graphql.Marshaler) {
@@ -12246,7 +12262,7 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_defaultLabel(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Form_Error_defaultLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Form_Error", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Form_Error", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Form_FieldError_messageKey(ctx context.Context, field graphql.CollectedField, obj *dto.FieldError) (ret graphql.Marshaler) {
@@ -12269,7 +12285,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_messageKey(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_messageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Form_FieldError", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Form_FieldError", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Form_FieldError_defaultLabel(ctx context.Context, field graphql.CollectedField, obj *dto.FieldError) (ret graphql.Marshaler) {
@@ -12292,7 +12308,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_defaultLabel(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_defaultLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Form_FieldError", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Form_FieldError", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Form_FieldError_fieldName(ctx context.Context, field graphql.CollectedField, obj *dto.FieldError) (ret graphql.Marshaler) {
@@ -12315,7 +12331,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_fieldName(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Form_FieldError_fieldName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Form_FieldError", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Form_FieldError", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_fieldErrors(ctx context.Context, field graphql.CollectedField, obj *dto.ValidationInfo) (ret graphql.Marshaler) {
@@ -12402,7 +12418,7 @@ func (ec *executionContext) _Commerce_Cart_Item_id(ctx context.Context, field gr
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, errors.New("field of type ID does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, "ID")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_externalReference(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12425,7 +12441,7 @@ func (ec *executionContext) _Commerce_Cart_Item_externalReference(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_externalReference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_marketplaceCode(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12448,7 +12464,7 @@ func (ec *executionContext) _Commerce_Cart_Item_marketplaceCode(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_marketplaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12471,7 +12487,7 @@ func (ec *executionContext) _Commerce_Cart_Item_variantMarketPlaceCode(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_variantMarketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_productName(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12494,7 +12510,7 @@ func (ec *executionContext) _Commerce_Cart_Item_productName(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_productName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_sourceID(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12517,7 +12533,7 @@ func (ec *executionContext) _Commerce_Cart_Item_sourceID(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_sourceID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_qty(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12540,7 +12556,7 @@ func (ec *executionContext) _Commerce_Cart_Item_qty(ctx context.Context, field g
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_qty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_additionalDataKeys(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12563,7 +12579,7 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataKeys(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_additionalDataKeys(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_additionalDataValues(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -12586,7 +12602,7 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataValues(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Item_additionalDataValues(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Item", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Item_getAdditionalData(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
@@ -13081,7 +13097,7 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_itemID(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_ItemValidationError_itemID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_ItemValidationError", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_ItemValidationError", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(ctx context.Context, field graphql.CollectedField, obj *validation.ItemValidationError) (ret graphql.Marshaler) {
@@ -13104,7 +13120,7 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_ItemValidationError_errorMessageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_ItemValidationError", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_ItemValidationError", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_KeyValue_key(ctx context.Context, field graphql.CollectedField, obj *dto.KeyValue) (ret graphql.Marshaler) {
@@ -13127,7 +13143,7 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_key(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_KeyValue_key(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_KeyValue", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_KeyValue", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_KeyValue_value(ctx context.Context, field graphql.CollectedField, obj *dto.KeyValue) (ret graphql.Marshaler) {
@@ -13150,7 +13166,7 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_value(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_KeyValue_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_KeyValue", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_KeyValue", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split_qualifier(ctx context.Context, field graphql.CollectedField, obj *dto.PaymentSelectionSplit) (ret graphql.Marshaler) {
@@ -13237,7 +13253,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_type(
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PaymentSelection_SplitQualifier", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PaymentSelection_SplitQualifier", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_method(ctx context.Context, field graphql.CollectedField, obj *cart.SplitQualifier) (ret graphql.Marshaler) {
@@ -13260,7 +13276,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_metho
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PaymentSelection_SplitQualifier", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PaymentSelection_SplitQualifier", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_reference(ctx context.Context, field graphql.CollectedField, obj *cart.SplitQualifier) (ret graphql.Marshaler) {
@@ -13283,7 +13299,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_refer
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PaymentSelection_SplitQualifier_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PaymentSelection_SplitQualifier", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PaymentSelection_SplitQualifier", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Person_address(ctx context.Context, field graphql.CollectedField, obj *cart.Person) (ret graphql.Marshaler) {
@@ -13402,7 +13418,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalData_dateOfBirth(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalData_dateOfBirth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PersonalData_passportCountry(ctx context.Context, field graphql.CollectedField, obj *forms.DefaultPersonalDataForm) (ret graphql.Marshaler) {
@@ -13425,7 +13441,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalData_passportCountry(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalData_passportCountry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PersonalData_passportNumber(ctx context.Context, field graphql.CollectedField, obj *forms.DefaultPersonalDataForm) (ret graphql.Marshaler) {
@@ -13448,7 +13464,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalData_passportNumber(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalData_passportNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PersonalData_address(ctx context.Context, field graphql.CollectedField, obj *forms.DefaultPersonalDataForm) (ret graphql.Marshaler) {
@@ -13567,7 +13583,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDataForm_processed(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDataForm_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDataForm", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDataForm", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_PersonalDetails_dateOfBirth(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
@@ -13590,7 +13606,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_dateOfBirth(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_dateOfBirth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportCountry(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
@@ -13613,7 +13629,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportCountry(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_passportCountry(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportNumber(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
@@ -13636,7 +13652,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportNumber(ctx co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_passportNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PersonalDetails_nationality(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
@@ -13659,7 +13675,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_nationality(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PersonalDetails_nationality(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PersonalDetails", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_orderNumber(ctx context.Context, field graphql.CollectedField, obj *placeorder.PlacedOrderInfo) (ret graphql.Marshaler) {
@@ -13682,7 +13698,7 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_orderNumber(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PlacedOrderInfo_orderNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PlacedOrderInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PlacedOrderInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *placeorder.PlacedOrderInfo) (ret graphql.Marshaler) {
@@ -13705,7 +13721,7 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_deliveryCode(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PlacedOrderInfo_deliveryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PlacedOrderInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PlacedOrderInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PricedCartItem_amount(ctx context.Context, field graphql.CollectedField, obj *dto.PricedCartItem) (ret graphql.Marshaler) {
@@ -13760,7 +13776,7 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem_itemID(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PricedCartItem_itemID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PricedCartItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PricedCartItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PricedItems_cartItems(ctx context.Context, field graphql.CollectedField, obj *dto.PricedItems) (ret graphql.Marshaler) {
@@ -13911,7 +13927,7 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem_deliveryInfoCode(c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PricedShippingItem_deliveryInfoCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PricedShippingItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PricedShippingItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_PricedTotalItem_amount(ctx context.Context, field graphql.CollectedField, obj *dto.PricedTotalItem) (ret graphql.Marshaler) {
@@ -13966,7 +13982,7 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_code(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_PricedTotalItem_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_PricedTotalItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_PricedTotalItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_isRestricted(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) (ret graphql.Marshaler) {
@@ -13989,7 +14005,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_isRestricted(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_isRestricted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) (ret graphql.Marshaler) {
@@ -14012,7 +14028,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_maxAllowed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_remainingDifference(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) (ret graphql.Marshaler) {
@@ -14035,7 +14051,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_remainingDiffere
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_remainingDifference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_restrictorName(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) (ret graphql.Marshaler) {
@@ -14058,7 +14074,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_restrictorName(c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_QtyRestrictionResult_restrictorName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_QtyRestrictionResult", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_validationInfo(ctx context.Context, field graphql.CollectedField, obj *dto.SelectedPaymentResult) (ret graphql.Marshaler) {
@@ -14113,7 +14129,7 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_processed(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_SelectedPaymentResult_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_SelectedPaymentResult", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_SelectedPaymentResult", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_ShippingItem_title(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
@@ -14136,7 +14152,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_title(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_ShippingItem_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_ShippingItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_ShippingItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_ShippingItem_priceNet(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
@@ -14511,7 +14527,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_hasAppliedDiscounts(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Summary_hasAppliedDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Summary", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Summary", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_Summary_sumTaxes(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
@@ -14686,7 +14702,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_type(ctx context.Context, field g
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Tax_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Tax", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Tax", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Tax_rate(ctx context.Context, field graphql.CollectedField, obj *cart.Tax) (ret graphql.Marshaler) {
@@ -14709,7 +14725,7 @@ func (ec *executionContext) _Commerce_Cart_Tax_rate(ctx context.Context, field g
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Tax_rate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Tax", field, false, false, errors.New("field of type Float does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Tax", field, false, false, "Float")
 }
 
 func (ec *executionContext) _Commerce_Cart_Taxes_items(ctx context.Context, field graphql.CollectedField, obj *dto.Taxes) (ret graphql.Marshaler) {
@@ -14808,7 +14824,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_productCount(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_productCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Teaser", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Teaser", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_Teaser_ItemCount(ctx context.Context, field graphql.CollectedField, obj *cart.Teaser) (ret graphql.Marshaler) {
@@ -14831,7 +14847,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_ItemCount(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_ItemCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Teaser", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Teaser", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Cart_Teaser_DeliveryCodes(ctx context.Context, field graphql.CollectedField, obj *cart.Teaser) (ret graphql.Marshaler) {
@@ -14854,7 +14870,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser_DeliveryCodes(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Teaser_DeliveryCodes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Teaser", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Teaser", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Totalitem_code(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
@@ -14877,7 +14893,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_code(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Totalitem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Totalitem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Totalitem_title(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
@@ -14900,7 +14916,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_title(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Totalitem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Totalitem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_Totalitem_price(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
@@ -14955,7 +14971,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_type(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_Totalitem_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_Totalitem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_Totalitem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result_processed(ctx context.Context, field graphql.CollectedField, obj *dto.UpdateShippingOptionsResult) (ret graphql.Marshaler) {
@@ -14978,7 +14994,7 @@ func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result_
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_UpdateDeliveryShippingOptions_Result_processed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_UpdateDeliveryShippingOptions_Result", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_UpdateDeliveryShippingOptions_Result", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_ValidationResult_hasCommonError(ctx context.Context, field graphql.CollectedField, obj *validation.Result) (ret graphql.Marshaler) {
@@ -15001,7 +15017,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_hasCommonError(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_hasCommonError(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_ValidationResult", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_ValidationResult", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Cart_ValidationResult_commonErrorMessageKey(ctx context.Context, field graphql.CollectedField, obj *validation.Result) (ret graphql.Marshaler) {
@@ -15024,7 +15040,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_commonErrorMessageKe
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Cart_ValidationResult_commonErrorMessageKey(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Cart_ValidationResult", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Cart_ValidationResult", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Cart_ValidationResult_itemResults(ctx context.Context, field graphql.CollectedField, obj *validation.Result) (ret graphql.Marshaler) {
@@ -15079,7 +15095,7 @@ func (ec *executionContext) _Commerce_CategoryData_code(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryData_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_CategoryData_name(ctx context.Context, field graphql.CollectedField, obj *domain3.CategoryData) (ret graphql.Marshaler) {
@@ -15102,7 +15118,7 @@ func (ec *executionContext) _Commerce_CategoryData_name(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryData_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_CategoryData_path(ctx context.Context, field graphql.CollectedField, obj *domain3.CategoryData) (ret graphql.Marshaler) {
@@ -15125,7 +15141,7 @@ func (ec *executionContext) _Commerce_CategoryData_path(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryData_path(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_CategoryData_active(ctx context.Context, field graphql.CollectedField, obj *domain3.CategoryData) (ret graphql.Marshaler) {
@@ -15148,7 +15164,7 @@ func (ec *executionContext) _Commerce_CategoryData_active(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryData_active(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_CategoryData_promoted(ctx context.Context, field graphql.CollectedField, obj *domain3.CategoryData) (ret graphql.Marshaler) {
@@ -15171,7 +15187,7 @@ func (ec *executionContext) _Commerce_CategoryData_promoted(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryData_promoted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryData", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_CategoryData_attributes(ctx context.Context, field graphql.CollectedField, obj *domain3.CategoryData) (ret graphql.Marshaler) {
@@ -15226,7 +15242,7 @@ func (ec *executionContext) _Commerce_CategoryTree_code(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryTree_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_CategoryTree_name(ctx context.Context, field graphql.CollectedField, obj *domain3.TreeData) (ret graphql.Marshaler) {
@@ -15249,7 +15265,7 @@ func (ec *executionContext) _Commerce_CategoryTree_name(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryTree_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_CategoryTree_path(ctx context.Context, field graphql.CollectedField, obj *domain3.TreeData) (ret graphql.Marshaler) {
@@ -15272,7 +15288,7 @@ func (ec *executionContext) _Commerce_CategoryTree_path(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryTree_path(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_CategoryTree_active(ctx context.Context, field graphql.CollectedField, obj *domain3.TreeData) (ret graphql.Marshaler) {
@@ -15295,7 +15311,7 @@ func (ec *executionContext) _Commerce_CategoryTree_active(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryTree_active(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_CategoryTree_subTrees(ctx context.Context, field graphql.CollectedField, obj *domain3.TreeData) (ret graphql.Marshaler) {
@@ -15350,7 +15366,7 @@ func (ec *executionContext) _Commerce_CategoryTree_hasChilds(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryTree_hasChilds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_CategoryTree_documentCount(ctx context.Context, field graphql.CollectedField, obj *domain3.TreeData) (ret graphql.Marshaler) {
@@ -15373,7 +15389,7 @@ func (ec *executionContext) _Commerce_CategoryTree_documentCount(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_CategoryTree_documentCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_CategoryTree", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Category_Attribute_code(ctx context.Context, field graphql.CollectedField, obj *domain3.Attribute) (ret graphql.Marshaler) {
@@ -15396,7 +15412,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_code(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Category_Attribute_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Category_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Category_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Category_Attribute_label(ctx context.Context, field graphql.CollectedField, obj *domain3.Attribute) (ret graphql.Marshaler) {
@@ -15419,7 +15435,7 @@ func (ec *executionContext) _Commerce_Category_Attribute_label(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Category_Attribute_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Category_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Category_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Category_Attribute_values(ctx context.Context, field graphql.CollectedField, obj *domain3.Attribute) (ret graphql.Marshaler) {
@@ -15474,7 +15490,7 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_value(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Category_AttributeValue_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Category_AttributeValue", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Category_AttributeValue", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Category_AttributeValue_label(ctx context.Context, field graphql.CollectedField, obj *domain3.AttributeValue) (ret graphql.Marshaler) {
@@ -15497,7 +15513,7 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_label(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Category_AttributeValue_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Category_AttributeValue", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Category_AttributeValue", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Category_Attributes_get(ctx context.Context, field graphql.CollectedField, obj domain3.Attributes) (ret graphql.Marshaler) {
@@ -15800,7 +15816,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderContext_uuid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderContext", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderContext", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx context.Context, field graphql.CollectedField, obj *application.PlaceOrderPaymentInfo) (ret graphql.Marshaler) {
@@ -15823,7 +15839,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_gateway(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_paymentProvider(ctx context.Context, field graphql.CollectedField, obj *application.PlaceOrderPaymentInfo) (ret graphql.Marshaler) {
@@ -15846,7 +15862,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_paymentProv
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_paymentProvider(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_method(ctx context.Context, field graphql.CollectedField, obj *application.PlaceOrderPaymentInfo) (ret graphql.Marshaler) {
@@ -15869,7 +15885,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_method(ctx 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_method(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_amount(ctx context.Context, field graphql.CollectedField, obj *application.PlaceOrderPaymentInfo) (ret graphql.Marshaler) {
@@ -15924,7 +15940,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderPaymentInfo_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderPaymentInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_key(ctx context.Context, field graphql.CollectedField, obj *dto1.FormParameter) (ret graphql.Marshaler) {
@@ -15947,7 +15963,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_ke
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_Form_Parameter_key(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_Form_Parameter", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_Form_Parameter", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_value(ctx context.Context, field graphql.CollectedField, obj *dto1.FormParameter) (ret graphql.Marshaler) {
@@ -15970,7 +15986,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_va
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_Form_Parameter_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_Form_Parameter", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_Form_Parameter", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_methodData(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
@@ -15993,7 +16009,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_methodData(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_details(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
@@ -16016,7 +16032,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_details(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_options(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
@@ -16039,7 +16055,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_options(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_merchantValidationURL(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
@@ -16062,7 +16078,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_merchantValidationURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_completeURL(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
@@ -16085,7 +16101,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_completeURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Failed) (ret graphql.Marshaler) {
@@ -16108,7 +16124,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Failed_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Failed", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Failed", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_reason(ctx context.Context, field graphql.CollectedField, obj *dto1.Failed) (ret graphql.Marshaler) {
@@ -16163,7 +16179,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_reason(ctx context.Context, field graphql.CollectedField, obj *process.CartValidationErrorReason) (ret graphql.Marshaler) {
@@ -16186,7 +16202,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_validationResult(ctx context.Context, field graphql.CollectedField, obj *process.CartValidationErrorReason) (ret graphql.Marshaler) {
@@ -16241,7 +16257,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_Error_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_Error", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_Error", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer_reason(ctx context.Context, field graphql.CollectedField, obj *process.PaymentCanceledByCustomerReason) (ret graphql.Marshaler) {
@@ -16264,7 +16280,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError_reason(ctx context.Context, field graphql.CollectedField, obj *process.PaymentErrorOccurredReason) (ret graphql.Marshaler) {
@@ -16287,7 +16303,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError_reason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_name(ctx context.Context, field graphql.CollectedField, obj *dto1.PostRedirect) (ret graphql.Marshaler) {
@@ -16310,7 +16326,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_PostRedirect", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_PostRedirect", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.PostRedirect) (ret graphql.Marshaler) {
@@ -16333,7 +16349,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_PostRedirect_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_PostRedirect", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_PostRedirect", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_Parameters(ctx context.Context, field graphql.CollectedField, obj *dto1.PostRedirect) (ret graphql.Marshaler) {
@@ -16388,7 +16404,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_na
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Redirect_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Redirect", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Redirect", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.Redirect) (ret graphql.Marshaler) {
@@ -16411,7 +16427,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_UR
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Redirect_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Redirect", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Redirect", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_name(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowHTML) (ret graphql.Marshaler) {
@@ -16434,7 +16450,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_na
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowHTML_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowHTML", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowHTML", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HTML(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowHTML) (ret graphql.Marshaler) {
@@ -16457,7 +16473,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HT
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowHTML_HTML(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowHTML", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowHTML", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowIframe) (ret graphql.Marshaler) {
@@ -16480,7 +16496,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowIframe", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowIframe", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowIframe) (ret graphql.Marshaler) {
@@ -16503,7 +16519,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowIframe", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowIframe", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_name(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowWalletPayment) (ret graphql.Marshaler) {
@@ -16526,7 +16542,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentMethod(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowWalletPayment) (ret graphql.Marshaler) {
@@ -16549,7 +16565,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentMethod(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentRequestAPI(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowWalletPayment) (ret graphql.Marshaler) {
@@ -16604,7 +16620,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_nam
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Success_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Success", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Success", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_name(ctx context.Context, field graphql.CollectedField, obj *dto1.TriggerClientSDK) (ret graphql.Marshaler) {
@@ -16627,7 +16643,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.TriggerClientSDK) (ret graphql.Marshaler) {
@@ -16650,7 +16666,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_URL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_data(ctx context.Context, field graphql.CollectedField, obj *dto1.TriggerClientSDK) (ret graphql.Marshaler) {
@@ -16673,7 +16689,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_data(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Wait) (ret graphql.Marshaler) {
@@ -16696,7 +16712,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_Wait_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Wait", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_Wait", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(ctx context.Context, field graphql.CollectedField, obj *dto1.WaitForCustomer) (ret graphql.Marshaler) {
@@ -16719,7 +16735,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_WaitForCustomer", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlaceOrderState_State_WaitForCustomer", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx context.Context, field graphql.CollectedField, obj *dto1.PlacedOrderInfos) (ret graphql.Marshaler) {
@@ -16806,7 +16822,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_PlacedOrderInfos_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_PlacedOrderInfos", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_PlacedOrderInfos", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx context.Context, field graphql.CollectedField, obj *dto1.StartPlaceOrderResult) (ret graphql.Marshaler) {
@@ -16829,7 +16845,7 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Checkout_StartPlaceOrder_Result_uuid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Checkout_StartPlaceOrder_Result", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Checkout_StartPlaceOrder_Result", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_id(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -16852,7 +16868,7 @@ func (ec *executionContext) _Commerce_Customer_Address_id(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type ID does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "ID")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_additionalAddressLines(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -16875,7 +16891,7 @@ func (ec *executionContext) _Commerce_Customer_Address_additionalAddressLines(ct
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_additionalAddressLines(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_city(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -16898,7 +16914,7 @@ func (ec *executionContext) _Commerce_Customer_Address_city(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_city(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_company(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -16921,7 +16937,7 @@ func (ec *executionContext) _Commerce_Customer_Address_company(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_company(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_countryCode(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -16944,7 +16960,7 @@ func (ec *executionContext) _Commerce_Customer_Address_countryCode(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_countryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_defaultBilling(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -16967,7 +16983,7 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultBilling(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_defaultBilling(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_defaultShipping(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -16990,7 +17006,7 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultShipping(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_defaultShipping(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_firstName(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17013,7 +17029,7 @@ func (ec *executionContext) _Commerce_Customer_Address_firstName(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_firstName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_lastName(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17036,7 +17052,7 @@ func (ec *executionContext) _Commerce_Customer_Address_lastName(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_lastName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_postCode(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17059,7 +17075,7 @@ func (ec *executionContext) _Commerce_Customer_Address_postCode(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_postCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_prefix(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17082,7 +17098,7 @@ func (ec *executionContext) _Commerce_Customer_Address_prefix(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_prefix(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_regionCode(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17105,7 +17121,7 @@ func (ec *executionContext) _Commerce_Customer_Address_regionCode(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_regionCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_street(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17128,7 +17144,7 @@ func (ec *executionContext) _Commerce_Customer_Address_street(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_street(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_streetNumber(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17151,7 +17167,7 @@ func (ec *executionContext) _Commerce_Customer_Address_streetNumber(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_streetNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_state(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17174,7 +17190,7 @@ func (ec *executionContext) _Commerce_Customer_Address_state(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_telephone(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17197,7 +17213,7 @@ func (ec *executionContext) _Commerce_Customer_Address_telephone(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_telephone(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Address_email(ctx context.Context, field graphql.CollectedField, obj *domain5.Address) (ret graphql.Marshaler) {
@@ -17220,7 +17236,7 @@ func (ec *executionContext) _Commerce_Customer_Address_email(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Address_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Address", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_gender(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17243,7 +17259,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_gender(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_gender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_firstName(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17266,7 +17282,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_firstName(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_firstName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_lastName(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17289,7 +17305,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_lastName(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_lastName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_middleName(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17312,7 +17328,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_middleName(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_middleName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_mainEmail(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17335,7 +17351,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_mainEmail(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_mainEmail(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_prefix(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17358,7 +17374,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_prefix(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_prefix(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17381,7 +17397,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.C
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_birthday(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type Date does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "Date")
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx context.Context, field graphql.CollectedField, obj *domain5.PersonData) (ret graphql.Marshaler) {
@@ -17404,7 +17420,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_PersonData_nationality(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_PersonData", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Result_id(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) (ret graphql.Marshaler) {
@@ -17427,7 +17443,7 @@ func (ec *executionContext) _Commerce_Customer_Result_id(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Result_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Result", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Result", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Customer_Result_personalData(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) (ret graphql.Marshaler) {
@@ -17622,7 +17638,7 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_isLoggedIn(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Status_Result_isLoggedIn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Status_Result", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Status_Result", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Customer_Status_Result_userID(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerStatusResult) (ret graphql.Marshaler) {
@@ -17645,7 +17661,7 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_userID(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Customer_Status_Result_userID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Customer_Status_Result", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Customer_Status_Result", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Price_amount(ctx context.Context, field graphql.CollectedField, obj *domain.Price) (ret graphql.Marshaler) {
@@ -17668,7 +17684,7 @@ func (ec *executionContext) _Commerce_Price_amount(ctx context.Context, field gr
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Price_amount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Price", field, true, false, errors.New("field of type Float does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Price", field, true, false, "Float")
 }
 
 func (ec *executionContext) _Commerce_Price_currency(ctx context.Context, field graphql.CollectedField, obj *domain.Price) (ret graphql.Marshaler) {
@@ -17691,7 +17707,7 @@ func (ec *executionContext) _Commerce_Price_currency(ctx context.Context, field 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Price_currency(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Price", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Price", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Price_Charge_price(ctx context.Context, field graphql.CollectedField, obj *domain.Charge) (ret graphql.Marshaler) {
@@ -17778,7 +17794,7 @@ func (ec *executionContext) _Commerce_Price_Charge_type(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Price_Charge_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Price_Charge", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Price_Charge", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Price_Charge_reference(ctx context.Context, field graphql.CollectedField, obj *domain.Charge) (ret graphql.Marshaler) {
@@ -17801,7 +17817,7 @@ func (ec *executionContext) _Commerce_Price_Charge_reference(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Price_Charge_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Price_Charge", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Price_Charge", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Price_ChargeQualifier_type(ctx context.Context, field graphql.CollectedField, obj *domain.ChargeQualifier) (ret graphql.Marshaler) {
@@ -17824,7 +17840,7 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_type(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Price_ChargeQualifier_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Price_ChargeQualifier", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Price_ChargeQualifier", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Price_ChargeQualifier_reference(ctx context.Context, field graphql.CollectedField, obj *domain.ChargeQualifier) (ret graphql.Marshaler) {
@@ -17847,7 +17863,7 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_reference(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Price_ChargeQualifier_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Price_ChargeQualifier", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Price_ChargeQualifier", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Price_Charges_items(ctx context.Context, field graphql.CollectedField, obj *domain.Charges) (ret graphql.Marshaler) {
@@ -18078,7 +18094,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_type(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18101,7 +18117,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCo
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18124,7 +18140,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_identifier(ct
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18243,7 +18259,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18298,7 +18314,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18321,7 +18337,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_shortDescript
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18440,7 +18456,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variantMarket
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariantProduct_variantMarketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariantProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variationSelections(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18591,7 +18607,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_code(ctx 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
@@ -18614,7 +18630,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_label(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_value(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
@@ -18637,7 +18653,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_value(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
@@ -18660,7 +18676,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_unitCode(
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ActiveVariationSelection_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ActiveVariationSelection", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attribute_code(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
@@ -18683,7 +18699,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_code(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attribute_codeLabel(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
@@ -18706,7 +18722,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_codeLabel(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_codeLabel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attribute_label(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
@@ -18729,7 +18745,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_label(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attribute_value(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
@@ -18752,7 +18768,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_value(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attribute_unitCode(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
@@ -18775,7 +18791,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_unitCode(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attribute_values(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
@@ -18798,7 +18814,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_values(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_values(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attribute_labels(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
@@ -18821,7 +18837,7 @@ func (ec *executionContext) _Commerce_Product_Attribute_labels(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_labels(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attribute", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attributes_attributeKeys(ctx context.Context, field graphql.CollectedField, obj domain1.Attributes) (ret graphql.Marshaler) {
@@ -18844,7 +18860,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_attributeKeys(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Attributes_attributeKeys(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Attributes", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Attributes", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Attributes_attributes(ctx context.Context, field graphql.CollectedField, obj domain1.Attributes) (ret graphql.Marshaler) {
@@ -19031,7 +19047,7 @@ func (ec *executionContext) _Commerce_Product_Badge_code(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Badge_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Badge_label(ctx context.Context, field graphql.CollectedField, obj *domain1.Badge) (ret graphql.Marshaler) {
@@ -19054,7 +19070,7 @@ func (ec *executionContext) _Commerce_Product_Badge_label(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Badge_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Badge_color(ctx context.Context, field graphql.CollectedField, obj *domain1.Badge) (ret graphql.Marshaler) {
@@ -19077,7 +19093,7 @@ func (ec *executionContext) _Commerce_Product_Badge_color(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Badge_color(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Badge_priority(ctx context.Context, field graphql.CollectedField, obj *domain1.Badge) (ret graphql.Marshaler) {
@@ -19100,7 +19116,7 @@ func (ec *executionContext) _Commerce_Product_Badge_priority(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Badge_priority(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Badge", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Product_Badges_all(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductBadges) (ret graphql.Marshaler) {
@@ -19187,7 +19203,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_type(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_BundleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
@@ -19210,7 +19226,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_marketPlaceCode(ctx 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_BundleProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
@@ -19233,7 +19249,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_identifier(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_BundleProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
@@ -19352,7 +19368,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_title(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_BundleProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
@@ -19407,7 +19423,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_description(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_BundleProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
@@ -19430,7 +19446,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct_shortDescription(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_BundleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_BundleProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
@@ -19709,7 +19725,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_code(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_CategoryTeaser", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_CategoryTeaser", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_CategoryTeaser_path(ctx context.Context, field graphql.CollectedField, obj *domain1.CategoryTeaser) (ret graphql.Marshaler) {
@@ -19732,7 +19748,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_path(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_path(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_CategoryTeaser", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_CategoryTeaser", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_CategoryTeaser_name(ctx context.Context, field graphql.CollectedField, obj *domain1.CategoryTeaser) (ret graphql.Marshaler) {
@@ -19755,7 +19771,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_name(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_CategoryTeaser", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_CategoryTeaser", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_CategoryTeaser_parent(ctx context.Context, field graphql.CollectedField, obj *domain1.CategoryTeaser) (ret graphql.Marshaler) {
@@ -19810,7 +19826,7 @@ func (ec *executionContext) _Commerce_Product_Choice_identifier(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Choice_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Choice", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Choice", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Choice_required(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
@@ -19833,7 +19849,7 @@ func (ec *executionContext) _Commerce_Product_Choice_required(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Choice_required(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Choice", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Choice", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Product_Choice_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
@@ -19856,7 +19872,7 @@ func (ec *executionContext) _Commerce_Product_Choice_label(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Choice_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Choice", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Choice", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Choice_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
@@ -19975,7 +19991,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_type(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
@@ -19998,7 +20014,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCod
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
@@ -20021,7 +20037,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_identifier(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
@@ -20140,7 +20156,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
@@ -20195,7 +20211,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ct
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
@@ -20218,7 +20234,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_shortDescripti
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_ConfigurableProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
@@ -20529,7 +20545,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_type(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_EarningInfo_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_EarningInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_EarningInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_default(ctx context.Context, field graphql.CollectedField, obj *domain1.LoyaltyEarningInfo) (ret graphql.Marshaler) {
@@ -20584,7 +20600,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_type(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_default(ctx context.Context, field graphql.CollectedField, obj *domain1.LoyaltyPriceInfo) (ret graphql.Marshaler) {
@@ -20639,7 +20655,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_isDiscounted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discounted(ctx context.Context, field graphql.CollectedField, obj *domain1.LoyaltyPriceInfo) (ret graphql.Marshaler) {
@@ -20694,7 +20710,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discountText(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_discountText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_minPointsToSpent(ctx context.Context, field graphql.CollectedField, obj *domain1.LoyaltyPriceInfo) (ret graphql.Marshaler) {
@@ -20717,7 +20733,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_minPointsToSpent
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_minPointsToSpent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, errors.New("field of type Float does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, "Float")
 }
 
 func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent(ctx context.Context, field graphql.CollectedField, obj *domain1.LoyaltyPriceInfo) (ret graphql.Marshaler) {
@@ -20740,7 +20756,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, errors.New("field of type Float does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Loyalty_PriceInfo", field, false, false, "Float")
 }
 
 func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_context(ctx context.Context, field graphql.CollectedField, obj *domain1.LoyaltyPriceInfo) (ret graphql.Marshaler) {
@@ -20871,7 +20887,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_type(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_MediaItem_mimeType(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
@@ -20894,7 +20910,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_mimeType(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_mimeType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_MediaItem_usage(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
@@ -20917,7 +20933,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_usage(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_usage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_MediaItem_title(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
@@ -20940,7 +20956,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_title(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_MediaItem_reference(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
@@ -20963,7 +20979,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_reference(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_MediaItem_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_MediaItem", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Meta_keywords(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductMeta) (ret graphql.Marshaler) {
@@ -20986,7 +21002,7 @@ func (ec *executionContext) _Commerce_Product_Meta_keywords(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Meta_keywords(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Meta", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Meta", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_Option_product(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Option) (ret graphql.Marshaler) {
@@ -21041,7 +21057,7 @@ func (ec *executionContext) _Commerce_Product_Option_qty(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_Option_qty(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_Option", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_Option", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceContext_customerGroup(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
@@ -21064,7 +21080,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_customerGroup(ctx con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_customerGroup(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceContext_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
@@ -21087,7 +21103,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_deliveryCode(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_deliveryCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceContext_channelCode(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
@@ -21110,7 +21126,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_channelCode(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_channelCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceContext_locale(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
@@ -21133,7 +21149,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_locale(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_locale(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceContext_from(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
@@ -21156,7 +21172,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_from(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_from(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, "Time")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceContext_to(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
@@ -21179,7 +21195,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext_to(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceContext_to(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, errors.New("field of type Time does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceContext", field, false, false, "Time")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_default(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -21266,7 +21282,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discountText(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_discountText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_activeBase(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -21321,7 +21337,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseAmount(ctx con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBaseAmount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, errors.New("field of type Float does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, "Float")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseUnit(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -21344,7 +21360,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseUnit(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_activeBaseUnit(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_isDiscounted(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -21367,7 +21383,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_isDiscounted(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_isDiscounted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_campaignRules(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -21390,7 +21406,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_campaignRules(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_campaignRules(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_denyMoreDiscounts(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -21413,7 +21429,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_denyMoreDiscounts(ctx co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_denyMoreDiscounts(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_context(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -21468,7 +21484,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_taxClass(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_PriceInfo_taxClass(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_PriceInfo", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SearchResult_products(ctx context.Context, field graphql.CollectedField, obj *graphql1.SearchResultDTO) (ret graphql.Marshaler) {
@@ -21619,7 +21635,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_hasSelectedFacet(ctx 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_hasSelectedFacet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SearchResult", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SearchResult", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Product_SearchResult_promotion(ctx context.Context, field graphql.CollectedField, obj *graphql1.SearchResultDTO) (ret graphql.Marshaler) {
@@ -21706,7 +21722,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -21729,7 +21745,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -21752,7 +21768,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_identifier(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_identifier(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -21871,7 +21887,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -21926,7 +21942,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -21949,7 +21965,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_shortDescription(ctx
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SimpleProduct_shortDescription(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SimpleProduct", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -22132,7 +22148,7 @@ func (ec *executionContext) _Commerce_Product_SpecificationEntry_label(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SpecificationEntry_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SpecificationEntry", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SpecificationEntry", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SpecificationEntry_values(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductSpecificationEntry) (ret graphql.Marshaler) {
@@ -22155,7 +22171,7 @@ func (ec *executionContext) _Commerce_Product_SpecificationEntry_values(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SpecificationEntry_values(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SpecificationEntry", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SpecificationEntry", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SpecificationGroup_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductSpecificationGroup) (ret graphql.Marshaler) {
@@ -22178,7 +22194,7 @@ func (ec *executionContext) _Commerce_Product_SpecificationGroup_title(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_SpecificationGroup_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_SpecificationGroup", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_SpecificationGroup", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_SpecificationGroup_entries(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductSpecificationGroup) (ret graphql.Marshaler) {
@@ -22329,7 +22345,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_label(c
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
@@ -22352,7 +22368,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_code(ct
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
@@ -22407,7 +22423,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute_Option", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute_Option", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
@@ -22430,7 +22446,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute_Option", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Attribute_Option", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
@@ -22549,7 +22565,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_key(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Match_Attributes", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Match_Attributes", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_value(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionMatchAttributes) (ret graphql.Marshaler) {
@@ -22572,7 +22588,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Match_Attributes", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Match_Attributes", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionMatchVariant) (ret graphql.Marshaler) {
@@ -22595,7 +22611,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant_mar
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Match_Variant", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Match_Variant", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
@@ -22618,7 +22634,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Option_OtherAttributesRestriction", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Option_OtherAttributesRestriction", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
@@ -22641,7 +22657,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Option_OtherAttributesRestriction", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariantSelection_Option_OtherAttributesRestriction", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelection) (ret graphql.Marshaler) {
@@ -22664,7 +22680,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelection) (ret graphql.Marshaler) {
@@ -22687,7 +22703,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelection) (ret graphql.Marshaler) {
@@ -22742,7 +22758,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ct
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_Option", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_Option", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_Option_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
@@ -22765,7 +22781,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_unitCode
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_unitCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_Option", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_Option", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
@@ -22788,7 +22804,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ct
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Option_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_Option", field, false, false, errors.New("field of type Commerce_Product_VariationSelection_OptionState does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_Option", field, false, false, "Commerce_Product_VariationSelection_OptionState")
 }
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variant(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
@@ -22843,7 +22859,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant_m
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_OptionVariant", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Product_VariationSelection_OptionVariant", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Action_type(ctx context.Context, field graphql.CollectedField, obj *domain2.Action) (ret graphql.Marshaler) {
@@ -22866,7 +22882,7 @@ func (ec *executionContext) _Commerce_Search_Action_type(ctx context.Context, fi
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Action_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Action", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Action", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Action_content(ctx context.Context, field graphql.CollectedField, obj *domain2.Action) (ret graphql.Marshaler) {
@@ -22889,7 +22905,7 @@ func (ec *executionContext) _Commerce_Search_Action_content(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Action_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Action", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Action", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) (ret graphql.Marshaler) {
@@ -22912,7 +22928,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) (ret graphql.Marshaler) {
@@ -22935,7 +22951,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) (ret graphql.Marshaler) {
@@ -22958,7 +22974,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacet_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) (ret graphql.Marshaler) {
@@ -23013,7 +23029,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_hasSelectedItem(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacet_hasSelectedItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacet", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) (ret graphql.Marshaler) {
@@ -23036,7 +23052,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) (ret graphql.Marshaler) {
@@ -23059,7 +23075,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) (ret graphql.Marshaler) {
@@ -23082,7 +23098,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_ListFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) (ret graphql.Marshaler) {
@@ -23105,7 +23121,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_count(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_ListFacetItem_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_ListFacetItem", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, field graphql.CollectedField, obj *domain2.SearchMeta) (ret graphql.Marshaler) {
@@ -23128,7 +23144,7 @@ func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, fie
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Meta_query(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Context, field graphql.CollectedField, obj *domain2.SearchMeta) (ret graphql.Marshaler) {
@@ -23151,7 +23167,7 @@ func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Meta_originalQuery(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, field graphql.CollectedField, obj *domain2.SearchMeta) (ret graphql.Marshaler) {
@@ -23174,7 +23190,7 @@ func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, fiel
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Meta_page(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, field graphql.CollectedField, obj *domain2.SearchMeta) (ret graphql.Marshaler) {
@@ -23197,7 +23213,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Meta_numPages(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context, field graphql.CollectedField, obj *domain2.SearchMeta) (ret graphql.Marshaler) {
@@ -23220,7 +23236,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Meta_numResults(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Meta", field, false, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Context, field graphql.CollectedField, obj *domain2.SearchMeta) (ret graphql.Marshaler) {
@@ -23275,7 +23291,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_title(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Promotion_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Promotion", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Promotion", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Promotion_content(ctx context.Context, field graphql.CollectedField, obj *searchdto.PromotionDTO) (ret graphql.Marshaler) {
@@ -23298,7 +23314,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_content(ctx context.Conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Promotion_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Promotion", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Promotion", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Promotion_url(ctx context.Context, field graphql.CollectedField, obj *searchdto.PromotionDTO) (ret graphql.Marshaler) {
@@ -23321,7 +23337,7 @@ func (ec *executionContext) _Commerce_Search_Promotion_url(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Promotion_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Promotion", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Promotion", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Promotion_media(ctx context.Context, field graphql.CollectedField, obj *searchdto.PromotionDTO) (ret graphql.Marshaler) {
@@ -23376,7 +23392,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_type(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_PromotionMedia_mimeType(ctx context.Context, field graphql.CollectedField, obj *domain2.Media) (ret graphql.Marshaler) {
@@ -23399,7 +23415,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_mimeType(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_mimeType(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_PromotionMedia_usage(ctx context.Context, field graphql.CollectedField, obj *domain2.Media) (ret graphql.Marshaler) {
@@ -23422,7 +23438,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_usage(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_usage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_PromotionMedia_title(ctx context.Context, field graphql.CollectedField, obj *domain2.Media) (ret graphql.Marshaler) {
@@ -23445,7 +23461,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_title(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_PromotionMedia_reference(ctx context.Context, field graphql.CollectedField, obj *domain2.Media) (ret graphql.Marshaler) {
@@ -23468,7 +23484,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_reference(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_PromotionMedia_reference(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_PromotionMedia", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) (ret graphql.Marshaler) {
@@ -23491,7 +23507,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) (ret graphql.Marshaler) {
@@ -23514,7 +23530,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) (ret graphql.Marshaler) {
@@ -23537,7 +23553,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacet_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) (ret graphql.Marshaler) {
@@ -23592,7 +23608,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_hasSelectedItem(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacet_hasSelectedItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacet", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23615,7 +23631,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23638,7 +23654,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23661,7 +23677,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23684,7 +23700,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23707,7 +23723,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_min(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23730,7 +23746,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_max(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23753,7 +23769,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selectedMin(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) (ret graphql.Marshaler) {
@@ -23776,7 +23792,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_RangeFacetItem_selectedMax(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_RangeFacetItem", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchSortOption) (ret graphql.Marshaler) {
@@ -23799,7 +23815,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_SortOption_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_SortOption", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_SortOption", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchSortOption) (ret graphql.Marshaler) {
@@ -23822,7 +23838,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Contex
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_SortOption_field(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_SortOption", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_SortOption", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_SortOption_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchSortOption) (ret graphql.Marshaler) {
@@ -23845,7 +23861,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_selected(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_SortOption_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_SortOption", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_SortOption", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context, field graphql.CollectedField, obj *domain2.Suggestion) (ret graphql.Marshaler) {
@@ -23868,7 +23884,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Suggestion_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Suggestion", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Suggestion", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Context, field graphql.CollectedField, obj *domain2.Suggestion) (ret graphql.Marshaler) {
@@ -23891,7 +23907,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_Suggestion_highlight(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_Suggestion", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_Suggestion", field, false, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) (ret graphql.Marshaler) {
@@ -23914,7 +23930,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) (ret graphql.Marshaler) {
@@ -23937,7 +23953,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) (ret graphql.Marshaler) {
@@ -23960,7 +23976,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Cont
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_position(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacet_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) (ret graphql.Marshaler) {
@@ -24015,7 +24031,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_hasSelectedItem(ctx conte
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacet_hasSelectedItem(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacet", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) (ret graphql.Marshaler) {
@@ -24038,7 +24054,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) (ret graphql.Marshaler) {
@@ -24061,7 +24077,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, "String")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) (ret graphql.Marshaler) {
@@ -24084,7 +24100,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_selected(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) (ret graphql.Marshaler) {
@@ -24107,7 +24123,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Con
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_count(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, errors.New("field of type Int does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, "Int")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) (ret graphql.Marshaler) {
@@ -24130,7 +24146,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Co
 	)
 }
 func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_active(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Commerce_Search_TreeFacetItem", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) _Commerce_Search_TreeFacetItem_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) (ret graphql.Marshaler) {
@@ -24185,7 +24201,7 @@ func (ec *executionContext) _Mutation_flamingo(ctx context.Context, field graphq
 	)
 }
 func (ec *executionContext) fieldContext_Mutation_flamingo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Mutation", field, true, true, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Mutation", field, true, true, "String")
 }
 
 func (ec *executionContext) _Mutation_Commerce_Cart_AddToCart(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -24780,7 +24796,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_Clean(ctx context.Context, f
 	)
 }
 func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_Clean(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Mutation", field, true, true, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Mutation", field, true, true, "Boolean")
 }
 
 func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalData(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -24979,7 +24995,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_ClearPlaceOrder(ctx cont
 	)
 }
 func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_ClearPlaceOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Mutation", field, true, true, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Mutation", field, true, true, "Boolean")
 }
 
 func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -25066,7 +25082,7 @@ func (ec *executionContext) _Query_flamingo(ctx context.Context, field graphql.C
 	)
 }
 func (ec *executionContext) fieldContext_Query_flamingo(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Query", field, true, true, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("Query", field, true, true, "String")
 }
 
 func (ec *executionContext) _Query_Commerce_Product(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -25349,7 +25365,7 @@ func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx contex
 	)
 }
 func (ec *executionContext) fieldContext_Query_Commerce_Checkout_ActivePlaceOrder(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("Query", field, true, true, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("Query", field, true, true, "Boolean")
 }
 
 func (ec *executionContext) _Query_Commerce_Checkout_CurrentContext(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -25529,10 +25545,10 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 		},
 		nil,
 		func(ctx context.Context, selections ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
-			return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, selections, v)
+			return ec.marshalN__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, selections, v)
 		},
 		true,
-		false,
+		true,
 	)
 }
 func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -25568,7 +25584,7 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 	)
 }
 func (ec *executionContext) fieldContext___Directive_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Directive", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Directive", field, false, false, "String")
 }
 
 func (ec *executionContext) ___Directive_description(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -25591,7 +25607,7 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 	)
 }
 func (ec *executionContext) fieldContext___Directive_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Directive", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Directive", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -25614,7 +25630,7 @@ func (ec *executionContext) ___Directive_isRepeatable(ctx context.Context, field
 	)
 }
 func (ec *executionContext) fieldContext___Directive_isRepeatable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Directive", field, false, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("__Directive", field, false, false, "Boolean")
 }
 
 func (ec *executionContext) ___Directive_locations(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -25637,7 +25653,7 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 	)
 }
 func (ec *executionContext) fieldContext___Directive_locations(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Directive", field, false, false, errors.New("field of type __DirectiveLocation does not have child fields"))
+	return graphql.NewScalarFieldContext("__Directive", field, false, false, "__DirectiveLocation")
 }
 
 func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -25649,7 +25665,8 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 			return ec.fieldContext___Directive_args(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return obj.Args, nil
+			fc := graphql.GetFieldContext(ctx)
+			return obj.VisibleArgs(fc.Args["includeDeprecated"].(bool)), nil
 		},
 		nil,
 		func(ctx context.Context, selections ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
@@ -25663,7 +25680,7 @@ func (ec *executionContext) fieldContext___Directive_args(ctx context.Context, f
 	fc = &graphql.FieldContext{
 		Object:     "__Directive",
 		Field:      field,
-		IsMethod:   false,
+		IsMethod:   true,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return ec.childFields___InputValue(ctx, field)
@@ -25703,7 +25720,7 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 	)
 }
 func (ec *executionContext) fieldContext___EnumValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__EnumValue", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__EnumValue", field, false, false, "String")
 }
 
 func (ec *executionContext) ___EnumValue_description(ctx context.Context, field graphql.CollectedField, obj *introspection.EnumValue) (ret graphql.Marshaler) {
@@ -25726,7 +25743,7 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 	)
 }
 func (ec *executionContext) fieldContext___EnumValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__EnumValue", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__EnumValue", field, true, false, "String")
 }
 
 func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field graphql.CollectedField, obj *introspection.EnumValue) (ret graphql.Marshaler) {
@@ -25749,7 +25766,7 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 	)
 }
 func (ec *executionContext) fieldContext___EnumValue_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__EnumValue", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("__EnumValue", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, field graphql.CollectedField, obj *introspection.EnumValue) (ret graphql.Marshaler) {
@@ -25772,7 +25789,7 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 	)
 }
 func (ec *executionContext) fieldContext___EnumValue_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__EnumValue", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__EnumValue", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Field) (ret graphql.Marshaler) {
@@ -25795,7 +25812,7 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 	)
 }
 func (ec *executionContext) fieldContext___Field_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Field", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Field", field, false, false, "String")
 }
 
 func (ec *executionContext) ___Field_description(ctx context.Context, field graphql.CollectedField, obj *introspection.Field) (ret graphql.Marshaler) {
@@ -25818,7 +25835,7 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 	)
 }
 func (ec *executionContext) fieldContext___Field_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Field", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Field", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.CollectedField, obj *introspection.Field) (ret graphql.Marshaler) {
@@ -25830,7 +25847,8 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 			return ec.fieldContext___Field_args(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return obj.Args, nil
+			fc := graphql.GetFieldContext(ctx)
+			return obj.VisibleArgs(fc.Args["includeDeprecated"].(bool)), nil
 		},
 		nil,
 		func(ctx context.Context, selections ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
@@ -25844,7 +25862,7 @@ func (ec *executionContext) fieldContext___Field_args(ctx context.Context, field
 	fc = &graphql.FieldContext{
 		Object:     "__Field",
 		Field:      field,
-		IsMethod:   false,
+		IsMethod:   true,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return ec.childFields___InputValue(ctx, field)
@@ -25916,7 +25934,7 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 	)
 }
 func (ec *executionContext) fieldContext___Field_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Field", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("__Field", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, field graphql.CollectedField, obj *introspection.Field) (ret graphql.Marshaler) {
@@ -25939,7 +25957,7 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 	)
 }
 func (ec *executionContext) fieldContext___Field_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Field", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Field", field, true, false, "String")
 }
 
 func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
@@ -25962,7 +25980,7 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 	)
 }
 func (ec *executionContext) fieldContext___InputValue_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__InputValue", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__InputValue", field, false, false, "String")
 }
 
 func (ec *executionContext) ___InputValue_description(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
@@ -25985,7 +26003,7 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 	)
 }
 func (ec *executionContext) fieldContext___InputValue_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__InputValue", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__InputValue", field, true, false, "String")
 }
 
 func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
@@ -26040,7 +26058,7 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 	)
 }
 func (ec *executionContext) fieldContext___InputValue_defaultValue(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__InputValue", field, false, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__InputValue", field, false, false, "String")
 }
 
 func (ec *executionContext) ___InputValue_isDeprecated(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
@@ -26063,7 +26081,7 @@ func (ec *executionContext) ___InputValue_isDeprecated(ctx context.Context, fiel
 	)
 }
 func (ec *executionContext) fieldContext___InputValue_isDeprecated(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__InputValue", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("__InputValue", field, true, false, "Boolean")
 }
 
 func (ec *executionContext) ___InputValue_deprecationReason(ctx context.Context, field graphql.CollectedField, obj *introspection.InputValue) (ret graphql.Marshaler) {
@@ -26086,7 +26104,7 @@ func (ec *executionContext) ___InputValue_deprecationReason(ctx context.Context,
 	)
 }
 func (ec *executionContext) fieldContext___InputValue_deprecationReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__InputValue", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__InputValue", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Schema_description(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) (ret graphql.Marshaler) {
@@ -26109,7 +26127,7 @@ func (ec *executionContext) ___Schema_description(ctx context.Context, field gra
 	)
 }
 func (ec *executionContext) fieldContext___Schema_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Schema", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Schema", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.CollectedField, obj *introspection.Schema) (ret graphql.Marshaler) {
@@ -26292,7 +26310,7 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 	)
 }
 func (ec *executionContext) fieldContext___Type_kind(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Type", field, true, false, errors.New("field of type __TypeKind does not have child fields"))
+	return graphql.NewScalarFieldContext("__Type", field, true, false, "__TypeKind")
 }
 
 func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) (ret graphql.Marshaler) {
@@ -26315,7 +26333,7 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 	)
 }
 func (ec *executionContext) fieldContext___Type_name(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Type", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Type", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Type_description(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) (ret graphql.Marshaler) {
@@ -26338,7 +26356,7 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 	)
 }
 func (ec *executionContext) fieldContext___Type_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Type", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Type", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) (ret graphql.Marshaler) {
@@ -26361,7 +26379,7 @@ func (ec *executionContext) ___Type_specifiedByURL(ctx context.Context, field gr
 	)
 }
 func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Type", field, true, false, errors.New("field of type String does not have child fields"))
+	return graphql.NewScalarFieldContext("__Type", field, true, false, "String")
 }
 
 func (ec *executionContext) ___Type_fields(ctx context.Context, field graphql.CollectedField, obj *introspection.Type) (ret graphql.Marshaler) {
@@ -26525,7 +26543,8 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 			return ec.fieldContext___Type_inputFields(ctx, field)
 		},
 		func(ctx context.Context) (any, error) {
-			return obj.InputFields(), nil
+			fc := graphql.GetFieldContext(ctx)
+			return obj.VisibleInputFields(fc.Args["includeDeprecated"].(bool)), nil
 		},
 		nil,
 		func(ctx context.Context, selections ast.SelectionSet, v []introspection.InputValue) graphql.Marshaler {
@@ -26535,7 +26554,7 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 		false,
 	)
 }
-func (ec *executionContext) fieldContext___Type_inputFields(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext___Type_inputFields(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "__Type",
 		Field:      field,
@@ -26544,6 +26563,17 @@ func (ec *executionContext) fieldContext___Type_inputFields(_ context.Context, f
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return ec.childFields___InputValue(ctx, field)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field___Type_inputFields_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -26600,7 +26630,7 @@ func (ec *executionContext) ___Type_isOneOf(ctx context.Context, field graphql.C
 	)
 }
 func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("__Type", field, true, false, errors.New("field of type Boolean does not have child fields"))
+	return graphql.NewScalarFieldContext("__Type", field, true, false, "Boolean")
 }
 
 // endregion **************************** field.gotpl *****************************
@@ -26663,6 +26693,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 		}
 	}
 	return it, nil
+}
+
+// UnmarshalCommerce_Cart_AddToCartInput unmarshals raw into the Commerce_Cart_AddToCartInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_AddToCartInput(ctx context.Context, raw any) (dto.AddToCart, error) {
+	var out dto.AddToCart
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_AddToCartInput", raw, &out)
+	return out, err
 }
 
 func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx context.Context, obj any) (forms.AddressForm, error) {
@@ -26821,6 +26863,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 	return it, nil
 }
 
+// UnmarshalCommerce_Cart_AddressFormInput unmarshals raw into the Commerce_Cart_AddressFormInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_AddressFormInput(ctx context.Context, raw any) (forms.AddressForm, error) {
+	var out forms.AddressForm
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_AddressFormInput", raw, &out)
+	return out, err
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput(ctx context.Context, obj any) (dto.ChoiceConfiguration, error) {
 	var it dto.ChoiceConfiguration
 	if obj == nil {
@@ -26872,6 +26926,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 	return it, nil
 }
 
+// UnmarshalCommerce_Cart_ChoiceConfigurationInput unmarshals raw into the Commerce_Cart_ChoiceConfigurationInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_ChoiceConfigurationInput(ctx context.Context, raw any) (dto.ChoiceConfiguration, error) {
+	var out dto.ChoiceConfiguration
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_ChoiceConfigurationInput", raw, &out)
+	return out, err
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx context.Context, obj any) (dto.DeliveryAdditionalData, error) {
 	var it dto.DeliveryAdditionalData
 	if obj == nil {
@@ -26907,6 +26973,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 		}
 	}
 	return it, nil
+}
+
+// UnmarshalCommerce_Cart_DeliveryAdditionalDataInput unmarshals raw into the Commerce_Cart_DeliveryAdditionalDataInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_DeliveryAdditionalDataInput(ctx context.Context, raw any) (dto.DeliveryAdditionalData, error) {
+	var out dto.DeliveryAdditionalData
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_DeliveryAdditionalDataInput", raw, &out)
+	return out, err
 }
 
 func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx context.Context, obj any) (forms.DeliveryForm, error) {
@@ -26974,6 +27052,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 	return it, nil
 }
 
+// UnmarshalCommerce_Cart_DeliveryAddressInput unmarshals raw into the Commerce_Cart_DeliveryAddressInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_DeliveryAddressInput(ctx context.Context, raw any) (forms.DeliveryForm, error) {
+	var out forms.DeliveryForm
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_DeliveryAddressInput", raw, &out)
+	return out, err
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx context.Context, obj any) (dto.DeliveryShippingOption, error) {
 	var it dto.DeliveryShippingOption
 	if obj == nil {
@@ -27018,6 +27108,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 	return it, nil
 }
 
+// UnmarshalCommerce_Cart_DeliveryShippingOptionInput unmarshals raw into the Commerce_Cart_DeliveryShippingOptionInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_DeliveryShippingOptionInput(ctx context.Context, raw any) (dto.DeliveryShippingOption, error) {
+	var out dto.DeliveryShippingOption
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_DeliveryShippingOptionInput", raw, &out)
+	return out, err
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx context.Context, obj any) (dto.KeyValue, error) {
 	var it dto.KeyValue
 	if obj == nil {
@@ -27053,6 +27155,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 		}
 	}
 	return it, nil
+}
+
+// UnmarshalCommerce_Cart_KeyValueInput unmarshals raw into the Commerce_Cart_KeyValueInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_KeyValueInput(ctx context.Context, raw any) (dto.KeyValue, error) {
+	var out dto.KeyValue
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_KeyValueInput", raw, &out)
+	return out, err
 }
 
 func (ec *executionContext) unmarshalInputCommerce_Cart_PersonalDataInput(ctx context.Context, obj any) (forms.DefaultPersonalDataForm, error) {
@@ -27106,6 +27220,18 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_PersonalDataInput(ctx co
 	return it, nil
 }
 
+// UnmarshalCommerce_Cart_PersonalDataInput unmarshals raw into the Commerce_Cart_PersonalDataInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Cart_PersonalDataInput(ctx context.Context, raw any) (forms.DefaultPersonalDataForm, error) {
+	var out forms.DefaultPersonalDataForm
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Cart_PersonalDataInput", raw, &out)
+	return out, err
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ctx context.Context, obj any) (domain.ChargeQualifier, error) {
 	var it domain.ChargeQualifier
 	if obj == nil {
@@ -27141,6 +27267,18 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 		}
 	}
 	return it, nil
+}
+
+// UnmarshalCommerce_Price_ChargeQualifierInput unmarshals raw into the Commerce_Price_ChargeQualifierInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Price_ChargeQualifierInput(ctx context.Context, raw any) (domain.ChargeQualifier, error) {
+	var out domain.ChargeQualifier
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Price_ChargeQualifierInput", raw, &out)
+	return out, err
 }
 
 func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationInput(ctx context.Context, obj any) (graphqlproductdto.ChoiceConfiguration, error) {
@@ -27194,6 +27332,18 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 	return it, nil
 }
 
+// UnmarshalCommerce_Product_ChoiceConfigurationInput unmarshals raw into the Commerce_Product_ChoiceConfigurationInput input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Product_ChoiceConfigurationInput(ctx context.Context, raw any) (graphqlproductdto.ChoiceConfiguration, error) {
+	var out graphqlproductdto.ChoiceConfiguration
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Product_ChoiceConfigurationInput", raw, &out)
+	return out, err
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx context.Context, obj any) (searchdto.CommerceSearchKeyValueFilter, error) {
 	var it searchdto.CommerceSearchKeyValueFilter
 	if obj == nil {
@@ -27229,6 +27379,18 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 		}
 	}
 	return it, nil
+}
+
+// UnmarshalCommerce_Search_KeyValueFilter unmarshals raw into the Commerce_Search_KeyValueFilter input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Search_KeyValueFilter(ctx context.Context, raw any) (searchdto.CommerceSearchKeyValueFilter, error) {
+	var out searchdto.CommerceSearchKeyValueFilter
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Search_KeyValueFilter", raw, &out)
+	return out, err
 }
 
 func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Context, obj any) (searchdto.CommerceSearchRequest, error) {
@@ -27287,6 +27449,18 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		}
 	}
 	return it, nil
+}
+
+// UnmarshalCommerce_Search_Request unmarshals raw into the Commerce_Search_Request input type, using the
+// unmarshaler bound to ctx's request. Call it from a resolver to decode an input
+// object that was not passed as a field argument.
+//
+// ctx must come from a gqlgen request; outside one there is no unmarshaler to use
+// and the returned error says so.
+func UnmarshalCommerce_Search_Request(ctx context.Context, raw any) (searchdto.CommerceSearchRequest, error) {
+	var out searchdto.CommerceSearchRequest
+	err := graphql.UnmarshalNamedInputFromContext(ctx, "Commerce_Search_Request", raw, &out)
+	return out, err
 }
 
 // endregion **************************** input.gotpl *****************************
@@ -27571,50 +27745,17 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData(ctx context.Context, s
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AdditionalDataImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_AdditionalData")
 		case "customAttributes":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Cart_AdditionalData_customAttributes(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Cart_AdditionalData_customAttributes(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "reservedOrderID":
 			out.Values[i] = ec._Commerce_Cart_AdditionalData_reservedOrderID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -27629,14 +27770,10 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData(ctx context.Context, s
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -27647,8 +27784,7 @@ func (ec *executionContext) _Commerce_Cart_Address(ctx context.Context, sel ast.
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AddressImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -27752,14 +27888,10 @@ func (ec *executionContext) _Commerce_Cart_Address(ctx context.Context, sel ast.
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -27770,8 +27902,7 @@ func (ec *executionContext) _Commerce_Cart_AddressForm(ctx context.Context, sel 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AddressFormImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -27880,14 +28011,10 @@ func (ec *executionContext) _Commerce_Cart_AddressForm(ctx context.Context, sel 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -27898,8 +28025,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedDiscountImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -27948,14 +28074,10 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -27966,8 +28088,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedDiscountsImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -27996,14 +28117,10 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28014,8 +28131,7 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedGiftCardImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28049,14 +28165,10 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28067,8 +28179,7 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm(ctx context.Contex
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_BillingAddressFormImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28097,14 +28208,10 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm(ctx context.Contex
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28115,8 +28222,7 @@ func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.Sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CartImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28217,43 +28323,11 @@ func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.Sel
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getDeliveryByCode":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Cart_Cart_getDeliveryByCode(ctx, field, obj)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Cart_Cart_getDeliveryByCode(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "getDeliveryCodes":
 			out.Values[i] = ec._Commerce_Cart_Cart_getDeliveryCodes(ctx, field, obj)
 			if out.Values[i] == graphql.RequiredNull {
@@ -28403,14 +28477,10 @@ func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.Sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28421,8 +28491,7 @@ func (ec *executionContext) _Commerce_Cart_CouponCode(ctx context.Context, sel a
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CouponCodeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28441,14 +28510,10 @@ func (ec *executionContext) _Commerce_Cart_CouponCode(ctx context.Context, sel a
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28459,8 +28524,7 @@ func (ec *executionContext) _Commerce_Cart_CustomAttributes(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CustomAttributesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28479,14 +28543,10 @@ func (ec *executionContext) _Commerce_Cart_CustomAttributes(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28497,8 +28557,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart(ctx context.Context, se
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedCartImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28537,14 +28596,10 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart(ctx context.Context, se
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28555,8 +28610,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery(ctx context.Context
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedDeliveryImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28580,14 +28634,10 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery(ctx context.Context
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28598,8 +28648,7 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem(ctx context.Context, se
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28623,14 +28672,10 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem(ctx context.Context, se
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28641,8 +28686,7 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.C
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DefaultPaymentSelectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28658,43 +28702,11 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.C
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "cartSplit":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Cart_DefaultPaymentSelection_cartSplit(ctx, field, obj)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Cart_DefaultPaymentSelection_cartSplit(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -28704,14 +28716,10 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.C
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28722,8 +28730,7 @@ func (ec *executionContext) _Commerce_Cart_Delivery(ctx context.Context, sel ast
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28802,14 +28809,10 @@ func (ec *executionContext) _Commerce_Cart_Delivery(ctx context.Context, sel ast
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28820,8 +28823,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Conte
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryAddressFormImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28875,14 +28877,10 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Conte
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28893,8 +28891,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -28930,43 +28927,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo(ctx context.Context, sel
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "additionalData":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Cart_DeliveryInfo_additionalData(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Cart_DeliveryInfo_additionalData(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -28976,14 +28941,10 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -28994,8 +28955,7 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryLocationImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29029,14 +28989,10 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29047,8 +29003,7 @@ func (ec *executionContext) _Commerce_Cart_ExistingCustomerData(ctx context.Cont
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ExistingCustomerDataImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29067,14 +29022,10 @@ func (ec *executionContext) _Commerce_Cart_ExistingCustomerData(ctx context.Cont
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29085,8 +29036,7 @@ func (ec *executionContext) _Commerce_Cart_Form_Error(ctx context.Context, sel a
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_Form_ErrorImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29110,14 +29060,10 @@ func (ec *executionContext) _Commerce_Cart_Form_Error(ctx context.Context, sel a
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29128,8 +29074,7 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_Form_FieldErrorImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29158,14 +29103,10 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29176,8 +29117,7 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo(ctx context.Conte
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_Form_ValidationInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29201,14 +29141,10 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo(ctx context.Conte
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29219,8 +29155,7 @@ func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.Sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29336,43 +29271,11 @@ func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.Sel
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "appliedDiscounts":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Cart_Item_appliedDiscounts(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Cart_Item_appliedDiscounts(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -29382,14 +29285,10 @@ func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.Sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29400,8 +29299,7 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Conte
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ItemValidationErrorImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29425,14 +29323,10 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Conte
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29443,8 +29337,7 @@ func (ec *executionContext) _Commerce_Cart_KeyValue(ctx context.Context, sel ast
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_KeyValueImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29468,14 +29361,10 @@ func (ec *executionContext) _Commerce_Cart_KeyValue(ctx context.Context, sel ast
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29486,8 +29375,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split(ctx context.Co
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PaymentSelection_SplitImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29511,14 +29399,10 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split(ctx context.Co
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29529,8 +29413,7 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier(ctx c
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PaymentSelection_SplitQualifierImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29559,14 +29442,10 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier(ctx c
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29577,8 +29456,7 @@ func (ec *executionContext) _Commerce_Cart_Person(ctx context.Context, sel ast.S
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29607,14 +29485,10 @@ func (ec *executionContext) _Commerce_Cart_Person(ctx context.Context, sel ast.S
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29625,8 +29499,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalData(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonalDataImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29660,14 +29533,10 @@ func (ec *executionContext) _Commerce_Cart_PersonalData(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29678,8 +29547,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDataForm(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonalDataFormImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29708,14 +29576,10 @@ func (ec *executionContext) _Commerce_Cart_PersonalDataForm(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29726,8 +29590,7 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonalDetailsImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29761,14 +29624,10 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29779,8 +29638,7 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PlacedOrderInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29804,14 +29662,10 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29822,8 +29676,7 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem(ctx context.Context, s
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedCartItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29847,14 +29700,10 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem(ctx context.Context, s
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29865,8 +29714,7 @@ func (ec *executionContext) _Commerce_Cart_PricedItems(ctx context.Context, sel 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedItemsImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29895,14 +29743,10 @@ func (ec *executionContext) _Commerce_Cart_PricedItems(ctx context.Context, sel 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29913,8 +29757,7 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem(ctx context.Contex
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedShippingItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29938,14 +29781,10 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem(ctx context.Contex
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29956,8 +29795,7 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedTotalItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -29981,14 +29819,10 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -29999,8 +29833,7 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult(ctx context.Cont
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_QtyRestrictionResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30034,14 +29867,10 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult(ctx context.Cont
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30052,8 +29881,7 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult(ctx context.Con
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_SelectedPaymentResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30077,14 +29905,10 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult(ctx context.Con
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30095,8 +29919,7 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ShippingItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30122,43 +29945,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem(ctx context.Context, sel
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "appliedDiscounts":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Cart_ShippingItem_appliedDiscounts(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Cart_ShippingItem_appliedDiscounts(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "totalWithDiscountInclTax":
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_totalWithDiscountInclTax(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -30178,14 +29969,10 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30196,8 +29983,7 @@ func (ec *executionContext) _Commerce_Cart_Summary(ctx context.Context, sel ast.
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_SummaryImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30256,14 +30042,10 @@ func (ec *executionContext) _Commerce_Cart_Summary(ctx context.Context, sel ast.
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30274,8 +30056,7 @@ func (ec *executionContext) _Commerce_Cart_Tax(ctx context.Context, sel ast.Sele
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TaxImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30304,14 +30085,10 @@ func (ec *executionContext) _Commerce_Cart_Tax(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30322,8 +30099,7 @@ func (ec *executionContext) _Commerce_Cart_Taxes(ctx context.Context, sel ast.Se
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TaxesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30347,14 +30123,10 @@ func (ec *executionContext) _Commerce_Cart_Taxes(ctx context.Context, sel ast.Se
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30365,8 +30137,7 @@ func (ec *executionContext) _Commerce_Cart_Teaser(ctx context.Context, sel ast.S
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TeaserImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30395,14 +30166,10 @@ func (ec *executionContext) _Commerce_Cart_Teaser(ctx context.Context, sel ast.S
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30413,8 +30180,7 @@ func (ec *executionContext) _Commerce_Cart_Totalitem(ctx context.Context, sel as
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TotalitemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30448,14 +30214,10 @@ func (ec *executionContext) _Commerce_Cart_Totalitem(ctx context.Context, sel as
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30466,8 +30228,7 @@ func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result(
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_UpdateDeliveryShippingOptions_ResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30486,14 +30247,10 @@ func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result(
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30504,8 +30261,7 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ValidationResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30534,14 +30290,10 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30552,8 +30304,7 @@ func (ec *executionContext) _Commerce_CategoryData(ctx context.Context, sel ast.
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CategoryDataImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30597,14 +30348,10 @@ func (ec *executionContext) _Commerce_CategoryData(ctx context.Context, sel ast.
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30615,8 +30362,7 @@ func (ec *executionContext) _Commerce_CategoryTree(ctx context.Context, sel ast.
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CategoryTreeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30665,14 +30411,10 @@ func (ec *executionContext) _Commerce_CategoryTree(ctx context.Context, sel ast.
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30683,8 +30425,7 @@ func (ec *executionContext) _Commerce_Category_Attribute(ctx context.Context, se
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_AttributeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30713,14 +30454,10 @@ func (ec *executionContext) _Commerce_Category_Attribute(ctx context.Context, se
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30731,8 +30468,7 @@ func (ec *executionContext) _Commerce_Category_AttributeValue(ctx context.Contex
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_AttributeValueImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30756,14 +30492,10 @@ func (ec *executionContext) _Commerce_Category_AttributeValue(ctx context.Contex
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30774,8 +30506,7 @@ func (ec *executionContext) _Commerce_Category_Attributes(ctx context.Context, s
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_AttributesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30804,14 +30535,10 @@ func (ec *executionContext) _Commerce_Category_Attributes(ctx context.Context, s
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30822,8 +30549,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_SearchResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30847,14 +30573,10 @@ func (ec *executionContext) _Commerce_Category_SearchResult(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30865,8 +30587,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext(ctx context.Con
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderContextImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30900,14 +30621,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext(ctx context.Con
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30918,8 +30635,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo(ctx context
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderPaymentInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -30958,14 +30674,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo(ctx context
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -30976,8 +30688,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter(ct
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_Form_ParameterImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31001,14 +30712,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter(ct
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31019,8 +30726,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_PaymentRequestAPIImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31059,14 +30765,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31077,8 +30779,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed(ctx 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31102,14 +30803,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed(ctx 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31120,8 +30817,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomerImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31140,14 +30836,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31158,8 +30850,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationErrorImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31183,14 +30874,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31201,8 +30888,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_ErrorImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31221,14 +30907,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31239,8 +30921,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomerImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31259,14 +30940,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31277,8 +30954,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentErrorImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31297,14 +30973,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31315,8 +30987,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_PostRedirectImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31345,14 +31016,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31363,8 +31030,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ct
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_RedirectImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31388,14 +31054,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ct
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31406,8 +31068,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML(ct
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_ShowHTMLImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31431,14 +31092,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML(ct
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31449,8 +31106,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_ShowIframeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31474,14 +31130,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31492,8 +31144,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_ShowWalletPaymentImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31522,14 +31173,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31540,8 +31187,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success(ctx
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_SuccessImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31560,14 +31206,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success(ctx
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31578,8 +31220,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_TriggerClientSDKImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31608,14 +31249,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClie
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31626,8 +31263,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait(ctx co
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_WaitImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31646,14 +31282,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait(ctx co
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31664,8 +31296,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_WaitForCustomerImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31684,14 +31315,10 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31702,8 +31329,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos(ctx context.Cont
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlacedOrderInfosImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31732,14 +31358,10 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos(ctx context.Cont
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31750,8 +31372,7 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx contex
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_StartPlaceOrder_ResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31770,14 +31391,10 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx contex
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31788,8 +31405,7 @@ func (ec *executionContext) _Commerce_Customer_Address(ctx context.Context, sel 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_AddressImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31888,14 +31504,10 @@ func (ec *executionContext) _Commerce_Customer_Address(ctx context.Context, sel 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31906,8 +31518,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData(ctx context.Context, s
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_PersonDataImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -31961,14 +31572,10 @@ func (ec *executionContext) _Commerce_Customer_PersonData(ctx context.Context, s
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -31979,8 +31586,7 @@ func (ec *executionContext) _Commerce_Customer_Result(ctx context.Context, sel a
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_ResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32024,14 +31630,10 @@ func (ec *executionContext) _Commerce_Customer_Result(ctx context.Context, sel a
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32042,8 +31644,7 @@ func (ec *executionContext) _Commerce_Customer_Status_Result(ctx context.Context
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_Status_ResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32067,14 +31668,10 @@ func (ec *executionContext) _Commerce_Customer_Status_Result(ctx context.Context
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32085,8 +31682,7 @@ func (ec *executionContext) _Commerce_Price(ctx context.Context, sel ast.Selecti
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_PriceImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32110,14 +31706,10 @@ func (ec *executionContext) _Commerce_Price(ctx context.Context, sel ast.Selecti
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32128,8 +31720,7 @@ func (ec *executionContext) _Commerce_Price_Charge(ctx context.Context, sel ast.
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Price_ChargeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32163,14 +31754,10 @@ func (ec *executionContext) _Commerce_Price_Charge(ctx context.Context, sel ast.
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32181,8 +31768,7 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Price_ChargeQualifierImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32206,14 +31792,10 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32224,8 +31806,7 @@ func (ec *executionContext) _Commerce_Price_Charges(ctx context.Context, sel ast
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Price_ChargesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32264,14 +31845,10 @@ func (ec *executionContext) _Commerce_Price_Charges(ctx context.Context, sel ast
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32282,8 +31859,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ActiveVariantProductImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32387,14 +31963,10 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32405,8 +31977,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection(ctx conte
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ActiveVariationSelectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32440,14 +32011,10 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection(ctx conte
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32458,8 +32025,7 @@ func (ec *executionContext) _Commerce_Product_Attribute(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_AttributeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32508,14 +32074,10 @@ func (ec *executionContext) _Commerce_Product_Attribute(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32526,8 +32088,7 @@ func (ec *executionContext) _Commerce_Product_Attributes(ctx context.Context, se
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_AttributesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32566,14 +32127,10 @@ func (ec *executionContext) _Commerce_Product_Attributes(ctx context.Context, se
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32584,8 +32141,7 @@ func (ec *executionContext) _Commerce_Product_Badge(ctx context.Context, sel ast
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BadgeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32619,14 +32175,10 @@ func (ec *executionContext) _Commerce_Product_Badge(ctx context.Context, sel ast
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32637,8 +32189,7 @@ func (ec *executionContext) _Commerce_Product_Badges(ctx context.Context, sel as
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BadgesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32662,14 +32213,10 @@ func (ec *executionContext) _Commerce_Product_Badges(ctx context.Context, sel as
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32680,8 +32227,7 @@ func (ec *executionContext) _Commerce_Product_BundleProduct(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BundleProductImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32775,14 +32321,10 @@ func (ec *executionContext) _Commerce_Product_BundleProduct(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32793,8 +32335,7 @@ func (ec *executionContext) _Commerce_Product_Categories(ctx context.Context, se
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_CategoriesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32818,14 +32359,10 @@ func (ec *executionContext) _Commerce_Product_Categories(ctx context.Context, se
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32836,8 +32373,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser(ctx context.Context
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_CategoryTeaserImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32871,14 +32407,10 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser(ctx context.Context
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32889,8 +32421,7 @@ func (ec *executionContext) _Commerce_Product_Choice(ctx context.Context, sel as
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ChoiceImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -32934,14 +32465,10 @@ func (ec *executionContext) _Commerce_Product_Choice(ctx context.Context, sel as
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -32952,8 +32479,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ConfigurableProductImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33047,14 +32573,10 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33065,8 +32587,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty(ctx context.Context, sel a
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_LoyaltyImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33095,14 +32616,10 @@ func (ec *executionContext) _Commerce_Product_Loyalty(ctx context.Context, sel a
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33113,8 +32630,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo(ctx context.Co
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_Loyalty_EarningInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33138,14 +32654,10 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo(ctx context.Co
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33156,8 +32668,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo(ctx context.Cont
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_Loyalty_PriceInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33211,14 +32722,10 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo(ctx context.Cont
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33229,8 +32736,7 @@ func (ec *executionContext) _Commerce_Product_Media(ctx context.Context, sel ast
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MediaImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33254,14 +32760,10 @@ func (ec *executionContext) _Commerce_Product_Media(ctx context.Context, sel ast
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33272,8 +32774,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MediaItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33312,14 +32813,10 @@ func (ec *executionContext) _Commerce_Product_MediaItem(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33330,8 +32827,7 @@ func (ec *executionContext) _Commerce_Product_Meta(ctx context.Context, sel ast.
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MetaImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33350,14 +32846,10 @@ func (ec *executionContext) _Commerce_Product_Meta(ctx context.Context, sel ast.
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33368,8 +32860,7 @@ func (ec *executionContext) _Commerce_Product_Option(ctx context.Context, sel as
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_OptionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33393,14 +32884,10 @@ func (ec *executionContext) _Commerce_Product_Option(ctx context.Context, sel as
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33411,8 +32898,7 @@ func (ec *executionContext) _Commerce_Product_PriceContext(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_PriceContextImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33456,14 +32942,10 @@ func (ec *executionContext) _Commerce_Product_PriceContext(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33474,8 +32956,7 @@ func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_PriceInfoImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33496,43 +32977,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "activeBase":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Product_PriceInfo_activeBase(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Product_PriceInfo_activeBase(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "activeBaseAmount":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_activeBaseAmount(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -33577,14 +33026,10 @@ func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33595,8 +33040,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SearchResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33645,14 +33089,10 @@ func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33663,8 +33103,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SimpleProductImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33753,14 +33192,10 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33771,8 +33206,7 @@ func (ec *executionContext) _Commerce_Product_SpecificationEntry(ctx context.Con
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SpecificationEntryImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33796,14 +33230,10 @@ func (ec *executionContext) _Commerce_Product_SpecificationEntry(ctx context.Con
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33814,8 +33244,7 @@ func (ec *executionContext) _Commerce_Product_SpecificationGroup(ctx context.Con
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SpecificationGroupImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33839,14 +33268,10 @@ func (ec *executionContext) _Commerce_Product_SpecificationGroup(ctx context.Con
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33857,8 +33282,7 @@ func (ec *executionContext) _Commerce_Product_Specifications(ctx context.Context
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SpecificationsImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33877,14 +33301,10 @@ func (ec *executionContext) _Commerce_Product_Specifications(ctx context.Context
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33895,8 +33315,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection(ctx context.Conte
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33920,14 +33339,10 @@ func (ec *executionContext) _Commerce_Product_VariantSelection(ctx context.Conte
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33938,8 +33353,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute(ctx con
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_AttributeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -33968,14 +33382,10 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute(ctx con
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -33986,8 +33396,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option(
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Attribute_OptionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34016,14 +33425,10 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option(
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34034,8 +33439,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match(ctx context
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_MatchImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34059,14 +33463,10 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match(ctx context
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34077,8 +33477,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes(
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Match_AttributesImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34102,14 +33501,10 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes(
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34120,8 +33515,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant(ctx
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Match_VariantImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34140,14 +33534,10 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant(ctx
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34158,8 +33548,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Option_OtherAttributesRestrictionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34183,14 +33572,10 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttri
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34201,8 +33586,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection(ctx context.Con
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34231,14 +33615,10 @@ func (ec *executionContext) _Commerce_Product_VariationSelection(ctx context.Con
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34249,8 +33629,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option(ctx cont
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelection_OptionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34284,14 +33663,10 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option(ctx cont
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34302,8 +33677,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant(c
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelection_OptionVariantImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34322,14 +33696,10 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant(c
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34340,8 +33710,7 @@ func (ec *executionContext) _Commerce_Search_Action(ctx context.Context, sel ast
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_ActionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34365,14 +33734,10 @@ func (ec *executionContext) _Commerce_Search_Action(ctx context.Context, sel ast
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34383,8 +33748,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet(ctx context.Context, sel 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_ListFacetImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34423,14 +33787,10 @@ func (ec *executionContext) _Commerce_Search_ListFacet(ctx context.Context, sel 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34441,8 +33801,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_ListFacetItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34476,14 +33835,10 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34494,8 +33849,7 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_MetaImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34526,43 +33880,11 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "sortOptions":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_Search_Meta_sortOptions(ctx, field, obj)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			if field.IsDeferred() {
-				deferredFieldSet.AddField(field)
-				fieldIndex := len(deferredFieldSet.Values) - 1
-				deferredFieldSet.Concurrently(fieldIndex, func(ctx context.Context) graphql.Marshaler {
-					return innerFunc(ctx, deferredFieldSet)
+			out.ResolveConcurrently(ec.OperationContext, &deferred, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Commerce_Search_Meta_sortOptions(ctx, field, obj)
 				})
-
-				for _, deferrable := range field.Deferrables {
-					view, ok := deferLabelToView[deferrable.Label]
-					if !ok {
-						view = deferredFieldSet.NewView()
-						deferLabelToView[deferrable.Label] = view
-					}
-					view.AddIndices(fieldIndex)
-				}
-
-				// don't run the out.Concurrently() call below
-				out.Values[i] = graphql.Null
-				continue
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -34572,14 +33894,10 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34590,8 +33908,7 @@ func (ec *executionContext) _Commerce_Search_Promotion(ctx context.Context, sel 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_PromotionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34625,14 +33942,10 @@ func (ec *executionContext) _Commerce_Search_Promotion(ctx context.Context, sel 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34643,8 +33956,7 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_PromotionMediaImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34683,14 +33995,10 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34701,8 +34009,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_RangeFacetImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34741,14 +34048,10 @@ func (ec *executionContext) _Commerce_Search_RangeFacet(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34759,8 +34062,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem(ctx context.Context,
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_RangeFacetItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34814,14 +34116,10 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem(ctx context.Context,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34832,8 +34130,7 @@ func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_SortOptionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34862,14 +34159,10 @@ func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34880,8 +34173,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion(ctx context.Context, sel
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_SuggestionImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34905,14 +34197,10 @@ func (ec *executionContext) _Commerce_Search_Suggestion(ctx context.Context, sel
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34923,8 +34211,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet(ctx context.Context, sel 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_TreeFacetImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -34963,14 +34250,10 @@ func (ec *executionContext) _Commerce_Search_TreeFacet(ctx context.Context, sel 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -34981,8 +34264,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem(ctx context.Context, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_TreeFacetItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -35026,14 +34308,10 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem(ctx context.Context, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35047,8 +34325,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	})
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
 			Object: field.Name,
@@ -35221,14 +34498,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35242,8 +34515,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	})
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
 			Object: field.Name,
@@ -35254,269 +34526,77 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
 		case "flamingo":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_flamingo(ctx, field)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_flamingo(ctx, field)
+				})
 		case "Commerce_Product":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Product(ctx, field)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Product(ctx, field)
+				})
 		case "Commerce_Product_Search":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Product_Search(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Product_Search(ctx, field)
+				})
 		case "Commerce_Customer_Status":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Customer_Status(ctx, field)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Customer_Status(ctx, field)
+				})
 		case "Commerce_Customer":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Customer(ctx, field)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Customer(ctx, field)
+				})
 		case "Commerce_Cart_DecoratedCart":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Cart_DecoratedCart(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Cart_DecoratedCart(ctx, field)
+				})
 		case "Commerce_Cart_Validator":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Cart_Validator(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Cart_Validator(ctx, field)
+				})
 		case "Commerce_Cart_QtyRestriction":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Cart_QtyRestriction(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Cart_QtyRestriction(ctx, field)
+				})
 		case "Commerce_Checkout_ActivePlaceOrder":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Checkout_ActivePlaceOrder(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Checkout_ActivePlaceOrder(ctx, field)
+				})
 		case "Commerce_Checkout_CurrentContext":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Checkout_CurrentContext(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Checkout_CurrentContext(ctx, field)
+				})
 		case "Commerce_CategoryTree":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_CategoryTree(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, true,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_CategoryTree(ctx, field)
+				})
 		case "Commerce_Category":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_Commerce_Category(ctx, field)
-				if res == graphql.RequiredNull {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+			out.ResolveRootConcurrently(innerCtx, ec.OperationContext, i,
+				true, false,
+				func(ctx context.Context) graphql.Marshaler {
+					return ec._Query_Commerce_Category(ctx, field)
+				})
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -35528,7 +34608,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
-			if out.Values[i] == graphql.RequiredNull {
+			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
@@ -35540,14 +34620,10 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35558,8 +34634,7 @@ func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionS
 	fields := graphql.CollectFields(ec.OperationContext, sel, __DirectiveImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -35598,14 +34673,10 @@ func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35616,8 +34687,7 @@ func (ec *executionContext) ___EnumValue(ctx context.Context, sel ast.SelectionS
 	fields := graphql.CollectFields(ec.OperationContext, sel, __EnumValueImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -35651,14 +34721,10 @@ func (ec *executionContext) ___EnumValue(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35669,8 +34735,7 @@ func (ec *executionContext) ___Field(ctx context.Context, sel ast.SelectionSet, 
 	fields := graphql.CollectFields(ec.OperationContext, sel, __FieldImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -35714,14 +34779,10 @@ func (ec *executionContext) ___Field(ctx context.Context, sel ast.SelectionSet, 
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35732,8 +34793,7 @@ func (ec *executionContext) ___InputValue(ctx context.Context, sel ast.Selection
 	fields := graphql.CollectFields(ec.OperationContext, sel, __InputValueImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -35777,14 +34837,10 @@ func (ec *executionContext) ___InputValue(ctx context.Context, sel ast.Selection
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35795,8 +34851,7 @@ func (ec *executionContext) ___Schema(ctx context.Context, sel ast.SelectionSet,
 	fields := graphql.CollectFields(ec.OperationContext, sel, __SchemaImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -35840,14 +34895,10 @@ func (ec *executionContext) ___Schema(ctx context.Context, sel ast.SelectionSet,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35858,8 +34909,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 	fields := graphql.CollectFields(ec.OperationContext, sel, __TypeImplementors)
 
 	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	deferred := graphql.NewDeferredGroup(ctx)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -35928,14 +34978,10 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
+	if n := len(deferred.Defers); n > 0 {
+		atomic.AddInt32(&ec.Deferred, int32(min(n, math.MaxInt32)))
+		ec.ProcessDeferredGroup(deferred)
+	}
 
 	return out
 }
@@ -35953,9 +34999,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	_ = sel
 	res := graphql.MarshalBoolean(v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "Boolean!")
 	}
 	return res
 }
@@ -35975,9 +35019,7 @@ func (ec *executionContext) marshalNCommerce_Cart_AppliedDiscount2flamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx context.Context, sel ast.SelectionSet, v *dto.CartAppliedDiscounts) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_AppliedDiscounts!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_AppliedDiscounts(ctx, sel, v)
@@ -35989,9 +35031,7 @@ func (ec *executionContext) marshalNCommerce_Cart_AppliedGiftCard2flamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Cart_BillingAddressForm2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐBillingAddressForm(ctx context.Context, sel ast.SelectionSet, v *dto.BillingAddressForm) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_BillingAddressForm!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_BillingAddressForm(ctx, sel, v)
@@ -36031,9 +35071,7 @@ func (ec *executionContext) marshalNCommerce_Cart_CouponCode2flamingoᚗmeᚋfla
 
 func (ec *executionContext) marshalNCommerce_Cart_CustomAttributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttributes(ctx context.Context, sel ast.SelectionSet, v *dto.CustomAttributes) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_CustomAttributes!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_CustomAttributes(ctx, sel, v)
@@ -36041,9 +35079,7 @@ func (ec *executionContext) marshalNCommerce_Cart_CustomAttributes2ᚖflamingo�
 
 func (ec *executionContext) marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedCart) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_DecoratedCart!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_DecoratedCart(ctx, sel, v)
@@ -36063,9 +35099,7 @@ func (ec *executionContext) marshalNCommerce_Cart_Delivery2flamingoᚗmeᚋflami
 
 func (ec *executionContext) marshalNCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v *cart.Delivery) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_Delivery!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_Delivery(ctx, sel, v)
@@ -36124,9 +35158,7 @@ func (ec *executionContext) marshalNCommerce_Cart_Item2flamingoᚗmeᚋflamingo�
 
 func (ec *executionContext) marshalNCommerce_Cart_Item2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx context.Context, sel ast.SelectionSet, v *cart.Item) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_Item!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_Item(ctx, sel, v)
@@ -36176,9 +35208,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗ
 
 func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_Split2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPaymentSelectionSplit(ctx context.Context, sel ast.SelectionSet, v *dto.PaymentSelectionSplit) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_PaymentSelection_Split!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_PaymentSelection_Split(ctx, sel, v)
@@ -36190,9 +35220,7 @@ func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_SplitQualifie
 
 func (ec *executionContext) marshalNCommerce_Cart_PersonalDataForm2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPersonalDataForm(ctx context.Context, sel ast.SelectionSet, v *dto.PersonalDataForm) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_PersonalDataForm!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_PersonalDataForm(ctx, sel, v)
@@ -36224,9 +35252,7 @@ func (ec *executionContext) marshalNCommerce_Cart_PricedTotalItem2flamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Cart_QtyRestrictionResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐRestrictionResult(ctx context.Context, sel ast.SelectionSet, v *validation.RestrictionResult) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_QtyRestrictionResult!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_QtyRestrictionResult(ctx, sel, v)
@@ -36234,9 +35260,7 @@ func (ec *executionContext) marshalNCommerce_Cart_QtyRestrictionResult2ᚖflamin
 
 func (ec *executionContext) marshalNCommerce_Cart_SelectedPaymentResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐSelectedPaymentResult(ctx context.Context, sel ast.SelectionSet, v *dto.SelectedPaymentResult) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_SelectedPaymentResult!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_SelectedPaymentResult(ctx, sel, v)
@@ -36262,9 +35286,7 @@ func (ec *executionContext) marshalNCommerce_Cart_Tax2ᚕflamingoᚗmeᚋflaming
 
 func (ec *executionContext) marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTeaser(ctx context.Context, sel ast.SelectionSet, v *cart.Teaser) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_Teaser!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_Teaser(ctx, sel, v)
@@ -36276,9 +35298,7 @@ func (ec *executionContext) marshalNCommerce_Cart_Totalitem2flamingoᚗmeᚋflam
 
 func (ec *executionContext) marshalNCommerce_Cart_UpdateDeliveryShippingOptions_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐUpdateShippingOptionsResult(ctx context.Context, sel ast.SelectionSet, v *dto.UpdateShippingOptionsResult) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_UpdateDeliveryShippingOptions_Result!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_UpdateDeliveryShippingOptions_Result(ctx, sel, v)
@@ -36290,9 +35310,7 @@ func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2flamingoᚗme
 
 func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v *validation.Result) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Cart_ValidationResult!")
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_ValidationResult(ctx, sel, v)
@@ -36300,9 +35318,7 @@ func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2ᚖflamingo�
 
 func (ec *executionContext) marshalNCommerce_Category2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v domain3.Category) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Category!")
 		return graphql.Null
 	}
 	return ec._Commerce_Category(ctx, sel, v)
@@ -36318,9 +35334,7 @@ func (ec *executionContext) marshalNCommerce_Category_AttributeValue2flamingoᚗ
 
 func (ec *executionContext) marshalNCommerce_Category_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttributes(ctx context.Context, sel ast.SelectionSet, v domain3.Attributes) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Category_Attributes!")
 		return graphql.Null
 	}
 	return ec._Commerce_Category_Attributes(ctx, sel, v)
@@ -36328,9 +35342,7 @@ func (ec *executionContext) marshalNCommerce_Category_Attributes2flamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx context.Context, sel ast.SelectionSet, v *dto1.PlaceOrderContext) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Checkout_PlaceOrderContext!")
 		return graphql.Null
 	}
 	return ec._Commerce_Checkout_PlaceOrderContext(ctx, sel, v)
@@ -36350,9 +35362,7 @@ func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_PaymentReq
 
 func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐState(ctx context.Context, sel ast.SelectionSet, v dto1.State) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Checkout_PlaceOrderState_State!")
 		return graphql.Null
 	}
 	return ec._Commerce_Checkout_PlaceOrderState_State(ctx, sel, v)
@@ -36360,9 +35370,7 @@ func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State2flam
 
 func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State_FailedReason2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋdomainᚋplaceorderᚋprocessᚐFailedReason(ctx context.Context, sel ast.SelectionSet, v process.FailedReason) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Checkout_PlaceOrderState_State_FailedReason!")
 		return graphql.Null
 	}
 	return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason(ctx, sel, v)
@@ -36370,9 +35378,7 @@ func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State_Fail
 
 func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx context.Context, sel ast.SelectionSet, v *dto1.StartPlaceOrderResult) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Checkout_StartPlaceOrder_Result!")
 		return graphql.Null
 	}
 	return ec._Commerce_Checkout_StartPlaceOrder_Result(ctx, sel, v)
@@ -36392,9 +35398,7 @@ func (ec *executionContext) marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑco
 
 func (ec *executionContext) marshalNCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx context.Context, sel ast.SelectionSet, v *domain.Price) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Price!")
 		return graphql.Null
 	}
 	return ec._Commerce_Price(ctx, sel, v)
@@ -36415,9 +35419,7 @@ func (ec *executionContext) marshalNCommerce_Price_Charges2flamingoᚗmeᚋflami
 
 func (ec *executionContext) marshalNCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Product) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Product!")
 		return graphql.Null
 	}
 	return ec._Commerce_Product(ctx, sel, v)
@@ -36433,9 +35435,7 @@ func (ec *executionContext) marshalNCommerce_Product_Attribute2flamingoᚗmeᚋf
 
 func (ec *executionContext) marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx context.Context, sel ast.SelectionSet, v domain1.Attributes) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Product_Attributes!")
 		return graphql.Null
 	}
 	return ec._Commerce_Product_Attributes(ctx, sel, v)
@@ -36484,9 +35484,7 @@ func (ec *executionContext) marshalNCommerce_Product_MediaItem2flamingoᚗmeᚋf
 
 func (ec *executionContext) marshalNCommerce_Product_MediaItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐMedia(ctx context.Context, sel ast.SelectionSet, v *domain1.Media) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Product_MediaItem!")
 		return graphql.Null
 	}
 	return ec._Commerce_Product_MediaItem(ctx, sel, v)
@@ -36510,9 +35508,7 @@ func (ec *executionContext) marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋf
 
 func (ec *executionContext) marshalNCommerce_Product_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚐSearchResultDTO(ctx context.Context, sel ast.SelectionSet, v *graphql1.SearchResultDTO) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Product_SearchResult!")
 		return graphql.Null
 	}
 	return ec._Commerce_Product_SearchResult(ctx, sel, v)
@@ -36632,9 +35628,7 @@ func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionSt
 	_ = sel
 	res := graphql.MarshalString(string(v))
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "Commerce_Product_VariationSelection_OptionState!")
 	}
 	return res
 }
@@ -36649,9 +35643,7 @@ func (ec *executionContext) marshalNCommerce_Search_Action2flamingoᚗmeᚋflami
 
 func (ec *executionContext) marshalNCommerce_Search_Facet2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacet(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchFacet) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Search_Facet!")
 		return graphql.Null
 	}
 	return ec._Commerce_Search_Facet(ctx, sel, v)
@@ -36696,9 +35688,7 @@ func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingo
 
 func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Search_ListFacetItem!")
 		return graphql.Null
 	}
 	return ec._Commerce_Search_ListFacetItem(ctx, sel, v)
@@ -36726,9 +35716,7 @@ func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚕᚖflaming
 
 func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Search_RangeFacetItem!")
 		return graphql.Null
 	}
 	return ec._Commerce_Search_RangeFacetItem(ctx, sel, v)
@@ -36741,9 +35729,7 @@ func (ec *executionContext) unmarshalNCommerce_Search_Request2flamingoᚗmeᚋfl
 
 func (ec *executionContext) marshalNCommerce_Search_SortOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Search_SortOption!")
 		return graphql.Null
 	}
 	return ec._Commerce_Search_SortOption(ctx, sel, v)
@@ -36771,9 +35757,7 @@ func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingo
 
 func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Search_TreeFacetItem!")
 		return graphql.Null
 	}
 	return ec._Commerce_Search_TreeFacetItem(ctx, sel, v)
@@ -36781,9 +35765,7 @@ func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗ
 
 func (ec *executionContext) marshalNCommerce_Tree2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐTree(ctx context.Context, sel ast.SelectionSet, v domain3.Tree) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Commerce_Tree!")
 		return graphql.Null
 	}
 	return ec._Commerce_Tree(ctx, sel, v)
@@ -36798,9 +35780,7 @@ func (ec *executionContext) marshalNFloat2mathᚋbigᚐFloat(ctx context.Context
 	_ = sel
 	res := graphql2.MarshalFloat(v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "Float!")
 	}
 	return res
 }
@@ -36812,17 +35792,13 @@ func (ec *executionContext) unmarshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Co
 
 func (ec *executionContext) marshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v *big.Float) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "Float!")
 		return graphql.Null
 	}
 	_ = sel
 	res := graphql2.MarshalFloat(*v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "Float!")
 	}
 	return res
 }
@@ -36836,9 +35812,7 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	_ = sel
 	res := graphql.MarshalID(v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "ID!")
 	}
 	return res
 }
@@ -36852,9 +35826,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	_ = sel
 	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "Int!")
 	}
 	return res
 }
@@ -36868,9 +35840,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	_ = sel
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "String!")
 	}
 	return res
 }
@@ -36933,9 +35903,7 @@ func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Conte
 	_ = sel
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "__DirectiveLocation!")
 	}
 	return res
 }
@@ -36998,6 +35966,14 @@ func (ec *executionContext) marshalN__InputValue2ᚕgithubᚗcomᚋ99designsᚋg
 	return ret
 }
 
+func (ec *executionContext) marshalN__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
+	if v == nil {
+		graphql.AddInvalidNullError(ctx, "__Schema!")
+		return graphql.Null
+	}
+	return ec.___Schema(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalN__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
 	return ec.___Type(ctx, sel, &v)
 }
@@ -37020,9 +35996,7 @@ func (ec *executionContext) marshalN__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgen�
 
 func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v *introspection.Type) graphql.Marshaler {
 	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullError(ctx, "__Type!")
 		return graphql.Null
 	}
 	return ec.___Type(ctx, sel, v)
@@ -37037,9 +36011,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	_ = sel
 	res := graphql.MarshalString(v)
 	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
+		graphql.AddInvalidNullFromMarshaler(ctx, "__TypeKind!")
 	}
 	return res
 }
@@ -38467,13 +37439,6 @@ func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋg
 	}
 
 	return ret
-}
-
-func (ec *executionContext) marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec.___Schema(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {
