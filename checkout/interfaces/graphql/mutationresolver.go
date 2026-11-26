@@ -113,7 +113,13 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 	startPlaceOrderCommand := placeorder.StartPlaceOrderCommand{Cart: *cart, ReturnURL: returnURL}
 	pctx, err := r.placeorderHandler.StartPlaceOrder(ctx, startPlaceOrderCommand)
 	if err != nil {
+		// keep existing external error contract for expected process states
+		if errors.Is(err, placeorder.ErrAnotherPlaceOrderProcessRunning) {
+			return nil, interfaces.ErrAnotherPlaceOrderProcessRunning
+		}
+
 		r.logger.Error("Failed to start place order", err)
+
 		return nil, interfaces.ErrCheckoutGeneral
 	}
 	return &dto.StartPlaceOrderResult{
