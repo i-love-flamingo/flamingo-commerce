@@ -12,7 +12,7 @@ require (
 	github.com/Rhymond/go-money v1.0.15
 	github.com/gavv/httpexpect/v2 v2.17.0
 	github.com/go-playground/form/v4 v4.5.0
-	github.com/go-redsync/redsync/v4 v4.18.0
+	github.com/go-redsync/redsync/v4 v4.18.1
 	github.com/go-test/deep v1.1.1
 	github.com/gomodule/redigo v1.9.3
 	github.com/google/go-cmp v0.7.0
@@ -129,7 +129,7 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/prometheus/statsd_exporter v0.22.7 // indirect
 	github.com/rbcervilla/redisstore/v9 v9.0.0 // indirect
-	github.com/redis/go-redis/v9 v9.22.0 // indirect
+	github.com/redis/go-redis/v9 v9.23.0 // indirect
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.6 // indirect
@@ -156,7 +156,7 @@ require (
 	go.opentelemetry.io/otel v1.44.0 // indirect
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
-	go.uber.org/atomic v1.11.0 // indirect
+	go.uber.org/atomic v1.12.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.28.0 // indirect
