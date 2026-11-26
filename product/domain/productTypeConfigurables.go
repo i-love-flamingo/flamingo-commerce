@@ -4,6 +4,22 @@ import (
 	"errors"
 )
 
+// ErrVariantNotFound is returned when a variant marketplace code does not match any variant of a configurable product.
+var ErrVariantNotFound = errors.New("variant not found")
+
+// variantNotFoundError keeps the original message, which clients match on, and matches ErrVariantNotFound via errors.Is.
+type variantNotFoundError struct {
+	code string
+}
+
+func (e variantNotFoundError) Error() string {
+	return "No Variant with code " + e.code + " found "
+}
+
+func (e variantNotFoundError) Is(target error) bool {
+	return target == ErrVariantNotFound
+}
+
 const (
 	// TypeConfigurable denotes configurable products
 	TypeConfigurable = "configurable"
@@ -110,7 +126,8 @@ func (p ConfigurableProduct) Variant(variantMarketplaceCode string) (*Variant, e
 			return &variant, nil
 		}
 	}
-	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
+
+	return nil, variantNotFoundError{code: variantMarketplaceCode}
 }
 
 // GetDefaultVariant getter
@@ -192,7 +209,8 @@ func (p ConfigurableProductWithActiveVariant) Variant(variantMarketplaceCode str
 			return &variant, nil
 		}
 	}
-	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
+
+	return nil, variantNotFoundError{code: variantMarketplaceCode}
 }
 
 // GetDefaultVariant getter
